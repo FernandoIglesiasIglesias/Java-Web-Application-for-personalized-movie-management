@@ -3,6 +3,8 @@ package com.tfg.tfg.model.services;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.stereotype.Service;
+
 import com.tfg.tfg.model.entities.Users;
 import com.tfg.tfg.model.entities.UsersDao;
 import com.tfg.tfg.model.services.exceptions.DuplicateInstanceException;
@@ -11,6 +13,8 @@ import com.tfg.tfg.model.services.exceptions.IncorrectPasswordException;
 import com.tfg.tfg.model.services.exceptions.InstanceNotFoundException;
 import org.springframework.transaction.annotation.Transactional;
 
+@Service
+@Transactional
 public class UserServiceImpl implements UserService{
 
     @Autowired
