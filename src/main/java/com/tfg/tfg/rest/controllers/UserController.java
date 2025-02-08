@@ -1,4 +1,5 @@
 package com.tfg.tfg.rest.controllers;
+
 import java.net.URI;
 import java.util.Locale;
 import static com.tfg.tfg.rest.dtos.UserConversor.toUser;
@@ -34,6 +35,7 @@ import com.tfg.tfg.rest.dtos.AuthenticatedUserDto;
 import com.tfg.tfg.rest.dtos.ChangePasswordParamsDto;
 import com.tfg.tfg.rest.dtos.LoginParamsDto;
 import com.tfg.tfg.rest.dtos.UserDto;
+
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
