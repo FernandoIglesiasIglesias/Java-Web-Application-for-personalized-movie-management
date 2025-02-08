@@ -19,14 +19,8 @@ spring:
     url: jdbc:h2:mem:testdb
     username: sa
     password: password
-    max-active: 4
-    max-idle: 2
-    max-wait: 10000
-    remove-abandoned: true
-    remove-abandoned-timeout: 60
-    log-abandoned: true
-    validation-query: SELECT 1
-
+    driver-class-name: org.h2.Driver
+    
   devtools:
     restart:
       trigger-file: reload
