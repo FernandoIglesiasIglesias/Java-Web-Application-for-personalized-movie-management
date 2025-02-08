@@ -1,0 +1,128 @@
+package com.tfg.tfg.model.services;
+
+import java.util.Optional;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import com.tfg.tfg.model.entities.Users;
+import com.tfg.tfg.model.entities.UsersDao;
+import com.tfg.tfg.model.services.exceptions.DuplicateInstanceException;
+import com.tfg.tfg.model.services.exceptions.IncorrectLoginException;
+import com.tfg.tfg.model.services.exceptions.IncorrectPasswordException;
+import com.tfg.tfg.model.services.exceptions.InstanceNotFoundException;
+import org.springframework.transaction.annotation.Transactional;
+
+public class UserServiceImpl implements UserService{
+
+    @Autowired
+	private PermissionChecker permissionChecker;
+	
+	@Autowired
+	private BCryptPasswordEncoder passwordEncoder;
+	
+	@Autowired
+	private UsersDao userDao;
+	
+    /**
+     * Registers a new user in the system.
+     *
+     * @param user the user to be registered
+     * @throws DuplicateInstanceException if a user with the same username already exists
+     */
+	@Override
+	public void signUp(Users user) throws DuplicateInstanceException {
+		
+		if (userDao.existsByUserName(user.getUserName())) {
+			throw new DuplicateInstanceException("project.entities.user", user.getUserName());
+		}
+			
+		user.setPassword(passwordEncoder.encode(user.getPassword()));
+		user.setRole(Users.RoleType.USER);
+		
+		userDao.save(user);
+		
+	}
+
+    /**
+     * Authenticates a user based on the provided username and password.
+     *
+     * @param userName the username of the user attempting to log in
+     * @param password the password of the user attempting to log in
+     * @return the authenticated user if the login is successful
+     * @throws IncorrectLoginException if the username does not exist or the password is incorrect
+     */
+	@Override
+	@Transactional(readOnly=true)
+	public Users login(String userName, String password) throws IncorrectLoginException {
+		
+		Optional<Users> user = userDao.findByUserName(userName);
+		
+		if (!user.isPresent()) {
+			throw new IncorrectLoginException(userName, password);
+		}
+		
+		if (!passwordEncoder.matches(password, user.get().getPassword())) {
+			throw new IncorrectLoginException(userName, password);
+		}
+		
+		return user.get();
+		
+	}
+	
+    /**
+     * Logs in a user based on their ID.
+     *
+     * @param id the ID of the user to log in
+     * @return the user associated with the given ID
+     * @throws InstanceNotFoundException if no user is found with the given ID
+     */
+	@Override
+	@Transactional(readOnly=true)
+	public Users loginFromId(Long id) throws InstanceNotFoundException {
+		return permissionChecker.checkUser(id);
+	}
+
+    /**
+     * Updates the profile of a user with the given details.
+     *
+     * @param id the ID of the user to update
+     * @param userName the new username for the user
+     * @param avatar the new avatar URL for the user
+     * @param email the new email address for the user
+     * @return the updated user object
+     * @throws InstanceNotFoundException if the user with the given ID is not found
+     */
+	@Override
+	public Users updateProfile(Long id, String userName, String avatar, String email) throws InstanceNotFoundException {
+		
+		Users user = permissionChecker.checkUser(id);
+        user.setUserName(userName);
+        user.setAvatar(avatar);
+		user.setEmail(email);
+		
+		return user;
+	}
+    
+    /**
+     * Changes the password of a user.
+     *
+     * @param id the ID of the user whose password is to be changed
+     * @param oldPassword the current password of the user
+     * @param newPassword the new password to be set for the user
+     * @throws InstanceNotFoundException if the user with the specified ID is not found
+     * @throws IncorrectPasswordException if the provided old password does not match the user's current password
+     */
+	@Override
+	public void changePassword(Long id, String oldPassword, String newPassword)
+		throws InstanceNotFoundException, IncorrectPasswordException {
+		
+		Users user = permissionChecker.checkUser(id);
+		
+		if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
+			throw new IncorrectPasswordException();
+		} else {
+			user.setPassword(passwordEncoder.encode(newPassword));
+		}
+		
+	}
+    
+}
