@@ -6,6 +6,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
@@ -20,7 +21,7 @@ public class SecurityConfig {
                 .requestMatchers("/h2-console/**").permitAll()  // Permitir acceso sin autenticación a la consola H2
                 .anyRequest().authenticated()  // Requiere autenticación para el resto
             )
-            .headers(headers -> headers.frameOptions().disable());  // Permitir cargar la consola H2 en un iframe
+            .headers(headers -> headers.frameOptions(frameOptions -> frameOptions.disable()));  // Permitir cargar la consola H2 en un iframe
 
         return http.build();
     }
@@ -29,4 +30,5 @@ public class SecurityConfig {
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
     }
+
 }
