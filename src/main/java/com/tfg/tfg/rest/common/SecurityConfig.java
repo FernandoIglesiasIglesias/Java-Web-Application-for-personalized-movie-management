@@ -32,11 +32,11 @@ public class SecurityConfig {
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(authorize -> authorize
                 .requestMatchers("/h2-console/**").permitAll()  // Permitir acceso sin autenticación a la consola H2
-                .requestMatchers("/api/users/signUp").permitAll()  // Permitir acceso sin autenticación a signUp
-                .requestMatchers("/api/users/login").permitAll()  // Permitir acceso sin autenticación a login
-                .requestMatchers("/api/users/loginFromServiceToken").permitAll()  // Permitir acceso sin autenticación a loginFromServiceToken
-                .requestMatchers("/api/users/{id}").hasRole("USER")  // Suponiendo que los usuarios puedan acceder a su perfil
-                .requestMatchers("/api/users/{id}/changePassword").hasRole("USER")  // Suponiendo que los usuarios puedan cambiar su contraseña
+                .requestMatchers("/users/signUp").permitAll()  // Permitir acceso sin autenticación a signUp
+                .requestMatchers("/users/login").permitAll()  // Permitir acceso sin autenticación a login
+                .requestMatchers("/users/loginFromServiceToken").permitAll()  // Permitir acceso sin autenticación a loginFromServiceToken
+                .requestMatchers("/users/{id}").hasRole("USER")  // Suponiendo que los usuarios puedan acceder a su perfil
+                .requestMatchers("/users/{id}/changePassword").hasRole("USER")  // Suponiendo que los usuarios puedan cambiar su contraseña
                 .anyRequest().authenticated()  // Requiere autenticación para el resto
             )
             .headers(headers -> headers.frameOptions().disable())  // Permitir cargar la consola H2 en un iframe

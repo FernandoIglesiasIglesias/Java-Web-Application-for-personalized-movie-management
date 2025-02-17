@@ -37,7 +37,7 @@ import com.tfg.tfg.rest.dtos.LoginParamsDto;
 import com.tfg.tfg.rest.dtos.UserDto;
 
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping("/users")
 public class UserController {
    
 	private static final String INCORRECT_LOGIN_EXCEPTION_CODE = "project.exceptions.IncorrectLoginException";
