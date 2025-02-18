@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { changePassword } from "../../../backend/userService";
 import { Errors } from "../../common";
 import { useNavigate } from "react-router-dom";
+import './ChangePassword.css'; // Importar el archivo CSS específico
 
 const ChangePassword = ({ user, onClose }) => {
     const navigate = useNavigate();
@@ -70,7 +71,7 @@ const ChangePassword = ({ user, onClose }) => {
                 <h2>Cambiar contraseña</h2>
                 {formErrors && <p className="error-message">{formErrors}</p>}
                 <form onSubmit={handleSubmit} ref={(node) => (form = node)} noValidate>
-                    <div className="settings-subcontainer">
+                    <div className="modal-subcontainer">
                         <h3>Contraseña actual</h3>
                         <input
                             id="oldPassword"
@@ -80,7 +81,7 @@ const ChangePassword = ({ user, onClose }) => {
                             required
                         />
                     </div>
-                    <div className="settings-subcontainer">
+                    <div className="modal-subcontainer">
                         <h3>Nueva contraseña</h3>
                         <input
                             id="newPassword"
@@ -90,7 +91,7 @@ const ChangePassword = ({ user, onClose }) => {
                             required
                         />
                     </div>
-                    <div className="settings-subcontainer">
+                    <div className="modal-subcontainer">
                         <h3>Confirmar nueva contraseña</h3>
                         <input
                             id="confirmPassword"

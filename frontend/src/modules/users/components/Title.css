@@ -1,0 +1,38 @@
+.auth-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #44174E; /* Fondo oscuro */
+  color: #ffffff; /* Texto blanco */
+}
+
+.auth-container h1 {
+  font-size: 3rem;
+  margin-bottom: 2rem;
+}
+
+.login-signup-button-container {
+  display: flex;
+  flex-direction: column; /* Apilar botones verticalmente */
+  gap: 1rem;
+  width: 100%; /* Asegurar que los botones ocupen el mismo ancho */
+  max-width: 150px; /* Limitar el ancho máximo de los botones */
+}
+
+.login-signup-button-container button {
+  padding: 0.75rem 1.5rem;
+  font-size: 1.25rem;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  background-color: #6A1B9A; /* Color del botón */
+  color: #ffffff; /* Color del texto del botón */
+  transition: background-color 0.3s ease;
+  width: 100%; /* Asegurar que los botones ocupen el mismo ancho */
+}
+
+.login-signup-button-container button:hover {
+  background-color: #4A148C; /* Color del botón al pasar el ratón */
+}

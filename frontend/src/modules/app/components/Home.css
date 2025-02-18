@@ -1,0 +1,14 @@
+.home-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #44174E; /* Fondo oscuro */
+  color: #ffffff; /* Texto blanco */
+  padding-top: 60px; /* Añadir margen superior para no superponerse con el header */
+}
+
+.home-content {
+  text-align: center;
+}

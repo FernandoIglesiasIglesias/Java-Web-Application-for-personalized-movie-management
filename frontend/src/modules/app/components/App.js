@@ -33,6 +33,7 @@ const App = () => {
 
   return (
     <Router>
+      <Header user={authenticatedUser?.user} /> {/* Incluir el Header aquí */}
       <Routes>
         {/* Rutas sin Header */}
         <Route path="/" element={<Title />} />
@@ -42,10 +43,7 @@ const App = () => {
         <Route
           path="*"
           element={
-            <>
-              <Header user={authenticatedUser?.user} />
-              <Body authenticatedUser={authenticatedUser} setAuthenticatedUser={setAuthenticatedUser} />
-            </>
+            <Body authenticatedUser={authenticatedUser} setAuthenticatedUser={setAuthenticatedUser} />
           }
         />
       </Routes>

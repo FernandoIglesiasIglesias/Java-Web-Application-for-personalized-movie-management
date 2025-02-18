@@ -2,8 +2,8 @@ import React, { useState } from "react";
 import { logout, signUp } from "../../../backend/userService";
 import { uploadAvatar } from "../../../backend/uploadService";
 import { useNavigate } from "react-router-dom";
-
 import { Errors } from "../../common";
+import './SignUp.css';
 
 const SignUp = ({ setAuthenticatedUser }) => {
   const DEFAULT_AVATAR = "https://cdn-icons-png.flaticon.com/512/1077/1077114.png"; // URL del avatar por defecto
@@ -113,69 +113,68 @@ const SignUp = ({ setAuthenticatedUser }) => {
   };
 
   return (
-    <div>
+    <div className="auth-container">
+      <h1>Registrarse</h1>
       <Errors errors={backendErrors} onClose={() => setBackendErrors(null)} />
-      <div className="auth-container">
-        <h1>Registrarse</h1>
-        <div className="auth-form-container">
-          <form ref={node => form = node} onSubmit={handleSubmit} noValidate>
-            <div className="auth-form-input">
-              <h3>Nombre de usuario</h3>
-              <input
-                type="text"
-                id="username"
-                value={username}
-                onChange={(e) => setUserName(e.target.value)}
-                required
-              />
-            </div>
-            <div className="auth-form-input">
-              <h3>Contraseña</h3>
-              <input
-                type="password"
-                id="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
-            </div>
-            <div className="auth-form-input">
-              <h3>Confirmar la contraseña</h3>
-              <input
-                type="password"
-                id="confirmPassword"
-                value={confirmPassword}
-                onChange={(e) => handleConfirmPasswordChange(e.target.value)}
-                required
-              />
-              {passwordsDoNotMatch && <p style={{ color: 'red' }}>{"Las contraseñas no coinciden"}</p>}
-            </div>
-            <div className="auth-form-input">
-              <h3>Email</h3>
-              <input
-                type="email"
-                id="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
-            </div>
-            <div className="auth-form-input">
-              <h3>Avatar (Sube un archivo)</h3>
-              <input
-                type="file"
-                id="avatar"
-                onChange={(e) => handleAvatarChange(e)}
-                accept="image/*"
-              />
-              {avatarPreview && <img src={avatarPreview} alt="Vista previa del avatar" style={{ width: '100px', height: '100px' }} />}
-              {avatarErrors && <p style={{ color: 'red' }}>{avatarErrors}</p>}
-            </div>
-            <div className="auth-form-input-submit">
-              <input type="submit" value="Finalizar" />
-            </div>
-          </form>
-        </div>
+      <div className="auth-form-container">
+        <form ref={node => form = node} onSubmit={handleSubmit} noValidate>
+          <div className="auth-form-input">
+            <h3>Nombre de usuario</h3>
+            <input
+              type="text"
+              id="username"
+              value={username}
+              onChange={(e) => setUserName(e.target.value)}
+              required
+            />
+          </div>
+          <div className="auth-form-input">
+            <h3>Contraseña</h3>
+            <input
+              type="password"
+              id="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+          </div>
+          <div className="auth-form-input">
+            <h3>Confirmar la contraseña</h3>
+            <input
+              type="password"
+              id="confirmPassword"
+              value={confirmPassword}
+              onChange={(e) => handleConfirmPasswordChange(e.target.value)}
+              required
+            />
+            {passwordsDoNotMatch && <p style={{ color: 'red' }}>{"Las contraseñas no coinciden"}</p>}
+          </div>
+          <div className="auth-form-input">
+            <h3>Email</h3>
+            <input
+              type="email"
+              id="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+          </div>
+          <div className="auth-form-input">
+            <h3>Avatar (Sube un archivo)</h3>
+            <label htmlFor="avatar">Seleccionar archivo</label>
+            <input
+              type="file"
+              id="avatar"
+              onChange={(e) => handleAvatarChange(e)}
+              accept="image/*"
+            />
+            {avatarPreview && <img src={avatarPreview} alt="Vista previa del avatar" />}
+            {avatarErrors && <p style={{ color: 'red' }}>{avatarErrors}</p>}
+          </div>
+          <div className="auth-form-input-submit">
+            <input type="submit" value="Finalizar" />
+          </div>
+        </form>
       </div>
     </div>
   );

@@ -3,6 +3,7 @@ import { updateProfile } from "../../../backend/userService";
 import { uploadAvatar } from "../../../backend/uploadService";
 import { Errors } from "../../common";
 import { useNavigate } from "react-router-dom";
+import './UpdateProfile.css'; // Importar el archivo CSS específico
 
 const UpdateProfile = ({ user, onClose }) => {
     const navigate = useNavigate();
@@ -108,6 +109,7 @@ const UpdateProfile = ({ user, onClose }) => {
                     </div>
                     <div className="modal-subcontainer">
                         <h3>Avatar (Sube un archivo)</h3>
+                        <label htmlFor="avatar">Seleccionar archivo</label>
                         <input
                             type="file"
                             id="avatar"

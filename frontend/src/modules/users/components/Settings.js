@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import UpdateProfile from "./UpdateProfile";
 import { logout } from "../../../backend/userService";
 import ChangePassword from "./ChangePassword";
+import './Settings.css'; // Importar el archivo CSS específico
 
 const Settings = ({ user }) => {
     const navigate = useNavigate();
@@ -20,45 +21,36 @@ const Settings = ({ user }) => {
     }
 
     return (
-        <div>
-            <div className="settings-page">
-                <h1>Ajustes de usuario</h1>
-                <div className="settings-container">
+        <div className="settings-page">
+            <h1>Ajustes de usuario</h1>
+            <div className="settings-container">
+                <div className="settings-subcontainer">
+                    <h3>Avatar</h3>
+                    <img src={avatar} alt="User Avatar" />
+                </div>
+                <div className="settings-horizontal">
                     <div className="settings-subcontainer">
-                        <h3>Avatar</h3>
-                        <img src={avatar} alt="User Avatar" />
+                        <h3>Nombre de usuario</h3>
+                        <p>{userName}</p>
                     </div>
-                    <div className="settings-horizontal">
-                        <div className="settings-subcontainer">
-                            <h3>Nombre de usuario</h3>
-                            <p>{userName}</p>
-                        </div>
-                        <div className="settings-subcontainer">
-                            <h3>Email</h3>
-                            <p>{email}</p>
-                        </div>
+                    <div className="settings-subcontainer">
+                        <h3>Email</h3>
+                        <p>{email}</p>
                     </div>
-                    <div className="settings-horizontal">
-                        <div>
-                            <button className="settings-subcontainer-button" onClick={() => setUpdate(true)}>
-                                Actualizar perfil
-                            </button>
-                        </div>
-                        <div>
-                            <button className="settings-subcontainer-button" onClick={() => setPasswordChange(true)}>
-                                Cambiar contraseña
-                            </button>
-                        </div>
-                        <div>
-                            <button className="settings-subcontainer-button red" onClick={() => handleLogOut()}>
-                                Cerrar Sesion
-                            </button>
-                        </div>
-                    </div>
-                    <button
-                        className="settings-subcontainer-button yellow"
-                        onClick={() => navigate(-1)}
-                    >
+                </div>
+                <div className="settings-horizontal">
+                    <button className="settings-subcontainer-button" onClick={() => setUpdate(true)}>
+                        Actualizar perfil
+                    </button>
+                    <button className="settings-subcontainer-button" onClick={() => setPasswordChange(true)}>
+                        Cambiar contraseña
+                    </button>
+                </div>
+                <div className="settings-horizontal">
+                    <button className="settings-subcontainer-button red" onClick={() => handleLogOut()}>
+                        Cerrar Sesion
+                    </button>
+                    <button className="settings-subcontainer-button grey" onClick={() => navigate(-1)}>
                         Volver
                     </button>
                 </div>
