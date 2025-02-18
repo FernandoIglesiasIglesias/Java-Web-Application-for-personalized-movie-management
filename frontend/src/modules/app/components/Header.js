@@ -7,22 +7,15 @@ const Header = ({ user }) => {
 
   return (
     <header className="home-header">
-
       <h1 className="home-title">TFG</h1>
-
       {user && (
-        <button onClick={() => navigate("/settings")}>
+        <div className="profile-container" onClick={() => navigate("/settings")}>
           <img
-            className="home-user-avatar"
+            className="profile-avatar"
             alt="user avatar"
             src={user.avatar}
           />
-        </button>
-      )}
-      {user && (
-        <button onClick={() => navigate(-1)} className="backbttn-header">
-          Volver
-        </button>
+        </div>
       )}
     </header>
   );

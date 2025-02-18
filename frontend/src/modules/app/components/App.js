@@ -5,6 +5,7 @@ import { tryLoginFromServiceToken, logout } from "../../../backend/userService";
 import Header from "./Header";
 import Body from "./Body";
 import Title from "../../users/components/Title";
+import Home from "./Home";
 
 const App = () => {
   const [authenticatedUser, setAuthenticatedUser] = useState(null);
@@ -35,6 +36,7 @@ const App = () => {
       <Routes>
         {/* Rutas sin Header */}
         <Route path="/" element={<Title />} />
+        <Route path="/home" element={<Home user={authenticatedUser?.user} />} /> {/* Pasar el usuario autenticado */}
 
         {/* Rutas con Header */}
         <Route
@@ -42,7 +44,7 @@ const App = () => {
           element={
             <>
               <Header user={authenticatedUser?.user} />
-              <Body authenticatedUser={authenticatedUser} />
+              <Body authenticatedUser={authenticatedUser} setAuthenticatedUser={setAuthenticatedUser} />
             </>
           }
         />

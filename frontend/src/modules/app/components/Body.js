@@ -6,13 +6,13 @@ import SignUp from "../../users/components/SignUp";
 import Title from "../../users/components/Title";
 import Settings from "../../users/components/Settings";
 
-const Body = ({ authenticatedUser }) => {
+const Body = ({ authenticatedUser, setAuthenticatedUser }) => {
   return (
     <div>
       <Routes>
-      <Route path="/*" element={authenticatedUser ? <Navigate to="/home" /> : <Title />} />
-      <Route path="/login" element={!authenticatedUser ? <Login /> : <Navigate to="/" />} />
-        <Route path="/signup" element={!authenticatedUser ? <SignUp /> : <Navigate to="/" />} />
+        <Route path="/*" element={authenticatedUser ? <Navigate to="/home" /> : <Title />} />
+        <Route path="/login" element={!authenticatedUser ? <Login setAuthenticatedUser={setAuthenticatedUser} /> : <Navigate to="/home" />} />
+        <Route path="/signup" element={!authenticatedUser ? <SignUp setAuthenticatedUser={setAuthenticatedUser} /> : <Navigate to="/home" />} />
         <Route path="/settings" element={authenticatedUser ? <Settings user={authenticatedUser.user} /> : <Navigate to="/" />} />
       </Routes>
     </div>
