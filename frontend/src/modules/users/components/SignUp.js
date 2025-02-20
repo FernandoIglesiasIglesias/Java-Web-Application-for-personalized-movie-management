@@ -3,11 +3,12 @@ import { logout, signUp } from "../../../backend/userService";
 import { uploadAvatar } from "../../../backend/uploadService";
 import { useNavigate } from "react-router-dom";
 import { Errors } from "../../common";
+import { useTheme } from "../../../context/ThemeContext";
 import './SignUp.css';
 
 const SignUp = ({ setAuthenticatedUser }) => {
   const DEFAULT_AVATAR = "https://cdn-icons-png.flaticon.com/512/1077/1077114.png"; // URL del avatar por defecto
-
+  const { theme } = useTheme();
   const navigate = useNavigate();
   const [username, setUserName] = useState("");
   const [password, setPassword] = useState("");
@@ -113,10 +114,10 @@ const SignUp = ({ setAuthenticatedUser }) => {
   };
 
   return (
-    <div className="auth-container">
+    <div className={`auth-container ${theme}`}>
       <h1>Registrarse</h1>
       <Errors errors={backendErrors} onClose={() => setBackendErrors(null)} />
-      <div className="auth-form-container">
+      <div className={`auth-form-container ${theme}`}>
         <form ref={node => form = node} onSubmit={handleSubmit} noValidate>
           <div className="auth-form-input">
             <h3>Nombre de usuario</h3>
@@ -126,6 +127,7 @@ const SignUp = ({ setAuthenticatedUser }) => {
               value={username}
               onChange={(e) => setUserName(e.target.value)}
               required
+              className={theme}
             />
           </div>
           <div className="auth-form-input">
@@ -136,6 +138,7 @@ const SignUp = ({ setAuthenticatedUser }) => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
+              className={theme}
             />
           </div>
           <div className="auth-form-input">
@@ -146,6 +149,7 @@ const SignUp = ({ setAuthenticatedUser }) => {
               value={confirmPassword}
               onChange={(e) => handleConfirmPasswordChange(e.target.value)}
               required
+              className={theme}
             />
             {passwordsDoNotMatch && <p style={{ color: 'red' }}>{"Las contraseñas no coinciden"}</p>}
           </div>
@@ -157,11 +161,12 @@ const SignUp = ({ setAuthenticatedUser }) => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
+              className={theme}
             />
           </div>
           <div className="auth-form-input">
             <h3>Avatar (Sube un archivo)</h3>
-            <label htmlFor="avatar">Seleccionar archivo</label>
+            <label htmlFor="avatar" className={theme}>Seleccionar archivo</label>
             <input
               type="file"
               id="avatar"
@@ -172,7 +177,7 @@ const SignUp = ({ setAuthenticatedUser }) => {
             {avatarErrors && <p style={{ color: 'red' }}>{avatarErrors}</p>}
           </div>
           <div className="auth-form-input-submit">
-            <input type="submit" value="Finalizar" />
+            <input type="submit" value="Finalizar" className={theme} />
           </div>
         </form>
       </div>

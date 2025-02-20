@@ -3,10 +3,12 @@ import { updateProfile } from "../../../backend/userService";
 import { uploadAvatar } from "../../../backend/uploadService";
 import { Errors } from "../../common";
 import { useNavigate } from "react-router-dom";
+import { useTheme } from "../../../context/ThemeContext";
 import './UpdateProfile.css'; // Importar el archivo CSS específico
 
 const UpdateProfile = ({ user, onClose }) => {
     const navigate = useNavigate();
+    const { theme } = useTheme();
     const [userName, setUserName] = useState(user.userName);
     const [email, setEmail] = useState(user.email);
     const [avatar, setAvatar] = useState(null);
@@ -81,8 +83,8 @@ const UpdateProfile = ({ user, onClose }) => {
     };
 
     return (
-        <div className="modal">
-            <div className="modal-content">
+        <div className={`modal ${theme}`}>
+            <div className={`modal-content ${theme}`}>
                 <h2>Actualizar perfil</h2>
                 <form onSubmit={handleSubmit} ref={(node) => (form = node)} noValidate>
                     <div className="modal-subcontainer">
@@ -93,6 +95,7 @@ const UpdateProfile = ({ user, onClose }) => {
                             value={userName}
                             onChange={(e) => setUserName(e.target.value)}
                             required
+                            className={theme}
                         />
                     </div>
                     <div className="modal-subcontainer">
@@ -104,12 +107,13 @@ const UpdateProfile = ({ user, onClose }) => {
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
                                 required
+                                className={theme}
                             />
                         </div>
                     </div>
                     <div className="modal-subcontainer">
                         <h3>Avatar (Sube un archivo)</h3>
-                        <label htmlFor="avatar">Seleccionar archivo</label>
+                        <label htmlFor="avatar" className={theme}>Seleccionar archivo</label>
                         <input
                             type="file"
                             id="avatar"
@@ -129,10 +133,10 @@ const UpdateProfile = ({ user, onClose }) => {
                     {/* Mostrar errores justo antes del botón de Guardar Cambios */}
                     <Errors errors={backendErrors} onClose={() => setBackendErrors(null)} />
 
-                    <button className="settings-subcontainer-button" type="submit">
+                    <button className={`settings-subcontainer-button ${theme}`} type="submit">
                         Guardar Cambios
                     </button>
-                    <button className="settings-subcontainer-button red" onClick={onClose}>
+                    <button className={`settings-subcontainer-button red ${theme}`} onClick={onClose}>
                         Cerrar
                     </button>
                 </form>

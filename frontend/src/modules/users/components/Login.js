@@ -2,10 +2,12 @@ import React, { useState } from "react";
 import { login, logout } from "../../../backend/userService";
 import { useNavigate } from "react-router-dom";
 import { Errors } from "../../common";
+import { useTheme } from "../../../context/ThemeContext";
 import './Login.css';
 
 const Login = ({ setAuthenticatedUser }) => {
   const navigate = useNavigate();
+  const { theme } = useTheme();
   const [username, setUserName] = useState("");
   const [password, setPassword] = useState("");
   const [backendErrors, setBackendErrors] = useState(null);
@@ -47,10 +49,10 @@ const Login = ({ setAuthenticatedUser }) => {
   };
 
   return (
-    <div className="auth-container">
+    <div className={`auth-container ${theme}`}>
       <h1>Identificarse</h1>
       <Errors errors={backendErrors} onClose={() => setBackendErrors(null)} />
-      <div className="auth-form-container">
+      <div className={`auth-form-container ${theme}`}>
         <form ref={node => form = node} onSubmit={handleSubmit} noValidate>
           <div className="auth-form-input">
             <h3>Nombre de usuario</h3>
@@ -60,6 +62,7 @@ const Login = ({ setAuthenticatedUser }) => {
               value={username}
               onChange={(e) => setUserName(e.target.value)}
               required
+              className={theme}
             />
           </div>
           <div className="auth-form-input">
@@ -70,10 +73,11 @@ const Login = ({ setAuthenticatedUser }) => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
+              className={theme}
             />
           </div>
           <div className="auth-form-input-submit">
-            <input type="submit" value="Iniciar Sesion" />
+            <input type="submit" value="Iniciar Sesion" className={theme} />
           </div>
         </form>
       </div>

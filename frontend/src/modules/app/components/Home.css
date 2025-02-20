@@ -1,14 +1,117 @@
+:root {
+  --background-color-light: #f9f9f9;
+  --text-color-light: #333;
+  --button-background-light: #007bff;
+  --button-text-light: #fff;
+  --button-hover-background-light: #0056b3;
+
+  --background-color-dark: #1e1e1e;
+  --text-color-dark: #f9f9f9;
+  --button-background-dark: #bb86fc;
+  --button-text-dark: #1e1e1e;
+  --button-hover-background-dark: #3700b3;
+
+  --transition-duration: 0.3s;
+}
+
+body.light {
+  background-color: var(--background-color-light);
+  color: var(--text-color-light);
+  transition: background-color var(--transition-duration), color var(--transition-duration);
+}
+
+body.dark {
+  background-color: var(--background-color-dark);
+  color: var(--text-color-dark);
+  transition: background-color var(--transition-duration), color var(--transition-duration);
+}
+
 .home-container {
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   height: 100vh;
-  background-color: #44174E; /* Fondo oscuro */
-  color: #ffffff; /* Texto blanco */
-  padding-top: 60px; /* Añadir margen superior para no superponerse con el header */
+  text-align: center;
+}
+
+.home-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  width: 100%;
+  background-color: var(--background-color-light);
+  color: var(--text-color-light);
+  transition: background-color var(--transition-duration), color var(--transition-duration);
+}
+
+.home-header.dark {
+  background-color: var(--background-color-dark);
+  color: var(--text-color-dark);
+}
+
+.home-title {
+  margin: 0;
+}
+
+.profile-container {
+  margin-left: auto;
+  cursor: pointer;
+}
+
+.profile-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.theme-toggle-button {
+  background-color: var(--button-background-light);
+  color: var(--button-text-light);
+  border: none;
+  border-radius: 5px;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  transition: background-color var(--transition-duration), color var(--transition-duration);
+}
+
+.theme-toggle-button:hover {
+  background-color: var(--button-hover-background-light);
+}
+
+.theme-toggle-button.dark {
+  background-color: var(--button-background-dark);
+  color: var(--button-text-dark);
+}
+
+.theme-toggle-button.dark:hover {
+  background-color: var(--button-hover-background-dark);
 }
 
 .home-content {
-  text-align: center;
+  padding: 2rem;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: background-color var(--transition-duration), color var(--transition-duration);
+}
+
+.home-content.light {
+  background-color: var(--background-color-light);
+  color: var(--text-color-light);
+}
+
+.home-content.dark {
+  background-color: var(--background-color-dark);
+  color: var(--text-color-dark);
+}
+
+.home-content h1 {
+  font-size: 2.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.home-content p {
+  font-size: 1.25rem;
 }

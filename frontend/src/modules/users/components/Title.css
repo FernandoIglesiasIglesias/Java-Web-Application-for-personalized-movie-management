@@ -1,24 +1,61 @@
+:root {
+  --background-color-light: #f9f9f9;
+  --text-color-light: #333;
+  --button-background-light: #007bff;
+  --button-text-light: #fff;
+  --button-hover-background-light: #0056b3;
+
+  --background-color-dark: #1e1e1e;
+  --text-color-dark: #f9f9f9;
+  --button-background-dark: #bb86fc;
+  --button-text-dark: #1e1e1e;
+  --button-hover-background-dark: #3700b3;
+
+  --transition-duration: 0.3s;
+}
+
+body.light {
+  background-color: var(--background-color-light);
+  color: var(--text-color-light);
+  transition: background-color var(--transition-duration), color var(--transition-duration);
+}
+
+body.dark {
+  background-color: var(--background-color-dark);
+  color: var(--text-color-dark);
+  transition: background-color var(--transition-duration), color var(--transition-duration);
+}
+
 .auth-container {
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   height: 100vh;
-  background-color: #44174E; /* Fondo oscuro */
-  color: #ffffff; /* Texto blanco */
+  text-align: center;
 }
 
 .auth-container h1 {
   font-size: 3rem;
   margin-bottom: 2rem;
+  transition: color var(--transition-duration);
+}
+
+.auth-container.light h1 {
+  color: var(--text-color-light);
+}
+
+.auth-container.dark h1 {
+  color: var(--text-color-dark);
 }
 
 .login-signup-button-container {
   display: flex;
-  flex-direction: column; /* Apilar botones verticalmente */
   gap: 1rem;
-  width: 100%; /* Asegurar que los botones ocupen el mismo ancho */
-  max-width: 150px; /* Limitar el ancho máximo de los botones */
+}
+
+.login-signup-button-container a {
+  text-decoration: none;
 }
 
 .login-signup-button-container button {
@@ -27,12 +64,23 @@
   border: none;
   border-radius: 5px;
   cursor: pointer;
-  background-color: #6A1B9A; /* Color del botón */
-  color: #ffffff; /* Color del texto del botón */
-  transition: background-color 0.3s ease;
-  width: 100%; /* Asegurar que los botones ocupen el mismo ancho */
+  transition: background-color var(--transition-duration), color var(--transition-duration);
 }
 
-.login-signup-button-container button:hover {
-  background-color: #4A148C; /* Color del botón al pasar el ratón */
+.login-signup-button-container .light {
+  background-color: var(--button-background-light);
+  color: var(--button-text-light);
+}
+
+.login-signup-button-container .light:hover {
+  background-color: var(--button-hover-background-light);
+}
+
+.login-signup-button-container .dark {
+  background-color: var(--button-background-dark);
+  color: var(--button-text-dark);
+}
+
+.login-signup-button-container .dark:hover {
+  background-color: var(--button-hover-background-dark);
 }

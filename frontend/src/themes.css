@@ -1,0 +1,99 @@
+:root {
+  --background-color-light: #ffffff; /* Fondo blanco para el modo claro */
+  --text-color-light: #333333;
+  --primary-color-light: #007bff;
+  --secondary-color-light: #f0f0f0; /* Fondo secundario claro */
+  --button-background-light: #007bff;
+  --button-text-light: #ffffff;
+
+  --background-color-dark: #000000; /* Fondo negro para el modo oscuro */
+  --text-color-dark: #ffffff;
+  --primary-color-dark: #bb86fc;
+  --secondary-color-dark: #121212; /* Fondo secundario oscuro */
+  --button-background-dark: #bb86fc;
+  --button-text-dark: #121212;
+
+  --transition-duration: 1s;
+}
+
+body.light {
+  background-color: var(--background-color-light);
+  color: var(--text-color-light);
+  transition: background-color var(--transition-duration), color var(--transition-duration);
+}
+
+body.dark {
+  background-color: var(--background-color-dark);
+  color: var(--text-color-dark);
+  transition: background-color var(--transition-duration), color var(--transition-duration);
+}
+
+.auth-container, .settings-page, .home-container {
+  transition: background-color var(--transition-duration), color var(--transition-duration);
+}
+
+.auth-container.light, .settings-page.light, .home-container.light {
+  background-color: var(--background-color-light);
+  color: var(--text-color-light);
+}
+
+.auth-container.dark, .settings-page.dark, .home-container.dark {
+  background-color: var(--background-color-dark);
+  color: var(--text-color-dark);
+}
+
+.auth-form-container, .settings-container, .modal-content {
+  background-color: var(--secondary-color-light);
+  transition: background-color var(--transition-duration), color var(--transition-duration);
+}
+
+.auth-form-container.dark, .settings-container.dark, .modal-content.dark {
+  background-color: var(--secondary-color-dark);
+}
+
+button {
+  background-color: var(--button-background-light);
+  color: var(--button-text-light);
+  transition: background-color var(--transition-duration), color var(--transition-duration);
+  border: none;
+  border-radius: 5px;
+  padding: 0.75rem 1.5rem;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+button:hover {
+  background-color: var(--primary-color-light);
+}
+
+button.dark {
+  background-color: var(--button-background-dark);
+  color: var(--button-text-dark);
+}
+
+button.dark:hover {
+  background-color: var(--primary-color-dark);
+}
+
+h1 {
+  font-size: 2.5rem;
+  margin-bottom: 1.5rem;
+}
+
+input {
+  width: 100%;
+  padding: 0.75rem;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  margin-bottom: 1rem;
+}
+
+input:focus {
+  outline: none;
+  border-color: var(--primary-color-light);
+}
+
+input.dark:focus {
+  border-color: var(--primary-color-dark);
+}

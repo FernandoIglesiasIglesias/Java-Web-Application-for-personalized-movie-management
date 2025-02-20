@@ -3,10 +3,12 @@ import { useNavigate } from "react-router-dom";
 import UpdateProfile from "./UpdateProfile";
 import { logout } from "../../../backend/userService";
 import ChangePassword from "./ChangePassword";
+import { useTheme } from "../../../context/ThemeContext";
 import './Settings.css'; // Importar el archivo CSS específico
 
 const Settings = ({ user }) => {
     const navigate = useNavigate();
+    const { theme } = useTheme();
 
     const userName = user.userName;
     const email = user.email;
@@ -21,9 +23,9 @@ const Settings = ({ user }) => {
     }
 
     return (
-        <div className="settings-page">
+        <div className={`settings-page ${theme}`}>
             <h1>Ajustes de usuario</h1>
-            <div className="settings-container">
+            <div className={`settings-container ${theme}`}>
                 <div className="settings-subcontainer">
                     <h3>Avatar</h3>
                     <img src={avatar} alt="User Avatar" />
@@ -39,18 +41,18 @@ const Settings = ({ user }) => {
                     </div>
                 </div>
                 <div className="settings-horizontal">
-                    <button className="settings-subcontainer-button" onClick={() => setUpdate(true)}>
+                    <button className={`settings-subcontainer-button ${theme}`} onClick={() => setUpdate(true)}>
                         Actualizar perfil
                     </button>
-                    <button className="settings-subcontainer-button" onClick={() => setPasswordChange(true)}>
+                    <button className={`settings-subcontainer-button ${theme}`} onClick={() => setPasswordChange(true)}>
                         Cambiar contraseña
                     </button>
                 </div>
                 <div className="settings-horizontal">
-                    <button className="settings-subcontainer-button red" onClick={() => handleLogOut()}>
+                    <button className={`settings-subcontainer-button red ${theme}`} onClick={() => handleLogOut()}>
                         Cerrar Sesion
                     </button>
-                    <button className="settings-subcontainer-button grey" onClick={() => navigate(-1)}>
+                    <button className={`settings-subcontainer-button grey ${theme}`} onClick={() => navigate(-1)}>
                         Volver
                     </button>
                 </div>
