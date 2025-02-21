@@ -49,6 +49,6 @@ CREATE TABLE IF NOT EXISTS MovieDirectors (
     movieId BIGINT NOT NULL,
     directorId BIGINT NOT NULL,
     CONSTRAINT MovieDirectorPK PRIMARY KEY (movieId, directorId),
-    CONSTRAINT MovieFK FOREIGN KEY (movieId) REFERENCES Movies(id),
-    CONSTRAINT DirectorFK FOREIGN KEY (directorId) REFERENCES Directors(id)
+    CONSTRAINT MovieFK_Actors FOREIGN KEY (movieId) REFERENCES Movies(id),
+    CONSTRAINT DirectorFK_Directors FOREIGN KEY (directorId) REFERENCES Directors(id)
 );
