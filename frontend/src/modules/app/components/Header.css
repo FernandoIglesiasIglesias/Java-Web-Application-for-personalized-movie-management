@@ -1,0 +1,29 @@
+.home-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  background-color: #44174E; /* Fondo oscuro */
+  color: #ffffff; /* Texto blanco */
+  z-index: 1000; /* Asegurarse de que el header esté por encima de otros elementos */
+}
+
+.home-title {
+  margin: 0;
+}
+
+.profile-container {
+  margin-left: auto; /* Empuja el contenedor del perfil a la derecha */
+  cursor: pointer;
+}
+
+.profile-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%; /* Forma circular */
+  object-fit: cover;
+}
