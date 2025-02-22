@@ -1,26 +1,25 @@
 package com.tfg.tfg.model.entities;
 
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.Table;
 
 /**
  * Represents a Movie entity in the system.
  */
 @Entity
+@Table(name = "Movies")
 public class Movie {
-
-    /**
-     * Enum representing the genre of a movie.
-     */
-    public enum Genre {ACTION, COMEDY, DRAMA, HORROR, ROMANCE, SCI_FI, THRILLER}
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,21 +32,21 @@ public class Movie {
     @Enumerated(EnumType.STRING)
     private Genre genre;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
         name = "MovieActors",
         joinColumns = @JoinColumn(name = "movieId"),
         inverseJoinColumns = @JoinColumn(name = "actorId")
     )
-    private Set<Actor> actors;
+    private List<Actor> actors;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
         name = "MovieDirectors",
         joinColumns = @JoinColumn(name = "movieId"),
         inverseJoinColumns = @JoinColumn(name = "directorId")
     )
-    private Set<Director> directors;
+    private List<Director> directors;
 
     /**
      * Default constructor.
@@ -67,6 +66,8 @@ public class Movie {
         this.synopsis = synopsis;
         this.duration = duration;
         this.genre = genre;
+        this.actors = new ArrayList<>();
+        this.directors = new ArrayList<>();
     }
 
     /**
@@ -164,7 +165,7 @@ public class Movie {
      *
      * @return the actors of the movie
      */
-    public Set<Actor> getActors() {
+    public List<Actor> getActors() {
         return actors;
     }
 
@@ -173,8 +174,17 @@ public class Movie {
      *
      * @param actors the actors to set
      */
-    public void setActors(Set<Actor> actors) {
+    public void setActors(List<Actor> actors) {
         this.actors = actors;
+    }
+
+    /**
+     * Adds an actor to the movie.
+     *
+     * @param actor the actor to add
+     */
+    public void addActor(Actor actor) {
+        this.actors.add(actor);
     }
 
     /**
@@ -182,7 +192,7 @@ public class Movie {
      *
      * @return the directors of the movie
      */
-    public Set<Director> getDirectors() {
+    public List<Director> getDirectors() {
         return directors;
     }
 
@@ -191,7 +201,16 @@ public class Movie {
      *
      * @param directors the directors to set
      */
-    public void setDirectors(Set<Director> directors) {
+    public void setDirectors(List<Director> directors) {
         this.directors = directors;
+    }
+
+    /**
+     * Adds a director to the movie.
+     *
+     * @param director the director to add
+     */
+    public void addDirector(Director director) {
+        this.directors.add(director);
     }
 }

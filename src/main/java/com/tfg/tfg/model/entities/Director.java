@@ -1,12 +1,15 @@
 package com.tfg.tfg.model.entities;
 
+import java.time.LocalDate;
+import java.util.List;
+
 import jakarta.persistence.*;
-import java.util.Set;
 
 /**
  * Represents a Director entity in the system.
  */
 @Entity
+@Table(name = "Directors")
 public class Director {
 
     @Id
@@ -16,10 +19,10 @@ public class Director {
     private String firstName;
     private String lastName;
     private String nationality;
-    private java.sql.Date birthDate;
+    private LocalDate birthDate;
 
-    @ManyToMany(mappedBy = "directors")
-    private Set<Movie> movies;
+    @ManyToMany(mappedBy = "directors", fetch = FetchType.LAZY)
+    private List<Movie> movies;
 
     /**
      * Default constructor.
@@ -34,7 +37,7 @@ public class Director {
      * @param nationality the nationality of the director
      * @param birthDate the birth date of the director
      */
-    public Director(String firstName, String lastName, String nationality, java.sql.Date birthDate) {
+    public Director(String firstName, String lastName, String nationality, LocalDate birthDate) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.nationality = nationality;
@@ -118,7 +121,7 @@ public class Director {
      *
      * @return the birth date of the director
      */
-    public java.sql.Date getBirthDate() {
+    public LocalDate getBirthDate() {
         return birthDate;
     }
 
@@ -127,7 +130,7 @@ public class Director {
      *
      * @param birthDate the birth date to set
      */
-    public void setBirthDate(java.sql.Date birthDate) {
+    public void setBirthDate(LocalDate birthDate) {
         this.birthDate = birthDate;
     }
 
@@ -136,7 +139,7 @@ public class Director {
      *
      * @return the movies of the director
      */
-    public Set<Movie> getMovies() {
+    public List<Movie> getMovies() {
         return movies;
     }
 
@@ -145,7 +148,7 @@ public class Director {
      *
      * @param movies the movies to set
      */
-    public void setMovies(Set<Movie> movies) {
+    public void setMovies(List<Movie> movies) {
         this.movies = movies;
     }
 }

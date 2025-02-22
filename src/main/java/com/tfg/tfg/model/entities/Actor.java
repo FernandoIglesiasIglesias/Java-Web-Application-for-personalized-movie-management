@@ -1,12 +1,15 @@
 package com.tfg.tfg.model.entities;
 
 import jakarta.persistence.*;
-import java.util.Set;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 /**
  * Represents an Actor entity in the system.
  */
 @Entity
+@Table(name = "Actors")
 public class Actor {
 
     @Id
@@ -16,10 +19,10 @@ public class Actor {
     private String firstName;
     private String lastName;
     private String nationality;
-    private java.sql.Date birthDate;
+    private LocalDate birthDate;
 
-    @ManyToMany(mappedBy = "actors")
-    private Set<Movie> movies;
+    @ManyToMany(mappedBy = "actors", fetch = FetchType.LAZY)
+    private List<Movie> movies;
 
     /**
      * Default constructor.
@@ -34,11 +37,12 @@ public class Actor {
      * @param nationality the nationality of the actor
      * @param birthDate the birth date of the actor
      */
-    public Actor(String firstName, String lastName, String nationality, java.sql.Date birthDate) {
+    public Actor(String firstName, String lastName, String nationality, LocalDate birthDate) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.nationality = nationality;
         this.birthDate = birthDate;
+        this.movies = new ArrayList<>();
     }
 
     /**
@@ -118,7 +122,7 @@ public class Actor {
      *
      * @return the birth date of the actor
      */
-    public java.sql.Date getBirthDate() {
+    public LocalDate getBirthDate() {
         return birthDate;
     }
 
@@ -127,7 +131,7 @@ public class Actor {
      *
      * @param birthDate the birth date to set
      */
-    public void setBirthDate(java.sql.Date birthDate) {
+    public void setBirthDate(LocalDate birthDate) {
         this.birthDate = birthDate;
     }
 
@@ -136,7 +140,7 @@ public class Actor {
      *
      * @return the movies of the actor
      */
-    public Set<Movie> getMovies() {
+    public List<Movie> getMovies() {
         return movies;
     }
 
@@ -145,7 +149,16 @@ public class Actor {
      *
      * @param movies the movies to set
      */
-    public void setMovies(Set<Movie> movies) {
+    public void setMovies(List<Movie> movies) {
         this.movies = movies;
+    }
+
+    /**
+     * Adds a movie to the actor.
+     *
+     * @param movie the movie to add
+     */
+    public void addMovie(Movie movie) {
+        this.movies.add(movie);
     }
 }
