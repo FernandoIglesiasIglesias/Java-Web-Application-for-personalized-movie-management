@@ -1,0 +1,31 @@
+.movies-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .movie-item {
+    padding: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: var(--background-color-light);
+    color: var(--text-color-light);
+    transition: background-color var(--transition-duration), color var(--transition-duration);
+  }
+  
+  .movie-item.dark {
+    background-color: var(--background-color-dark);
+    color: var(--text-color-dark);
+  }
+  
+  .movie-item h3 {
+    margin: 0 0 0.5rem 0;
+  }
+  
+  .movie-item p {
+    margin: 0;
+  }
+  
+  .error-message {
+    color: red;
+  }

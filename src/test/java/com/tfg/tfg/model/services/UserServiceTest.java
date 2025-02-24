@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.tfg.tfg.model.entities.Users;
@@ -15,6 +15,7 @@ import com.tfg.tfg.model.services.exceptions.IncorrectLoginException;
 import com.tfg.tfg.model.services.exceptions.IncorrectPasswordException;
 import com.tfg.tfg.model.services.exceptions.InstanceNotFoundException;
 
+@ActiveProfiles("test")
 @SpringBootTest
 @Transactional
 public class UserServiceTest {
