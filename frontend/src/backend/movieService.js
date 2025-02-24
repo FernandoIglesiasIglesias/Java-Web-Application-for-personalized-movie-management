@@ -8,3 +8,12 @@ export const getAllMovies = (onSuccess, onErrors) => {
     onErrors
   );
 };
+
+export const getMovieDetails = (id, onSuccess, onErrors) => {
+  appFetch(
+    `/movies/${id}`,
+    fetchConfig("GET"),
+    onSuccess,
+    onErrors
+  );
+};

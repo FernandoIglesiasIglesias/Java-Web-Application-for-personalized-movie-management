@@ -6,6 +6,8 @@ import Header from "./Header";
 import Body from "./Body";
 import Title from "../../users/components/Title";
 import Home from "./Home";
+import ShowMovie from "../../movies/components/ShowMovie";
+
 
 const App = () => {
   const [authenticatedUser, setAuthenticatedUser] = useState(null);
@@ -38,6 +40,8 @@ const App = () => {
         {/* Rutas sin Header */}
         <Route path="/" element={<Title />} />
         <Route path="/home" element={<Home user={authenticatedUser?.user} />} /> {/* Pasar el usuario autenticado */}
+        <Route path="/movies/:id" element={<ShowMovie />} />
+
 
         {/* Rutas con Header */}
         <Route

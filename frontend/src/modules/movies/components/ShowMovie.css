@@ -1,0 +1,79 @@
+:root {
+    --background-color-light: #f9f9f9;
+    --text-color-light: #333;
+    --primary-color-light: #007bff;
+    --secondary-color-light: #ffffff;
+    --button-background-light: #007bff;
+    --button-text-light: #fff;
+    --button-hover-background-light: #0056b3;
+  
+    --background-color-dark: #1e1e1e;
+    --text-color-dark: #f9f9f9;
+    --primary-color-dark: #bb86fc;
+    --secondary-color-dark: #333;
+    --button-background-dark: #bb86fc;
+    --button-text-dark: #1e1e1e;
+    --button-hover-background-dark: #3700b3;
+  
+    --transition-duration: 0.3s;
+  }
+  
+  body.light {
+    background-color: var(--background-color-light);
+    color: var(--text-color-light);
+    transition: background-color var(--transition-duration), color var(--transition-duration);
+  }
+  
+  body.dark {
+    background-color: var(--background-color-dark);
+    color: var(--text-color-dark);
+    transition: background-color var(--transition-duration), color var(--transition-duration);
+  }
+  
+  .movie-details {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    padding: 2rem;
+    background-color: var(--secondary-color-light);
+    color: var(--text-color-light);
+    transition: background-color var(--transition-duration), color var(--transition-duration);
+  }
+  
+  .movie-details.dark {
+    background-color: var(--secondary-color-dark);
+    color: var(--text-color-dark);
+  }
+  
+  .movie-details h1 {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+  }
+  
+  .movie-details p {
+    font-size: 1.25rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .movie-details h2 {
+    font-size: 2rem;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+  }
+  
+  .movie-details ul {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  .movie-details li {
+    font-size: 1.25rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .error-message {
+    color: red;
+    font-size: 1.5rem;
+  }

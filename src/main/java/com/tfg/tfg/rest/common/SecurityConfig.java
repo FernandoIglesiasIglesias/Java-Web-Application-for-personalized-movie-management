@@ -43,7 +43,7 @@ public class SecurityConfig {
                 .requestMatchers(antMatcher("/users/loginFromServiceToken")).permitAll()
                 .requestMatchers(antMatcher("/users/{id}")).hasRole(USER)
                 .requestMatchers(antMatcher("/users/{id}/changePassword")).hasRole(USER)
-                .requestMatchers(antMatcher("/movies/allMovies")).permitAll()
+                .requestMatchers(antMatcher("/movies/allMovies")).hasAnyRole(USER, ADMIN)
                 .requestMatchers(antMatcher("/movies/{id}")).hasAnyRole(USER, ADMIN)
                 .anyRequest().authenticated()
             )
