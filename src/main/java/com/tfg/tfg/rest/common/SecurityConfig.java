@@ -2,6 +2,7 @@ package com.tfg.tfg.rest.common;
 
 import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
 
+import org.apache.catalina.filters.CorsFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -42,7 +43,7 @@ public class SecurityConfig {
                 .requestMatchers(antMatcher("/users/loginFromServiceToken")).permitAll()
                 .requestMatchers(antMatcher("/users/{id}")).hasRole(USER)
                 .requestMatchers(antMatcher("/users/{id}/changePassword")).hasRole(USER)
-                .requestMatchers(antMatcher("/movies/allMovies")).hasAnyRole(USER, ADMIN)
+                .requestMatchers(antMatcher("/movies/allMovies")).permitAll()
                 .requestMatchers(antMatcher("/movies/{id}")).hasAnyRole(USER, ADMIN)
                 .anyRequest().authenticated()
             )
