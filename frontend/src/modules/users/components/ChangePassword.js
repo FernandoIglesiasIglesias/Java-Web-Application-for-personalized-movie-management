@@ -2,7 +2,8 @@ import React, { useState } from "react";
 import { changePassword } from "../../../backend/userService";
 import { Errors } from "../../common";
 import { useNavigate } from "react-router-dom";
-import './ChangePassword.css'; // Importar el archivo CSS específico
+import { useTheme } from "../../../context/ThemeContext";
+import './ChangePassword.css';
 
 const ChangePassword = ({ user, onClose }) => {
     const navigate = useNavigate();
@@ -12,6 +13,7 @@ const ChangePassword = ({ user, onClose }) => {
     const [backendErrors, setBackendErrors] = useState(null);
     const [formErrors, setFormErrors] = useState(''); 
     const [isConfirmationVisible, setIsConfirmationVisible] = useState(false);
+    const { theme } = useTheme();
     let form;
 
     const handleOnClose = () => {
@@ -49,8 +51,8 @@ const ChangePassword = ({ user, onClose }) => {
 
     if (isConfirmationVisible) {
         return (
-            <div className="modal">
-                <div className="modal-content">
+            <div className={`modal ${theme}`}>
+              <div className={`modal-content ${theme}`}>
                     <h2>¡Contraseña cambiada con éxito!</h2>
                     <p>Tu contraseña ha sido actualizada correctamente.</p>
                     <button 
@@ -65,13 +67,13 @@ const ChangePassword = ({ user, onClose }) => {
     }
 
     return (
-        <div className="modal">
+        <div className={`modal ${theme}`}>
             <Errors errors={backendErrors} onClose={() => setBackendErrors(null)} />
-            <div className="modal-content">
+            <div className={`modal-content ${theme}`}>
                 <h2>Cambiar contraseña</h2>
                 {formErrors && <p className="error-message">{formErrors}</p>}
                 <form onSubmit={handleSubmit} ref={(node) => (form = node)} noValidate>
-                    <div className="modal-subcontainer">
+                 <div className={`modal-subcontainer ${theme}`}>
                         <h3>Contraseña actual</h3>
                         <input
                             id="oldPassword"
