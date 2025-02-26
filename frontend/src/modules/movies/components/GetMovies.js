@@ -23,10 +23,10 @@ const GetMovies = () => {
     <div className="movies-list">
       {errors && <p className="error-message">{errors}</p>}
       {movies.map((movie) => (
-        <div key={movie.id} className="movie-item" onClick={() => handleMovieClick(movie.id)}>
+        <button key={movie.id} className="movie-item" onClick={() => handleMovieClick(movie.id)}>
           <h3>{movie.title}</h3>
           <p>{movie.synopsis}</p>
-        </div>
+        </button>
       ))}
     </div>
   );

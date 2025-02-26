@@ -12,11 +12,17 @@
     color: var(--text-color-light);
     transition: background-color var(--transition-duration), color var(--transition-duration);
   }
+
+  .movie-item:hover {
+    background-color: var(--background-color-light);
+    color: var(--text-color-light);
+  }
   
   .movie-item.dark {
     background-color: var(--background-color-dark);
     color: var(--text-color-dark);
   }
+  
   
   .movie-item h3 {
     margin: 0 0 0.5rem 0;
