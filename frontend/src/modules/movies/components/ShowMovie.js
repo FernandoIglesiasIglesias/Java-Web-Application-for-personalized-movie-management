@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import { useTheme } from "../../../context/ThemeContext";
 import { getMovieDetails } from "../../../backend/movieService";
 import './ShowMovie.css';
 
@@ -7,7 +8,7 @@ const ShowMovie = () => {
   const { id } = useParams();
   const [movie, setMovie] = useState(null);
   const [errors, setErrors] = useState(null);
-  const [theme, setTheme] = useState('light'); // Estado para el tema
+  const { theme } = useTheme();
 
   useEffect(() => {
     getMovieDetails(
@@ -16,12 +17,6 @@ const ShowMovie = () => {
       (errors) => setErrors(errors)
     );
   }, [id]);
-
-  useEffect(() => {
-    // Obtener el tema actual del body
-    const currentTheme = document.body.classList.contains('dark') ? 'dark' : 'light';
-    setTheme(currentTheme);
-  }, []);
 
   if (errors) {
     return <p className="error-message">{errors}</p>;
