@@ -9,6 +9,16 @@ export const getAllMovies = (onSuccess, onErrors) => {
   );
 };
 
+export const saveMovie = (movie, onSuccess, onErrors) => {
+  console.log("Saving movie", movie);
+  appFetch(
+    "/movies/saveMovie",
+    fetchConfig("POST", movie),
+    onSuccess,
+    onErrors
+  );
+};
+
 /*
 export const getMovieDetails = (id, onSuccess, onErrors) => {
   appFetch(

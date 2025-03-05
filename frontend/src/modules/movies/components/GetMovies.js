@@ -8,10 +8,12 @@ const GetMovies = () => {
   const [errors, setErrors] = useState(null);
   const [cursor, setCursor] = useState(null);
   const [hasMore, setHasMore] = useState(false);
+  const [loading, setLoading] = useState(true); // Estado de carga
   const navigate = useNavigate();
   const moviesListRef = useRef(null);
 
   const fetchMovies = (cursor) => {
+    setLoading(true); // Inicia la carga
     getExternalMovies(
       cursor,
       (data) => {
@@ -22,8 +24,12 @@ const GetMovies = () => {
         } else {
           setErrors("No se encontraron resultados.");
         }
+        setLoading(false); // Finaliza la carga
       },
-      (errors) => setErrors(errors)
+      (errors) => {
+        setErrors(errors);
+        setLoading(false); // Finaliza la carga
+      }
     );
   };
 
@@ -49,37 +55,41 @@ const GetMovies = () => {
     <div className="movies-container">
       <h2>Películas más populares del último mes</h2>
       {errors && <p className="error-message">{errors.message || errors}</p>}
-      <div className="movies-wrapper">
-        <button
-          className="scroll-button left"
-          onClick={() => scrollMovies("left")}
-        >
-          ◀
-        </button>
-        <div className="movies-list-container" ref={moviesListRef}>
-          <div className="movies-list">
-            {movies.map((movie, index) => (
-              <div
-                key={`${movie.id}-${index}`}
-                className="movie-item"
-                onClick={() => handleMovieClick(movie.id)}
-              >
-                <img
-                  src={movie.imageSet?.verticalPoster?.w240}
-                  alt={movie.title}
-                />
-                <h3>{movie.title}</h3>
-              </div>
-            ))}
+      {loading ? (
+        <div className="spinner">Cargando...</div> 
+      ) : (
+        <div className="movies-wrapper">
+          <button
+            className="scroll-button left"
+            onClick={() => scrollMovies("left")}
+          >
+            ◀
+          </button>
+          <div className="movies-list-container" ref={moviesListRef}>
+            <div className="movies-list">
+              {movies.map((movie, index) => (
+                <div
+                  key={`${movie.id}-${index}`}
+                  className="movie-item"
+                  onClick={() => handleMovieClick(movie.id)}
+                >
+                  <img
+                    src={movie.imageSet?.verticalPoster?.w240}
+                    alt={movie.title}
+                  />
+                  <h3>{movie.title}</h3>
+                </div>
+              ))}
+            </div>
           </div>
+          <button
+            className="scroll-button right"
+            onClick={() => scrollMovies("right")}
+          >
+            ▶
+          </button>
         </div>
-        <button
-          className="scroll-button right"
-          onClick={() => scrollMovies("right")}
-        >
-          ▶
-        </button>
-      </div>
+      )}
     </div>
   );
 };
