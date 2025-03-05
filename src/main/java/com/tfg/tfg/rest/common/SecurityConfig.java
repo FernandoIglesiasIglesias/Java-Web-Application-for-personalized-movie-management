@@ -2,7 +2,6 @@ package com.tfg.tfg.rest.common;
 
 import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
 
-import org.apache.catalina.filters.CorsFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -31,7 +30,7 @@ public class SecurityConfig {
 
     @Bean
     protected SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-
+    
         // @formatter:off
         http.cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .csrf(csrf -> csrf.disable())
@@ -41,6 +40,7 @@ public class SecurityConfig {
                 .requestMatchers(antMatcher("/users/signUp")).permitAll()
                 .requestMatchers(antMatcher("/users/login")).permitAll()
                 .requestMatchers(antMatcher("/users/loginFromServiceToken")).permitAll()
+                .requestMatchers(antMatcher("/movies/saveMovie")).permitAll()
                 .requestMatchers(antMatcher("/users/{id}")).hasRole(USER)
                 .requestMatchers(antMatcher("/users/{id}/changePassword")).hasRole(USER)
                 .requestMatchers(antMatcher("/movies/allMovies")).hasAnyRole(USER, ADMIN)
@@ -50,7 +50,7 @@ public class SecurityConfig {
             .headers(headers -> headers.frameOptions().disable()) // Permitir cargar la consola H2 en un iframe
             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
         // @formatter:on
-
+    
         return http.build();
     }
 

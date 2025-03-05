@@ -3,8 +3,7 @@ package com.tfg.tfg.rest.controllers;
 import com.tfg.tfg.model.entities.Movie;
 import com.tfg.tfg.model.services.MovieService;
 import com.tfg.tfg.rest.dtos.MovieConversor;
-import com.tfg.tfg.rest.dtos.MovieDetailDto;
-import com.tfg.tfg.rest.dtos.MovieListDto;
+import com.tfg.tfg.rest.dtos.MovieDto;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,10 +26,8 @@ public class MovieController {
      * @return a list of all movies
      */
     @GetMapping("/allMovies")
-    public List<MovieListDto> getAllMovies() {
-        return movieService.getAllMovies().stream()
-                .map(MovieConversor::toMovieListDto)
-                .toList();
+    public List<MovieDto> getAllMovies() {
+        return MovieConversor.toMovieDtos(movieService.getAllMovies());
     }
 
     /**
@@ -40,9 +37,21 @@ public class MovieController {
      * @return the movie if found, or a 404 status if not found
      */
     @GetMapping("/{id}")
-    public ResponseEntity<MovieDetailDto> getMovieById(@PathVariable Long id) {
+    public ResponseEntity<MovieDto> getMovieById(@PathVariable Long id) {
         Optional<Movie> movie = movieService.getMovieById(id);
-        return movie.map(m -> ResponseEntity.ok(MovieConversor.toMovieDetailDto(m)))
+        return movie.map(value -> ResponseEntity.ok(MovieConversor.toMovieDto(value)))
                     .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    /**
+     * Endpoint to save a movie.
+     *
+     * @param movieDto the movie data transfer object
+     * @return the saved movie
+     */
+    @PostMapping("/saveMovie")
+    public ResponseEntity<MovieDto> saveMovie(@RequestBody MovieDto movieDto) {
+        Movie movie = movieService.saveMovie(MovieConversor.toMovie(movieDto));
+        return ResponseEntity.ok(MovieConversor.toMovieDto(movie));
     }
 }

@@ -7,6 +7,6 @@ public class DirectorConversor {
     private DirectorConversor() {}
 
     public static DirectorDto toDirectorDto(Director director) {
-        return new DirectorDto(director.getId(), director.getFirstName(), director.getLastName(), director.getNationality(), director.getBirthDate());
+        return new DirectorDto(director.getId(), director.getFirstName(), director.getLastName());
     }
 }

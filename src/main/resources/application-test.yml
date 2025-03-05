@@ -6,7 +6,7 @@ spring:
     password: password
   jpa:
     hibernate:
-      ddl-auto: create-drop  # Esto recrea la BD cada vez que se ejecuten los tests
+      ddl-auto: update  # Esto recrea la BD cada vez que se ejecuten los tests
     show-sql: true
     format-sql: true
   h2:
