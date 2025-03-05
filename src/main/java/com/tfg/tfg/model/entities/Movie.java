@@ -1,11 +1,9 @@
 package com.tfg.tfg.model.entities;
 
-import java.util.ArrayList;
 import java.util.List;
+
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -25,14 +23,24 @@ public class Movie {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private String imbdId;
     private String title;
-    private String synopsis;
-    private int duration;
+    private String overview;
+    private int releaseYear;
+    
+    @Column(name = "verticalPoster", length = 600)
+    private String verticalPoster;
+    private int runtime;
 
-    @Enumerated(EnumType.STRING)
-    private Genre genre;
+    @ManyToMany
+    @JoinTable(
+        name = "MovieGenres",
+        joinColumns = @JoinColumn(name = "movieId"),
+        inverseJoinColumns = @JoinColumn(name = "genreId")
+    )
+    private List<Genre> genres;
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany
     @JoinTable(
         name = "MovieActors",
         joinColumns = @JoinColumn(name = "movieId"),
@@ -40,7 +48,7 @@ public class Movie {
     )
     private List<Actor> actors;
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany
     @JoinTable(
         name = "MovieDirectors",
         joinColumns = @JoinColumn(name = "movieId"),
@@ -56,160 +64,112 @@ public class Movie {
     /**
      * Parameterized constructor to create a Movie with the specified details.
      *
+     * @param imbdId the imbdId of the movie
      * @param title the title of the movie
-     * @param synopsis the synopsis of the movie
-     * @param duration the duration of the movie
-     * @param genre the genre of the movie
+     * @param overview the overview of the movie
+     * @param releaseYear the release year of the movie
+     * @param verticalPoster the vertical poster of the movie
+     * @param runtime the runtime of the movie
+     * @param genres the genres of the movie
+     * @param actors the actors of the movie
+     * @param directors the directors of the movie
      */
-    public Movie(String title, String synopsis, int duration, Genre genre) {
+    public Movie(String imbdId, String title, String overview, int releaseYear, String verticalPoster, int runtime, List<Genre> genres, List<Actor> actors, List<Director> directors) {
+        this.imbdId = imbdId;
         this.title = title;
-        this.synopsis = synopsis;
-        this.duration = duration;
-        this.genre = genre;
-        this.actors = new ArrayList<>();
-        this.directors = new ArrayList<>();
+        this.overview = overview;
+        this.releaseYear = releaseYear;
+        this.verticalPoster = verticalPoster;
+        this.runtime = runtime;
+        this.genres = genres;
+        this.actors = actors;
+        this.directors = directors;
     }
 
-    /**
-     * Gets the ID of the movie.
-     *
-     * @return the ID of the movie
-     */
     public Long getId() {
         return id;
     }
 
-    /**
-     * Sets the ID of the movie.
-     *
-     * @param id the ID to set
-     */
     public void setId(Long id) {
         this.id = id;
     }
 
-    /**
-     * Gets the title of the movie.
-     *
-     * @return the title of the movie
-     */
+    public String getImbdId() {
+        return imbdId;
+    }
+
+    public void setImbdId(String imbdId) {
+        this.imbdId = imbdId;
+    }
+
     public String getTitle() {
         return title;
     }
 
-    /**
-     * Sets the title of the movie.
-     *
-     * @param title the title to set
-     */
     public void setTitle(String title) {
         this.title = title;
     }
 
-    /**
-     * Gets the synopsis of the movie.
-     *
-     * @return the synopsis of the movie
-     */
-    public String getSynopsis() {
-        return synopsis;
+    public String getOverview() {
+        return overview;
     }
 
-    /**
-     * Sets the synopsis of the movie.
-     *
-     * @param synopsis the synopsis to set
-     */
-    public void setSynopsis(String synopsis) {
-        this.synopsis = synopsis;
+    public void setOverview(String overview) {
+        this.overview = overview;
     }
 
-    /**
-     * Gets the duration of the movie.
-     *
-     * @return the duration of the movie
-     */
-    public int getDuration() {
-        return duration;
+    public int getReleaseYear() {
+        return releaseYear;
     }
 
-    /**
-     * Sets the duration of the movie.
-     *
-     * @param duration the duration to set
-     */
-    public void setDuration(int duration) {
-        this.duration = duration;
+    public void setReleaseYear(int releaseYear) {
+        this.releaseYear = releaseYear;
     }
 
-    /**
-     * Gets the genre of the movie.
-     *
-     * @return the genre of the movie
-     */
-    public Genre getGenre() {
-        return genre;
+    public String getVerticalPoster() {
+        return verticalPoster;
     }
 
-    /**
-     * Sets the genre of the movie.
-     *
-     * @param genre the genre to set
-     */
-    public void setGenre(Genre genre) {
-        this.genre = genre;
+    public void setVerticalPoster(String verticalPoster) {
+        this.verticalPoster = verticalPoster;
     }
 
-    /**
-     * Gets the actors of the movie.
-     *
-     * @return the actors of the movie
-     */
+    public int getRuntime() {
+        return runtime;
+    }
+
+    public void setRuntime(int runtime) {
+        this.runtime = runtime;
+    }
+
+    public List<Genre> getGenres() {
+        return genres;
+    }
+
+    public void setGenres(List<Genre> genres) {
+        this.genres = genres;
+    }
+
     public List<Actor> getActors() {
         return actors;
     }
 
-    /**
-     * Sets the actors of the movie.
-     *
-     * @param actors the actors to set
-     */
     public void setActors(List<Actor> actors) {
         this.actors = actors;
     }
 
-    /**
-     * Adds an actor to the movie.
-     *
-     * @param actor the actor to add
-     */
     public void addActor(Actor actor) {
         this.actors.add(actor);
     }
 
-    /**
-     * Gets the directors of the movie.
-     *
-     * @return the directors of the movie
-     */
     public List<Director> getDirectors() {
         return directors;
     }
 
-    /**
-     * Sets the directors of the movie.
-     *
-     * @param directors the directors to set
-     */
     public void setDirectors(List<Director> directors) {
         this.directors = directors;
     }
 
-    /**
-     * Adds a director to the movie.
-     *
-     * @param director the director to add
-     */
     public void addDirector(Director director) {
         this.directors.add(director);
     }

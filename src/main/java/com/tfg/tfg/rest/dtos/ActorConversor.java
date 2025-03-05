@@ -7,6 +7,6 @@ public class ActorConversor {
     private ActorConversor() {}
 
     public static ActorDto toActorDto(Actor actor) {
-        return new ActorDto(actor.getId(), actor.getFirstName(), actor.getLastName(), actor.getNationality(), actor.getBirthDate());
+        return new ActorDto(actor.getId(), actor.getFirstName(), actor.getLastName());
     }
 }

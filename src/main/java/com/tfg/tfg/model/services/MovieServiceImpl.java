@@ -7,6 +7,12 @@ import org.springframework.stereotype.Service;
 
 import com.tfg.tfg.model.entities.Movie;
 import com.tfg.tfg.model.entities.MovieDao;
+import com.tfg.tfg.model.entities.Actor;
+import com.tfg.tfg.model.entities.ActorDao;
+import com.tfg.tfg.model.entities.Director;
+import com.tfg.tfg.model.entities.DirectorDao;
+import com.tfg.tfg.model.entities.Genre;
+import com.tfg.tfg.model.entities.GenreDao;
 
 import jakarta.transaction.Transactional;
 
@@ -15,9 +21,15 @@ import jakarta.transaction.Transactional;
 public class MovieServiceImpl implements MovieService {
     
     private final MovieDao movieDao;
+    private final ActorDao actorDao;
+    private final DirectorDao directorDao;
+    private final GenreDao genreDao;
 
-    public MovieServiceImpl(MovieDao movieDao) {
+    public MovieServiceImpl(MovieDao movieDao, ActorDao actorDao, DirectorDao directorDao, GenreDao genreDao) {
         this.movieDao = movieDao;
+        this.actorDao = actorDao;
+        this.directorDao = directorDao;
+        this.genreDao = genreDao;
     }
 
     public List<Movie> getAllMovies() {
@@ -26,5 +38,28 @@ public class MovieServiceImpl implements MovieService {
 
     public Optional<Movie> getMovieById(Long id) {
         return movieDao.findById(id);
+    }
+
+    public Movie saveMovie(Movie movie) {
+
+        Optional<Movie> optionalMovie = movieDao.findByImbdId(movie.getImbdId());
+
+        if (optionalMovie.isPresent()) {
+            return optionalMovie.get();
+        }
+
+        for (Actor actor : movie.getActors()) {
+            actorDao.save(actor);
+        }
+
+        for (Director director : movie.getDirectors()) {
+            directorDao.save(director);
+        }
+
+        for (Genre genre : movie.getGenres()) {
+            genreDao.save(genre);
+        }
+
+        return movieDao.save(movie);
     }
 }

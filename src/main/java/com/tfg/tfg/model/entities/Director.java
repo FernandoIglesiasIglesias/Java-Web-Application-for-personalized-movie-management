@@ -1,6 +1,5 @@
 package com.tfg.tfg.model.entities;
 
-import java.time.LocalDate;
 import java.util.List;
 
 import jakarta.persistence.*;
@@ -18,10 +17,8 @@ public class Director {
 
     private String firstName;
     private String lastName;
-    private String nationality;
-    private LocalDate birthDate;
 
-    @ManyToMany(mappedBy = "directors", fetch = FetchType.LAZY)
+    @ManyToMany(mappedBy = "directors")
     private List<Movie> movies;
 
     /**
@@ -34,14 +31,11 @@ public class Director {
      *
      * @param firstName the first name of the director
      * @param lastName the last name of the director
-     * @param nationality the nationality of the director
-     * @param birthDate the birth date of the director
      */
-    public Director(String firstName, String lastName, String nationality, LocalDate birthDate) {
+    public Director(String firstName, String lastName, List<Movie> movies) {
         this.firstName = firstName;
         this.lastName = lastName;
-        this.nationality = nationality;
-        this.birthDate = birthDate;
+        this.movies = movies;
     }
 
     /**
@@ -96,42 +90,6 @@ public class Director {
      */
     public void setLastName(String lastName) {
         this.lastName = lastName;
-    }
-
-    /**
-     * Gets the nationality of the director.
-     *
-     * @return the nationality of the director
-     */
-    public String getNationality() {
-        return nationality;
-    }
-
-    /**
-     * Sets the nationality of the director.
-     *
-     * @param nationality the nationality to set
-     */
-    public void setNationality(String nationality) {
-        this.nationality = nationality;
-    }
-
-    /**
-     * Gets the birth date of the director.
-     *
-     * @return the birth date of the director
-     */
-    public LocalDate getBirthDate() {
-        return birthDate;
-    }
-
-    /**
-     * Sets the birth date of the director.
-     *
-     * @param birthDate the birth date to set
-     */
-    public void setBirthDate(LocalDate birthDate) {
-        this.birthDate = birthDate;
     }
 
     /**

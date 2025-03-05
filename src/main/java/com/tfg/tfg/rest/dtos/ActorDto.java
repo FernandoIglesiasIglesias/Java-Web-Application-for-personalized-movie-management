@@ -1,20 +1,14 @@
 package com.tfg.tfg.rest.dtos;
 
-import java.time.LocalDate;
-
 public class ActorDto {
     private Long id;
     private String firstName;
     private String lastName;
-    private String nationality;
-    private LocalDate birthDate;
 
-    public ActorDto(Long id, String firstName, String lastName, String nationality, LocalDate birthDate) {
+    public ActorDto(Long id, String firstName, String lastName) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
-        this.nationality = nationality;
-        this.birthDate = birthDate;
     }
 
     public Long getId() {
@@ -41,19 +35,4 @@ public class ActorDto {
         this.lastName = lastName;
     }
 
-    public String getNationality() {
-        return nationality;
-    }
-
-    public void setNationality(String nationality) {
-        this.nationality = nationality;
-    }
-
-    public LocalDate getBirthDate() {
-        return birthDate;
-    }
-
-    public void setBirthDate(LocalDate birthDate) {
-        this.birthDate = birthDate;
-    }
 }

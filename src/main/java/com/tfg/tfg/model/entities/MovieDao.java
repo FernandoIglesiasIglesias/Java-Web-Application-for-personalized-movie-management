@@ -1,5 +1,7 @@
 package com.tfg.tfg.model.entities;
 
+import java.util.Optional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -8,4 +10,5 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface MovieDao extends JpaRepository<Movie, Long> {
+    Optional<Movie> findByImbdId(String imbdId);
 }

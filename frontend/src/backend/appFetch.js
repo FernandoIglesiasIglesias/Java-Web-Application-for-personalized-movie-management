@@ -6,7 +6,6 @@ let reauthenticationCallback;
 
 const isJson = (response) => {
   const contentType = response.headers.get("content-type");
-
   return contentType && contentType.indexOf("application/json") !== -1;
 };
 
@@ -111,7 +110,9 @@ export const fetchConfig = (method, body) => {
   return fConfig;
 };
 
-export const appFetch = (path, options, onSuccess, onErrors) =>
-  fetch(`${config.BASE_PATH}${path}`, options)
+export const appFetch = (path, options, onSuccess, onErrors) => {
+  const url = path.startsWith("http") ? path : `${config.BASE_PATH}${path}`;
+  fetch(url, options)
     .then((response) => handleResponse(response, onSuccess, onErrors))
     .catch(networkErrorCallback);
+};

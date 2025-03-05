@@ -22,5 +22,13 @@ public interface MovieService {
      * @return an Optional containing the movie if found, or empty if not found
      */
     public Optional<Movie> getMovieById(Long id);
+
+    /**
+     * Saves a movie.
+     *
+     * @param movie the movie to save
+     * @return the saved movie
+     */
+    public Movie saveMovie(Movie movie);
     
 }
