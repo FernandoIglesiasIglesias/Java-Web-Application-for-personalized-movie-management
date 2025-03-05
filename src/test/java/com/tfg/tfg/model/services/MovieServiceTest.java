@@ -123,4 +123,44 @@ public class MovieServiceTest {
         assertTrue(result.isEmpty());
     }
 
+    @Test
+    public void testSaveMovie() {
+        Genre genre = new Genre("Action", List.of());
+        Actor actor = new Actor("Robert", "Downey Jr.", List.of());
+        Director director = new Director("Jon", "Favreau", List.of());
+
+        genreDao.save(genre);
+        actorDao.save(actor);
+        directorDao.save(director);
+
+        Movie movie = createMovie("tt43722", "Iron Man", "A billionaire industrialist and genius inventor, Tony Stark (Robert Downey Jr.), is conducting weapons tests overseas, but terrorists kidnap him to force him to build a devastating weapon.", 2008, "ironman.jpg", 126, List.of(genre), List.of(actor), List.of(director));
+
+        Movie savedMovie = movieService.saveMovie(movie);
+
+        Optional<Movie> result = movieService.getMovieById(savedMovie.getId());
+        assertTrue(result.isPresent());
+        assertEquals("Iron Man", result.get().getTitle());
+        assertEquals(126, result.get().getRuntime());
+    }
+
+    @Test
+    public void testSaveExistingMovie() {
+        Genre genre = new Genre("Action", List.of());
+        Actor actor = new Actor("Robert", "Downey Jr.", List.of());
+        Director director = new Director("Jon", "Favreau", List.of());
+
+        genreDao.save(genre);
+        actorDao.save(actor);
+        directorDao.save(director);
+
+        Movie movie = createMovie("tt43722", "Iron Man", "A billionaire industrialist and genius inventor, Tony Stark (Robert Downey Jr.), is conducting weapons tests overseas, but terrorists kidnap him to force him to build a devastating weapon.", 2008, "ironman.jpg", 126, List.of(genre), List.of(actor), List.of(director));
+
+        movieService.saveMovie(movie);
+        Movie savedMovie = movieService.saveMovie(movie);
+
+        List<Movie> allMovies = movieService.getAllMovies();
+        assertEquals(1, allMovies.size());
+        assertEquals(savedMovie.getId(), allMovies.get(0).getId());
+    }
+
 }

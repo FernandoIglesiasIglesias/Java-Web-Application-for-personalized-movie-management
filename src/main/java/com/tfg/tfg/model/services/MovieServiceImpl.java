@@ -41,22 +41,25 @@ public class MovieServiceImpl implements MovieService {
     }
 
     public Movie saveMovie(Movie movie) {
-        // Guardar actores
+
+        Optional<Movie> optionalMovie = movieDao.findByImbdId(movie.getImbdId());
+
+        if (optionalMovie.isPresent()) {
+            return optionalMovie.get();
+        }
+
         for (Actor actor : movie.getActors()) {
             actorDao.save(actor);
         }
 
-        // Guardar directores
         for (Director director : movie.getDirectors()) {
             directorDao.save(director);
         }
 
-        // Guardar géneros
         for (Genre genre : movie.getGenres()) {
             genreDao.save(genre);
         }
 
-        // Guardar la película
         return movieDao.save(movie);
     }
 }
