@@ -4,7 +4,7 @@ import UpdateProfile from "./UpdateProfile";
 import { logout } from "../../../backend/userService";
 import ChangePassword from "./ChangePassword";
 import { useTheme } from "../../../context/ThemeContext";
-import './Settings.css'; // Importar el archivo CSS específico
+import './Settings.css';
 
 const Settings = ({ user }) => {
     const navigate = useNavigate();
@@ -20,6 +20,11 @@ const Settings = ({ user }) => {
     const handleLogOut = () => {
         logout();
         navigate(0);
+    }
+
+    const handleManageLists = () => {
+        // Navegar a la página específica de gestión de listas
+        navigate('/user/lists');
     }
 
     return (
@@ -49,6 +54,11 @@ const Settings = ({ user }) => {
                     </button>
                 </div>
                 <div className="settings-horizontal">
+                    <button className={`settings-subcontainer-button ${theme}`} onClick={handleManageLists}>
+                        Gestionar mis listas
+                    </button>
+                </div>
+                <div className="settings-horizontal">
                     <button className={`settings-subcontainer-button red ${theme}`} onClick={() => handleLogOut()}>
                         Cerrar Sesion
                     </button>
@@ -59,9 +69,9 @@ const Settings = ({ user }) => {
             </div>
 
             {update && !passwordChange && <UpdateProfile user={user} onClose={() => setUpdate(false)} />}
-            {passwordChange && !update && <ChangePassword user={user} onClose={() => setPasswordChange(false)} />}
+            {passwordChange && !update && <ChangePassword user={user} handleOnClose={() => setPasswordChange(false)} />}
         </div>
     );
-}
+};
 
 export default Settings;

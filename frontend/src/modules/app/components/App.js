@@ -7,7 +7,8 @@ import Body from "./Body";
 import Title from "../../users/components/Title";
 import Home from "./Home";
 import ShowMovie from "../../movies/components/ShowMovie";
-
+import UserLists from "../../list/components/UserLists";
+import ListDetails from "../../list/components/ListDetails";
 
 const App = () => {
   const [authenticatedUser, setAuthenticatedUser] = useState(null);
@@ -41,6 +42,9 @@ const App = () => {
         <Route path="/" element={<Title />} />
         <Route path="/home" element={<Home user={authenticatedUser?.user} />} /> {/* Pasar el usuario autenticado */}
         <Route path="/movies/:id" element={<ShowMovie />} />
+
+        <Route path="/user/lists" element={<UserLists />} />
+        <Route path="/lists/:id" element={<ListDetails />} />
 
 
         {/* Rutas con Header */}

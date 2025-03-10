@@ -1,0 +1,167 @@
+/* Variables de color (se mantienen para ambos archivos para consistencia) */
+:root {
+    --background-color-light: #ffffff;
+    --text-color-light: #333;
+    --input-background-light: #ffffff;
+    --input-border-light: #ccc;
+    --input-focus-border-light: #007bff;
+    --button-background-light: #007bff;
+    --button-text-light: #fff;
+    --button-hover-background-light: #0056b3;
+    --card-background-light: #ffffff;
+    --card-shadow-light: rgba(0, 0, 0, 0.1);
+  
+    --background-color-dark: #000000;
+    --text-color-dark: #f9f9f9;
+    --input-background-dark: #333;
+    --input-border-dark: #555;
+    --input-focus-border-dark: #bb86fc;
+    --button-background-dark: #bb86fc;
+    --button-text-dark: #1e1e1e;
+    --button-hover-background-dark: #3700b3;
+    --card-background-dark: #2d2d2d;
+    --card-shadow-dark: rgba(0, 0, 0, 0.3);
+  
+    --transition-duration: 0.3s;
+}
+
+/* Contenedor de listas */
+.lists-container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+    min-height: 100vh;
+    transition: color var(--transition-duration);
+}
+
+.lists-container h2 {
+    font-size: 2rem;
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+/* Formulario para crear nueva lista */
+.create-list-form {
+    margin-bottom: 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.create-list-form input[type="text"] {
+    width: 100%;
+    padding: 0.75rem;
+    font-size: 1rem;
+    border: 1px solid var(--input-border-light);
+    border-radius: 5px;
+    background-color: var(--input-background-light);
+    color: var(--text-color-light);
+    margin-bottom: 1rem;
+    transition: border-color var(--transition-duration), background-color var(--transition-duration), color var(--transition-duration);
+}
+
+.create-list-form input[type="text"]:focus {
+    outline: none;
+    border-color: var(--input-focus-border-light);
+}
+
+.create-list-form input[type="text"].dark {
+    border-color: var(--input-border-dark);
+    background-color: var(--input-background-dark);
+    color: var(--text-color-dark);
+}
+
+.create-list-form input[type="text"].dark:focus {
+    border-color: var(--input-focus-border-dark);
+}
+
+/* Botones comunes para listas */
+.list-button {
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    background-color: var(--button-background-light);
+    color: var(--button-text-light);
+    transition: background-color var(--transition-duration), color var(--transition-duration);
+}
+
+.list-button:hover {
+    background-color: var(--button-hover-background-light);
+}
+
+.list-button.dark {
+    background-color: var(--button-background-dark);
+    color: var(--button-text-dark);
+}
+
+.list-button.dark:hover {
+    background-color: var(--button-hover-background-dark);
+}
+
+.list-button.red {
+    background-color: #E53935;
+    color: #fff;
+}
+
+.list-button.red:hover {
+    background-color: #C62828;
+}
+
+.list-button.back {
+    margin-top: 2rem;
+}
+
+/* Grid de listas */
+.lists-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-top: 2rem;
+}
+
+.list-card {
+    padding: 1.5rem;
+    background-color: var(--card-background-light);
+    border-radius: 10px;
+    box-shadow: 0 4px 8px var(--card-shadow-light);
+    cursor: pointer;
+    transition: transform var(--transition-duration), box-shadow var(--transition-duration), 
+                background-color var(--transition-duration), color var(--transition-duration);
+}
+
+.list-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px var(--card-shadow-light);
+}
+
+.list-card.dark {
+    background-color: var(--card-background-dark);
+    color: var(--text-color-dark);
+    box-shadow: 0 4px 8px var(--card-shadow-dark);
+}
+
+.list-card.dark:hover {
+    box-shadow: 0 6px 12px var(--card-shadow-dark);
+}
+
+.list-card h3 {
+    font-size: 1.3rem;
+    margin-bottom: 0.5rem;
+}
+
+/* Mensajes de estado */
+.no-lists-message,
+.loading-message {
+    text-align: center;
+    margin: 2rem 0;
+    font-size: 1.2rem;
+    color: #666;
+}
+
+.dark .no-lists-message,
+.dark .loading-message {
+    color: #aaa;
+}
