@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.tfg.tfg.model.entities.Users;
 import com.tfg.tfg.model.services.exceptions.DuplicateInstanceException;
+import com.tfg.tfg.model.services.exceptions.DuplicateListNameException;
 import com.tfg.tfg.model.services.exceptions.IncorrectLoginException;
 import com.tfg.tfg.model.services.exceptions.IncorrectPasswordException;
 import com.tfg.tfg.model.services.exceptions.InstanceNotFoundException;
@@ -30,7 +31,7 @@ public class UserServiceTest {
 	}
 	
 	@Test
-	public void testSignUpAndLoginFromId() throws DuplicateInstanceException, InstanceNotFoundException {
+	public void testSignUpAndLoginFromId() throws DuplicateInstanceException, InstanceNotFoundException, DuplicateListNameException {
 		
 		Users user = createUser("user");
 		
@@ -43,7 +44,7 @@ public class UserServiceTest {
 	}
 	
 	@Test
-	public void testSignUpDuplicatedUserName() throws DuplicateInstanceException {
+	public void testSignUpDuplicatedUserName() throws DuplicateInstanceException, DuplicateListNameException {
 		
 		Users user = createUser("user");
 		
@@ -58,7 +59,7 @@ public class UserServiceTest {
 	}
 	
 	@Test
-	public void testLogin() throws DuplicateInstanceException, IncorrectLoginException {
+	public void testLogin() throws DuplicateInstanceException, IncorrectLoginException, DuplicateListNameException {
 		
 		Users user = createUser("user");
 		String clearPassword = user.getPassword();
@@ -72,7 +73,7 @@ public class UserServiceTest {
 	}
 	
 	@Test
-	public void testLoginWithIncorrectPassword() throws DuplicateInstanceException {
+	public void testLoginWithIncorrectPassword() throws DuplicateInstanceException, DuplicateListNameException {
 		
 		Users user = createUser("user");
 		String clearPassword = user.getPassword();
@@ -89,7 +90,7 @@ public class UserServiceTest {
 	}
 	
 	@Test
-	public void testUpdateProfile() throws InstanceNotFoundException, DuplicateInstanceException {
+	public void testUpdateProfile() throws InstanceNotFoundException, DuplicateInstanceException, DuplicateListNameException {
 		
 		Users user = createUser("user");
 		
@@ -115,7 +116,7 @@ public class UserServiceTest {
 	
 	@Test
 	public void testChangePassword() throws DuplicateInstanceException, InstanceNotFoundException,
-		IncorrectPasswordException, IncorrectLoginException {
+		IncorrectPasswordException, IncorrectLoginException, DuplicateListNameException {
 		
         Users user = createUser("user");
         String oldPassword = user.getPassword();
@@ -135,7 +136,7 @@ public class UserServiceTest {
 	}
 	
 	@Test
-	public void testChangePasswordWithIncorrectPassword() throws DuplicateInstanceException {
+	public void testChangePasswordWithIncorrectPassword() throws DuplicateInstanceException, DuplicateListNameException {
 		
 		Users user = createUser("user");
 		String oldPassword = user.getPassword();

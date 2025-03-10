@@ -24,6 +24,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import com.tfg.tfg.model.entities.Users;
 import com.tfg.tfg.model.services.UserService;
 import com.tfg.tfg.model.services.exceptions.DuplicateInstanceException;
+import com.tfg.tfg.model.services.exceptions.DuplicateListNameException;
 import com.tfg.tfg.model.services.exceptions.IncorrectLoginException;
 import com.tfg.tfg.model.services.exceptions.IncorrectPasswordException;
 import com.tfg.tfg.model.services.exceptions.InstanceNotFoundException;
@@ -52,7 +53,7 @@ public class UserController {
 	@Autowired
 	private UserService userService;
 	
-    @ExceptionHandler(IncorrectLoginException.class)
+	@ExceptionHandler(IncorrectLoginException.class)
 	@ResponseStatus(HttpStatus.NOT_FOUND)
 	@ResponseBody
 	public ErrorsDto handleIncorrectLoginException(IncorrectLoginException exception, Locale locale) {
@@ -73,9 +74,9 @@ public class UserController {
 		return new ErrorsDto(errorMessage);
 		
 	}
-    @PostMapping("/signUp")
+	@PostMapping("/signUp")
 	public ResponseEntity<AuthenticatedUserDto> signUp(
-		@Validated({UserDto.AllValidations.class}) @RequestBody UserDto userDto) throws DuplicateInstanceException {
+		@Validated({UserDto.AllValidations.class}) @RequestBody UserDto userDto) throws DuplicateInstanceException, DuplicateListNameException {
 		
 		Users user = toUser(userDto);
 		

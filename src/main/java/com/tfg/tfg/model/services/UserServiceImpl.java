@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import com.tfg.tfg.model.entities.Users;
 import com.tfg.tfg.model.entities.UsersDao;
 import com.tfg.tfg.model.services.exceptions.DuplicateInstanceException;
+import com.tfg.tfg.model.services.exceptions.DuplicateListNameException;
 import com.tfg.tfg.model.services.exceptions.IncorrectLoginException;
 import com.tfg.tfg.model.services.exceptions.IncorrectPasswordException;
 import com.tfg.tfg.model.services.exceptions.InstanceNotFoundException;
@@ -17,23 +18,27 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class UserServiceImpl implements UserService{
 
-    @Autowired
-	private PermissionChecker permissionChecker;
+	private final PermissionChecker permissionChecker;
+	private final BCryptPasswordEncoder passwordEncoder;
+	private final UsersDao userDao;
+	private final CustomListService customListService;
+
+	public UserServiceImpl(PermissionChecker permissionChecker, BCryptPasswordEncoder passwordEncoder, UsersDao userDao, CustomListService customListService) {
+		this.permissionChecker = permissionChecker;
+		this.passwordEncoder = passwordEncoder;
+		this.userDao = userDao;
+		this.customListService = customListService;
+	}
 	
-	@Autowired
-	private BCryptPasswordEncoder passwordEncoder;
-	
-	@Autowired
-	private UsersDao userDao;
-	
-    /**
-     * Registers a new user in the system.
-     *
-     * @param user the user to be registered
-     * @throws DuplicateInstanceException if a user with the same username already exists
-     */
+	/**
+	 * Registers a new user in the system.
+	 *
+	 * @param user the user to be registered
+	 * @throws DuplicateInstanceException if a user with the same username already exists
+	 * @throws DuplicateListNameException if a user with the same list name already exists
+	 */
 	@Override
-	public void signUp(Users user) throws DuplicateInstanceException {
+	public void signUp(Users user) throws DuplicateInstanceException, DuplicateListNameException {
 		
 		if (userDao.existsByUserName(user.getUserName())) {
 			throw new DuplicateInstanceException("project.entities.user", user.getUserName());
@@ -44,6 +49,10 @@ public class UserServiceImpl implements UserService{
 		
 		userDao.save(user);
 		
+		customListService.createList("Películas favoritas", user);
+        customListService.createList("Pendientes por ver", user);
+        customListService.createList("Películas vistas", user);
+        customListService.createList("Películas con las que lloré", user);
 	}
 
     /**

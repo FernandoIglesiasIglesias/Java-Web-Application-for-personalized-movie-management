@@ -3,6 +3,8 @@ package com.tfg.tfg.model.services;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -33,6 +35,7 @@ import com.tfg.tfg.model.services.exceptions.PermissionException;
 public class CustomListServiceTest {
 
     private final Long NON_EXISTENT_ID = -1L;
+    private final int DEFAULT_LISTS_COUNT = 4; 
 
     @Autowired
     private CustomListService customListService;
@@ -61,24 +64,42 @@ public class CustomListServiceTest {
     }
 
     @BeforeEach
-    public void setUp() throws DuplicateInstanceException {
-        // Create a test user
+    public void setUp() throws DuplicateInstanceException, DuplicateListNameException {
+
         testUser = new Users("testUser", "password", "test@example.com", "avatar.jpg");
         userService.signUp(testUser);
 
-        // Create another user for permission tests
         anotherUser = new Users("anotherUser", "password", "another@example.com", "avatar2.jpg");
         usersDao.save(anotherUser);
 
-        // Create a test movie
         testMovie = createMovie("tt12345", "Test Movie", "Test Overview", 2023, "poster.jpg", 120, 
                                 List.of(), List.of(), List.of());
         testMovie = movieService.saveMovie(testMovie);
     }
 
     @Test
+    public void testDefaultListsCreatedOnSignUp() throws DuplicateInstanceException, DuplicateListNameException, EmptyUserListsException, InstanceNotFoundException {
+
+        Users newUser = new Users("defaultListUser", "password", "default@example.com", "avatar.jpg");
+        userService.signUp(newUser);
+        
+        List<CustomList> userLists = customListService.getUserLists(newUser.getId());
+        
+        assertEquals(4, userLists.size());
+        
+        Set<String> listNames = userLists.stream()
+            .map(CustomList::getName)
+            .collect(Collectors.toSet());
+        
+        assertTrue(listNames.contains("Películas favoritas"));
+        assertTrue(listNames.contains("Pendientes por ver"));
+        assertTrue(listNames.contains("Películas vistas"));
+        assertTrue(listNames.contains("Películas con las que lloré"));
+    }
+
+    @Test
     public void testCreateList() throws DuplicateListNameException {
-        String listName = "My Favorites";
+        String listName = "Random List";
 
         CustomList createdList = customListService.createList(listName, testUser);
 
@@ -93,7 +114,7 @@ public class CustomListServiceTest {
 
     @Test
     public void testCreateDuplicateList() throws DuplicateListNameException {
-        String listName = "My Favorites";
+        String listName = "Example List";
         customListService.createList(listName, testUser);
     
         assertThrows(DuplicateListNameException.class, () -> {
@@ -109,9 +130,19 @@ public class CustomListServiceTest {
 
         List<CustomList> userLists = customListService.getUserLists(testUser.getId());
 
-        assertEquals(2, userLists.size());
+        // Must be DEFAULT_LISTS_COUNT + 2 lists (the ones created above)
+        assertEquals(DEFAULT_LISTS_COUNT + 2, userLists.size());
         assertTrue(userLists.stream().anyMatch(list -> list.getId().equals(list1.getId())));
         assertTrue(userLists.stream().anyMatch(list -> list.getId().equals(list2.getId())));
+        
+        Set<String> listNames = userLists.stream()
+            .map(CustomList::getName)
+            .collect(Collectors.toSet());
+        
+        assertTrue(listNames.contains("Películas favoritas"));
+        assertTrue(listNames.contains("Pendientes por ver"));
+        assertTrue(listNames.contains("Películas vistas"));
+        assertTrue(listNames.contains("Películas con las que lloré"));
     }
 
     @Test
@@ -122,7 +153,13 @@ public class CustomListServiceTest {
     }
 
     @Test
-    public void testGetUserListsEmptyLists() {
+    public void testGetUserListsEmptyLists() throws InstanceNotFoundException, PermissionException {
+        List<CustomList> defaultLists = customListDao.findByUserId(testUser.getId());
+        for (CustomList list : defaultLists) {
+            customListService.deleteList(list.getId(), testUser.getId());
+        }
+
+        // Now there should be no lists for this user
         assertThrows(EmptyUserListsException.class, () -> {
             customListService.getUserLists(testUser.getId());
         });
