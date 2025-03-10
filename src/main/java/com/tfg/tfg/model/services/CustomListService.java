@@ -6,8 +6,10 @@ import com.tfg.tfg.model.entities.CustomList;
 import com.tfg.tfg.model.entities.Movie;
 import com.tfg.tfg.model.entities.Users;
 import com.tfg.tfg.model.services.exceptions.InstanceNotFoundException;
+import com.tfg.tfg.model.services.exceptions.MovieAlreadyInListException;
 import com.tfg.tfg.model.services.exceptions.PermissionException;
-import com.tfg.tfg.model.services.exceptions.DuplicateInstanceException;
+import com.tfg.tfg.model.services.exceptions.DuplicateListNameException;
+import com.tfg.tfg.model.services.exceptions.EmptyUserListsException;
 
 public interface CustomListService {
     
@@ -16,17 +18,18 @@ public interface CustomListService {
      * @param name Name of the list
      * @param user Owner user
      * @return Created list
-     * @throws DuplicateInstanceException if a list with the same name already exists for this user
+     * @throws DuplicateListNameException if a list with the same name already exists for this user
      */
-    CustomList createList(String name, Users user) throws DuplicateInstanceException;
+    CustomList createList(String name, Users user) throws DuplicateListNameException;
     
     /**
      * Get all lists of a user
      * @param userId ID of the user
      * @return List of custom lists
      * @throws InstanceNotFoundException if the user doesn't exist
+     * @throws EmptyUserListsException if the user doesn't have any lists
      */
-    List<CustomList> getUserLists(Long userId) throws InstanceNotFoundException;
+    List<CustomList> getUserLists(Long userId) throws InstanceNotFoundException , EmptyUserListsException;
     
     /**
      * Get a specific list
@@ -46,11 +49,11 @@ public interface CustomListService {
      * @return Updated list
      * @throws InstanceNotFoundException if the list doesn't exist
      * @throws PermissionException if the list doesn't belong to the user
-     * @throws DuplicateInstanceException if another list with the same name already exists for this user
+     * @throws DuplicateListNameException if another list with the same name already exists for this user
      */
     CustomList updateListName(Long listId, Long userId, String newName) 
-        throws InstanceNotFoundException, PermissionException, DuplicateInstanceException;
-    
+        throws InstanceNotFoundException, PermissionException, DuplicateListNameException;
+
     /**
      * Delete a list
      * @param listId ID of the list
@@ -68,10 +71,10 @@ public interface CustomListService {
      * @return Updated list
      * @throws InstanceNotFoundException if the list doesn't exist
      * @throws PermissionException if the list doesn't belong to the user
-     * @throws DuplicateInstanceException if the movie is already in the list
+     * @throws MovieAlreadyInListException if the movie is already in the list
      */
     CustomList addMovieToList(Long listId, Long userId, Movie movie) 
-        throws InstanceNotFoundException, PermissionException, DuplicateInstanceException;
+        throws InstanceNotFoundException, PermissionException, MovieAlreadyInListException;
     
     /**
      * Remove a movie from a list

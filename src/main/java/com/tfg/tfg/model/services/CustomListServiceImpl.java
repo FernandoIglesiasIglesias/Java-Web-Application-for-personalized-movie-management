@@ -10,8 +10,11 @@ import com.tfg.tfg.model.entities.CustomListDao;
 import com.tfg.tfg.model.entities.Movie;
 import com.tfg.tfg.model.entities.MovieDao;
 import com.tfg.tfg.model.entities.Users;
-import com.tfg.tfg.model.services.exceptions.DuplicateInstanceException;
+import com.tfg.tfg.model.entities.UsersDao;
+import com.tfg.tfg.model.services.exceptions.DuplicateListNameException;
+import com.tfg.tfg.model.services.exceptions.EmptyUserListsException;
 import com.tfg.tfg.model.services.exceptions.InstanceNotFoundException;
+import com.tfg.tfg.model.services.exceptions.MovieAlreadyInListException;
 import com.tfg.tfg.model.services.exceptions.PermissionException;
 
 import jakarta.transaction.Transactional;
@@ -24,17 +27,18 @@ public class CustomListServiceImpl implements CustomListService {
 
     private final CustomListDao customListDao;
     private final MovieDao movieDao;
+    private final UsersDao usersDao;
     
-    public CustomListServiceImpl(CustomListDao customListDao, MovieDao movieDao) {
+    public CustomListServiceImpl(CustomListDao customListDao, MovieDao movieDao, UsersDao usersDao) {
         this.customListDao = customListDao;
         this.movieDao = movieDao;
+        this.usersDao = usersDao;
     }
     
     @Override
-    public CustomList createList(String name, Users user) throws DuplicateInstanceException {
-        // Check for duplicates
+    public CustomList createList(String name, Users user) throws DuplicateListNameException {
         if (customListDao.findByNameAndUserId(name, user.getId()).isPresent()) {
-            throw new DuplicateInstanceException(CUSTOM_LIST_ENTITY_NAME, name);
+            throw new DuplicateListNameException(name, user.getId());
         }
         
         CustomList list = new CustomList(name, user);
@@ -42,12 +46,15 @@ public class CustomListServiceImpl implements CustomListService {
     }
     
     @Override
-    public List<CustomList> getUserLists(Long userId) throws InstanceNotFoundException {
-        // You might want to verify if the user exists first
+    public List<CustomList> getUserLists(Long userId) throws InstanceNotFoundException, EmptyUserListsException  {
+        if (!usersDao.existsById(userId)) {
+            throw new InstanceNotFoundException("User", userId);
+        }
+        
         List<CustomList> lists = customListDao.findByUserId(userId);
         
         if (lists == null || lists.isEmpty()) {
-            throw new InstanceNotFoundException("Users", userId);
+            throw new EmptyUserListsException(userId);
         }
         
         return lists;
@@ -72,13 +79,13 @@ public class CustomListServiceImpl implements CustomListService {
     
     @Override
     public CustomList updateListName(Long listId, Long userId, String newName) 
-            throws InstanceNotFoundException, PermissionException, DuplicateInstanceException {
+            throws InstanceNotFoundException, PermissionException, DuplicateListNameException {
         // Check if list exists and belongs to user
         CustomList list = getListById(listId, userId);
         
         // Check for duplicate names
         if (customListDao.findByNameAndUserIdAndIdNot(newName, userId, listId).isPresent()) {
-            throw new DuplicateInstanceException(CUSTOM_LIST_ENTITY_NAME, newName);
+            throw new DuplicateListNameException(newName, userId);
         }
         
         list.setName(newName);
@@ -96,17 +103,20 @@ public class CustomListServiceImpl implements CustomListService {
     
     @Override
     public CustomList addMovieToList(Long listId, Long userId, Movie movie) 
-            throws InstanceNotFoundException, PermissionException, DuplicateInstanceException {
-        // Check if list exists and belongs to user
+            throws InstanceNotFoundException, PermissionException, MovieAlreadyInListException {
         CustomList list = getListById(listId, userId);
         
         if (movie.getId() == null) {
             movie = movieDao.save(movie);
         }
         
-        // Check if movie is already in the list
         if (list.getMovies().contains(movie)) {
-            throw new DuplicateInstanceException("Movie", movie.getId());
+            throw new MovieAlreadyInListException(
+                movie.getId(), 
+                listId, 
+                movie.getTitle(), 
+                list.getName()
+            );
         }
         
         list.addMovie(movie);
