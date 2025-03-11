@@ -3,6 +3,8 @@ package com.tfg.tfg.model.entities;
 import jakarta.persistence.*;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 @Entity
 @Table(name = "Genres")
 public class Genre {
@@ -12,6 +14,7 @@ public class Genre {
 
     private String name;
 
+    @JsonBackReference
     @ManyToMany(mappedBy = "genres")
     private List<Movie> movies;
 

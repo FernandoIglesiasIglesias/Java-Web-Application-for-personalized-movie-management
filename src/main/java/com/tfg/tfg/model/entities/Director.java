@@ -2,6 +2,8 @@ package com.tfg.tfg.model.entities;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.*;
 
 /**
@@ -18,6 +20,7 @@ public class Director {
     private String firstName;
     private String lastName;
 
+    @JsonBackReference
     @ManyToMany(mappedBy = "directors")
     private List<Movie> movies;
 

@@ -8,14 +8,16 @@ public class CustomListDto {
     private String name;
     private Long userId;
     private List<MovieDto> movies;
+    private int movieCount;
     
     public CustomListDto() {}
     
-    public CustomListDto(Long id, String name, Long userId, List<MovieDto> movies) {
+    public CustomListDto(Long id, String name, Long userId, List<MovieDto> movies, int movieCount) {
         this.id = id;
         this.name = name;
         this.userId = userId;
         this.movies = movies;
+        this.movieCount = movieCount;
     }
     
     public Long getId() {
@@ -48,5 +50,13 @@ public class CustomListDto {
     
     public void setMovies(List<MovieDto> movies) {
         this.movies = movies;
+    }
+
+    public int getMovieCount() {
+        return movieCount;
+    }
+    
+    public void setMovieCount(int movieCount) {
+        this.movieCount = movieCount;
     }
 }

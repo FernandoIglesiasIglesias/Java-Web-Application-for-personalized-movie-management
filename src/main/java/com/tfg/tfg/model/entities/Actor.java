@@ -2,6 +2,8 @@ package com.tfg.tfg.model.entities;
 
 import jakarta.persistence.*;
 import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
 /**
  * Represents an Actor entity in the system.
  */
@@ -16,6 +18,7 @@ public class Actor {
     private String firstName;
     private String lastName;
 
+    @JsonBackReference
     @ManyToMany(mappedBy = "actors")
     private List<Movie> movies;
 
