@@ -2,13 +2,14 @@ package com.tfg.tfg.model.services;
 
 import com.tfg.tfg.model.entities.Users;
 import com.tfg.tfg.model.services.exceptions.DuplicateInstanceException;
+import com.tfg.tfg.model.services.exceptions.DuplicateListNameException;
 import com.tfg.tfg.model.services.exceptions.IncorrectLoginException;
 import com.tfg.tfg.model.services.exceptions.IncorrectPasswordException;
 import com.tfg.tfg.model.services.exceptions.InstanceNotFoundException;
 
 public interface UserService {
     
-    void signUp(Users user) throws DuplicateInstanceException;
+    void signUp(Users user) throws DuplicateInstanceException, DuplicateListNameException;
 	
 	Users login(String userName, String password) throws IncorrectLoginException;
 	

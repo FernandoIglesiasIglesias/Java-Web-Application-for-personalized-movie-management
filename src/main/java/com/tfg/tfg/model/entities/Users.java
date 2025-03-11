@@ -1,8 +1,14 @@
 package com.tfg.tfg.model.entities;
+import java.util.ArrayList;
+import java.util.List;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+
 /**
  * Represents a User entity in the system.
  */
@@ -14,6 +20,8 @@ public class Users {
      */
     public enum RoleType {USER, ADMIN}
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String userName;
@@ -26,6 +34,9 @@ public class Users {
 
     private RoleType role;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<CustomList> customLists;
+
     /**
      * Default constructor.
      */
@@ -37,12 +48,14 @@ public class Users {
      * @param userName the username of the user
      * @param password the password of the user
      * @param email the email address of the user
+     * @param avatar the avatar image of the user
      */
     public Users(String userName, String password, String email, String avatar) {
         this.userName = userName;
         this.password = password;
         this.email = email;
         this.avatar = avatar;
+        this.customLists = new ArrayList<>();
     }
 
     /**
@@ -50,8 +63,6 @@ public class Users {
      *
      * @return the ID of the user
      */
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Long getId() {
         return id;
     }
@@ -153,5 +164,43 @@ public class Users {
      */
     public void setRole(RoleType role) {
         this.role = role;
+    }
+
+    /**
+     * Gets the custom lists of the user.
+     *
+     * @return the custom lists of the user
+     */
+    public List<CustomList> getCustomLists() {
+        return customLists;
+    }
+
+    /**
+     * Sets the custom lists of the user.
+     *
+     * @param customLists the custom lists to set
+     */
+    public void setCustomLists(List<CustomList> customLists) {
+        this.customLists = customLists;
+    }
+    
+    /**
+     * Adds a custom list to the user while maintaining the bidirectional relationship.
+     *
+     * @param customList the custom list to add
+     */
+    public void addCustomList(CustomList customList) {
+        customLists.add(customList);
+        customList.setUser(this);
+    }
+
+    /**
+     * Removes a custom list from the user while maintaining the bidirectional relationship.
+     *
+     * @param customList the custom list to remove
+     */
+    public void removeCustomList(CustomList customList) {
+        customLists.remove(customList);
+        customList.setUser(null);
     }
 }

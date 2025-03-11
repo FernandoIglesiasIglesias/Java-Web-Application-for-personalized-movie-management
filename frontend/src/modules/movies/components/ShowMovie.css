@@ -27,6 +27,10 @@
 }
 
 .movie-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
   text-align: center;
   margin-bottom: 20px;
 }
@@ -98,4 +102,29 @@
 .loading {
   font-size: 1.2rem;
   text-align: center;
+}
+
+.add-to-list-button {
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  background-color: var(--primary-color);
+  color: #fff;
+  margin-left: 1rem;
+  transition: background-color var(--transition-duration);
+}
+
+.add-to-list-button:hover {
+  background-color: #e55a4f; /* Una versión más oscura del color primario */
+}
+
+.add-to-list-button.dark {
+  background-color: var(--primary-color);
+  color: #fff;
+}
+
+.add-to-list-button.dark:hover {
+  background-color: #e55a4f;
 }

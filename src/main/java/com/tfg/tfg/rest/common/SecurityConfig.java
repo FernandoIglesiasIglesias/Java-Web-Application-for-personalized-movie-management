@@ -45,6 +45,11 @@ public class SecurityConfig {
                 .requestMatchers(antMatcher("/users/{id}/changePassword")).hasRole(USER)
                 .requestMatchers(antMatcher("/movies/allMovies")).hasAnyRole(USER, ADMIN)
                 .requestMatchers(antMatcher("/movies/{id}")).hasAnyRole(USER, ADMIN)
+                // CustomList endpoints
+                .requestMatchers(antMatcher("/lists")).hasRole(USER)
+                .requestMatchers(antMatcher("/lists/{id}")).hasRole(USER)
+                .requestMatchers(antMatcher("/lists/{listId}/movies")).hasRole(USER)
+                .requestMatchers(antMatcher("/lists/{listId}/movies/{movieId}")).hasRole(USER)
                 .anyRequest().authenticated()
             )
             .headers(headers -> headers.frameOptions().disable()) // Permitir cargar la consola H2 en un iframe
