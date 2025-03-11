@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { useTheme } from "../../../context/ThemeContext"; // Importamos el hook
-import { saveMovie } from "../../../backend/movieService"; // Importa la función saveMovie
+import { useTheme } from "../../../context/ThemeContext";
+import { saveMovie } from "../../../backend/movieService";
+import AddToListModal from "../../list/components/AddToListModal";
 import "./ShowMovie.css";
 
 const ShowMovie = () => {
@@ -9,6 +10,7 @@ const ShowMovie = () => {
   const { theme } = useTheme();
   const [movie, setMovie] = useState(null);
   const [error, setError] = useState(null);
+  const [showAddToListModal, setShowAddToListModal] = useState(false);
 
   const parseMovieJson = (json) => {
     const parseName = (name) => {
@@ -30,7 +32,8 @@ const ShowMovie = () => {
         name: genre.name
       })),
       cast: json.cast.map(parseName),
-      directors: json.directors.map(parseName)
+      directors: json.directors.map(parseName),
+      streamingOptions: json.streamingInfo
     };
   };
 
@@ -66,6 +69,12 @@ const ShowMovie = () => {
     <div className={`movie-details ${theme}`}>
       <div className="movie-header">
         <h1>{movie.title || "Título no disponible"}</h1>
+        <button
+          className={`add-to-list-button ${theme}`}
+          onClick={() => setShowAddToListModal(true)}
+        >
+          Añadir a lista
+        </button>
       </div>
       <div className="movie-content">
         <div className="movie-poster">
@@ -108,6 +117,14 @@ const ShowMovie = () => {
           <p>No disponible en ninguna plataforma.</p>
         )}
       </div>
+      
+      {/* Modal para añadir a lista */}
+      {showAddToListModal && (
+        <AddToListModal
+          movie={movie}
+          onClose={() => setShowAddToListModal(false)}
+        />
+      )}
     </div>
   );
 };

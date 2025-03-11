@@ -12,6 +12,7 @@ const AddToListModal = ({ movie, onClose }) => {
   const [showCreateList, setShowCreateList] = useState(false);
   const [errors, setErrors] = useState(null);
   const [successMessage, setSuccessMessage] = useState("");
+  const [loading, setLoading] = useState(true);
 
   // Cargar las listas del usuario al montar el componente
   useEffect(() => {
@@ -23,6 +24,7 @@ const AddToListModal = ({ movie, onClose }) => {
         } else {
           setShowCreateList(true);
         }
+        setLoading(false);
       },
       (error) => {
         if (error.globalError === "project.exceptions.EmptyUserListsException") {
@@ -30,6 +32,7 @@ const AddToListModal = ({ movie, onClose }) => {
         } else {
           setErrors(error);
         }
+        setLoading(false);
       }
     );
   }, []);
@@ -64,7 +67,6 @@ const AddToListModal = ({ movie, onClose }) => {
           setSelectedList(newList.id);
           setNewListName("");
           setShowCreateList(false);
-          setErrors(null);
         },
         (error) => {
           setErrors(error);
@@ -74,29 +76,36 @@ const AddToListModal = ({ movie, onClose }) => {
   };
 
   return (
-    <div className={`modal ${theme}`}>
+    <div className={`modal-overlay ${theme}`}>
       <div className={`modal-content ${theme}`}>
-        <h2>Añadir a una lista</h2>
-        {successMessage ? (
-          <p className="success-message">{successMessage}</p>
+        <h2>Añadir a lista</h2>
+        {errors && <Errors errors={errors} onClose={() => setErrors(null)} />}
+        
+        {successMessage && (
+          <div className="success-message">{successMessage}</div>
+        )}
+
+        {loading ? (
+          <div className="loading-message">Cargando listas...</div>
         ) : (
           <>
-            {errors && <Errors errors={errors} onClose={() => setErrors(null)} />}
-            
             {showCreateList ? (
-              <form className="create-list-form" onSubmit={handleCreateList}>
+              <form onSubmit={handleCreateList}>
                 <h3>Crear nueva lista</h3>
                 <input
                   type="text"
                   value={newListName}
                   onChange={(e) => setNewListName(e.target.value)}
-                  placeholder="Nombre de la nueva lista"
+                  placeholder="Nombre de la lista"
                   className={theme}
                   required
                 />
                 <div className="modal-buttons">
-                  <button type="submit" className={`list-button ${theme}`}>
-                    Crear y seleccionar
+                  <button
+                    type="submit"
+                    className={`list-button ${theme}`}
+                  >
+                    Crear y añadir
                   </button>
                   {lists.length > 0 && (
                     <button
@@ -146,7 +155,7 @@ const AddToListModal = ({ movie, onClose }) => {
           className={`list-button red ${theme}`}
           onClick={onClose}
         >
-          Cerrar
+          Cancelar
         </button>
       </div>
     </div>

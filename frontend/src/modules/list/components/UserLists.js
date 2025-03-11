@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { getUserLists, createList } from "../../../backend/listService";
 import { useTheme } from "../../../context/ThemeContext";
@@ -13,41 +13,81 @@ const UserLists = () => {
   const [errors, setErrors] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Cargar las listas del usuario al montar el componente
-  useEffect(() => {
-    loadUserLists();
-  }, []);
-
-  // Función para cargar las listas del usuario
-  const loadUserLists = () => {
+  // Función para cargar las listas del usuario con useCallback para poder referirla en useEffect
+  const loadUserLists = useCallback(() => {
     setLoading(true);
     getUserLists(
       (fetchedLists) => {
+        console.log("Listas cargadas:", fetchedLists);
         setLists(fetchedLists);
         setLoading(false);
       },
       (error) => {
+        console.error("Error al cargar listas:", error);
+        // Solo mostrar error si no es por listas vacías
         if (error.globalError !== "project.exceptions.EmptyUserListsException") {
           setErrors(error);
+        } else {
+          // Si no hay listas, inicializar con un array vacío
+          setLists([]);
         }
         setLoading(false);
       }
     );
-  };
+  }, []);
+
+  // Cargar las listas al montar el componente
+  useEffect(() => {
+    loadUserLists();
+  }, [loadUserLists]);
+
+  // Actualizar las listas cuando la ventana obtiene el foco
+  // Esto garantiza que los contadores de películas estén actualizados después de añadir películas
+  useEffect(() => {
+    const handleFocus = () => {
+      console.log("Ventana obtuvo el foco, actualizando listas...");
+      loadUserLists();
+    };
+
+    window.addEventListener('focus', handleFocus);
+    
+    // También podemos actualizar las listas cuando se muestra el componente
+    // usando la API de Visibility Change
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        console.log("Documento visible, actualizando listas...");
+        loadUserLists();
+      }
+    };
+    
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    
+    // Limpiar los event listeners al desmontar el componente
+    return () => {
+      window.removeEventListener('focus', handleFocus);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [loadUserLists]);
 
   // Manejar el envío del formulario para crear una nueva lista
   const handleSubmit = (e) => {
     e.preventDefault();
+    
     if (newListName.trim()) {
+      setLoading(true); // Mostrar indicador de carga
+      
       createList(
         newListName.trim(),
         (newList) => {
-          setLists([...lists, newList]);
+          // En lugar de añadir manualmente, recargar todas las listas
+          // para asegurar que todos los datos estén actualizados
+          loadUserLists();
           setNewListName("");
           setErrors(null);
         },
         (error) => {
           setErrors(error);
+          setLoading(false);
         }
       );
     }
@@ -72,8 +112,13 @@ const UserLists = () => {
           onChange={(e) => setNewListName(e.target.value)}
           placeholder="Nombre de la nueva lista"
           className={theme}
+          disabled={loading}
         />
-        <button type="submit" className={`list-button ${theme}`}>
+        <button 
+          type="submit" 
+          className={`list-button ${theme}`}
+          disabled={loading || !newListName.trim()}
+        >
           Crear lista
         </button>
       </form>
@@ -90,7 +135,16 @@ const UserLists = () => {
               onClick={() => handleListClick(list.id)}
             >
               <h3>{list.name}</h3>
-              <p>{list.movieCount || 0} películas</p>
+              {(list.movieCount > 0 || (list.movies && list.movies.length > 0)) ? (
+                <p>
+                  {list.movieCount !== undefined 
+                    ? `${list.movieCount} película${list.movieCount !== 1 ? 's' : ''}` 
+                    : `${list.movies.length} película${list.movies.length !== 1 ? 's' : ''}`
+                  }
+                </p>
+              ) : (
+                <p className="empty-list">Todavía no tienes películas añadidas</p>
+              )}
             </div>
           ))}
         </div>
