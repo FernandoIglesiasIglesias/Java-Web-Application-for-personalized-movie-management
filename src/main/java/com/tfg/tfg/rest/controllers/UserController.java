@@ -1,6 +1,7 @@
 package com.tfg.tfg.rest.controllers;
 
 import java.net.URI;
+import java.util.List;
 import java.util.Locale;
 import static com.tfg.tfg.rest.dtos.UserConversor.toUser;
 import static com.tfg.tfg.rest.dtos.UserConversor.toUserDto;
@@ -30,6 +31,7 @@ import com.tfg.tfg.model.services.exceptions.IncorrectPasswordException;
 import com.tfg.tfg.model.services.exceptions.InstanceNotFoundException;
 import com.tfg.tfg.model.services.exceptions.PermissionException;
 import com.tfg.tfg.rest.common.ErrorsDto;
+import com.tfg.tfg.rest.common.FieldErrorDto;
 import com.tfg.tfg.rest.common.JwtGenerator;
 import com.tfg.tfg.rest.common.JwtInfo;
 import com.tfg.tfg.rest.dtos.AuthenticatedUserDto;
@@ -43,6 +45,8 @@ public class UserController {
    
 	private static final String INCORRECT_LOGIN_EXCEPTION_CODE = "project.exceptions.IncorrectLoginException";
 	private static final String INCORRECT_PASSWORD_EXCEPTION_CODE = "project.exceptions.IncorrectPasswordException";
+	private static final String DUPLICATE_INSTANCE_EXCEPTION_CODE = "project.exceptions.DuplicateInstanceException";
+
 	
 	@Autowired
 	private MessageSource messageSource;
@@ -74,6 +78,29 @@ public class UserController {
 		return new ErrorsDto(errorMessage);
 		
 	}
+
+	@ExceptionHandler(DuplicateInstanceException.class)
+	@ResponseStatus(HttpStatus.CONFLICT)
+	@ResponseBody
+	public ErrorsDto handleDuplicateInstanceException(DuplicateInstanceException exception, Locale locale) {
+		String errorMessage = messageSource.getMessage(DUPLICATE_INSTANCE_EXCEPTION_CODE, 
+			new Object[] {exception.getName()}, DUPLICATE_INSTANCE_EXCEPTION_CODE, locale);
+		
+		ErrorsDto errorDto = new ErrorsDto(errorMessage);
+		
+		if (exception.getName() != null && exception.getName().contains("@")) {
+			errorDto.setFieldErrors(List.of(
+				new FieldErrorDto("email", "Este correo electrónico ya está en uso")
+			));
+		} else {
+			errorDto.setFieldErrors(List.of(
+				new FieldErrorDto("userName", "Este nombre de usuario ya está registrado")
+			));
+		}
+		
+		return errorDto;
+	}
+
 	@PostMapping("/signUp")
 	public ResponseEntity<AuthenticatedUserDto> signUp(
 		@Validated({UserDto.AllValidations.class}) @RequestBody UserDto userDto) throws DuplicateInstanceException, DuplicateListNameException {

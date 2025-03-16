@@ -1,7 +1,6 @@
 package com.tfg.tfg.model.services;
 
 import java.util.Optional;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -35,13 +34,17 @@ public class UserServiceImpl implements UserService{
 	 *
 	 * @param user the user to be registered
 	 * @throws DuplicateInstanceException if a user with the same username already exists
-	 * @throws DuplicateListNameException if a user with the same list name already exists
+	 * @throws DuplicateListNameException if a username or a email already exists
 	 */
 	@Override
 	public void signUp(Users user) throws DuplicateInstanceException, DuplicateListNameException {
 		
 		if (userDao.existsByUserName(user.getUserName())) {
 			throw new DuplicateInstanceException("project.entities.user", user.getUserName());
+		}
+
+		if (userDao.existsByEmail(user.getEmail())) {
+			throw new DuplicateInstanceException("project.entities.email", user.getEmail());
 		}
 			
 		user.setPassword(passwordEncoder.encode(user.getPassword()));
@@ -50,9 +53,9 @@ public class UserServiceImpl implements UserService{
 		userDao.save(user);
 		
 		customListService.createList("Películas favoritas", user);
-        customListService.createList("Pendientes por ver", user);
-        customListService.createList("Películas vistas", user);
-        customListService.createList("Películas con las que lloré", user);
+		customListService.createList("Pendientes por ver", user);
+		customListService.createList("Películas vistas", user);
+		customListService.createList("Películas con las que lloré", user);
 	}
 
     /**
