@@ -18,6 +18,10 @@
   --button-hover-background-dark: #3700b3;
 
   --transition-duration: 0.3s;
+  
+  /* Variables para errores */
+  --danger-color-light: #dc3545;
+  --danger-color-dark: #e64980;
 }
 
 body.light {
@@ -64,7 +68,8 @@ body.dark {
   padding: 2rem;
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  border: 1px solid var(--input-border-light);
+  background-color: var(--background-color-light);
+  color: var(--text-color-light);
   transition: background-color var(--transition-duration), color var(--transition-duration), border-color var(--transition-duration);
 }
 
@@ -99,7 +104,7 @@ body.dark {
   border-radius: 5px;
   background-color: var(--input-background-light);
   color: var(--text-color-light);
-  transition: border-color var(--transition-duration), background-color var(--transition-duration), color var (--transition-duration);
+  transition: border-color var(--transition-duration), background-color var(--transition-duration), color var(--transition-duration);
 }
 
 .auth-form-input input[type="text"]:focus,
@@ -199,4 +204,163 @@ body.dark {
 
 .auth-form-input-submit .dark:hover {
   background-color: var(--button-hover-background-dark);
+}
+
+.duplicate-email-error {
+  margin: 1rem 0;
+  padding: 0.75rem 1rem;
+  border-left: 4px solid #ffc107; /* Color amarillo para diferenciar del error de usuario */
+  background-color: rgba(255, 193, 7, 0.1);
+  border-radius: 8px;
+  color: #d68102;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+body.dark .duplicate-email-error {
+  border-left-color: #ffca28;
+  background-color: rgba(255, 202, 40, 0.15);
+  color: #ffca28;
+}
+
+.duplicate-error-icon {
+  font-size: 1.3rem;
+}
+
+.required-field {
+  color: var(--danger-color-light);
+  margin-left: 3px;
+}
+
+body.dark .required-field {
+  color: var(--danger-color-dark);
+}
+
+/* Estilos para los botones y campos deshabilitados */
+input:disabled, button:disabled, .auth-form-input label[disabled] {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Nota de campos obligatorios al pie del formulario */
+.form-footer-note {
+  color: var(--text-color-light);
+  font-size: 0.85rem;
+  margin-top: 1.5rem;
+  text-align: center;
+}
+
+body.dark .form-footer-note {
+  color: var(--text-color-dark);
+}
+
+/* Estilo específico para el error de email duplicado */
+.duplicate-user-error.email-error {
+  border-left-color: #ffc107;
+  background-color: rgba(255, 193, 7, 0.1);
+}
+
+body.dark .duplicate-user-error.email-error {
+  border-left-color: #ffca28;
+  background-color: rgba(255, 202, 40, 0.15);
+}
+
+.field-error {
+  color: var(--danger-color-light);
+  background-color: rgba(220, 53, 69, 0.1);
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+  margin-top: 0.25rem;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  animation: shake 0.6s cubic-bezier(.36,.07,.19,.97) both;
+  transform: translate3d(0, 0, 0);
+}
+
+body.dark .field-error {
+  color: var(--danger-color-dark);
+  background-color: rgba(230, 73, 128, 0.15);
+}
+
+.field-error::before {
+  content: "⚠️";
+}
+
+@keyframes shake {
+  10%, 90% { transform: translate3d(-1px, 0, 0); }
+  20%, 80% { transform: translate3d(2px, 0, 0); }
+  30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+  40%, 60% { transform: translate3d(4px, 0, 0); }
+}
+
+/* Estilo específico para el error de usuario duplicado */
+.duplicate-user-error {
+  margin: 1rem 0;
+  padding: 0.75rem 1rem;
+  border-left: 4px solid var(--danger-color-light);
+  background-color: rgba(220, 53, 69, 0.1);
+  border-radius: 8px;
+  color: var(--danger-color-light);
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+body.dark .duplicate-user-error {
+  border-left-color: var(--danger-color-dark);
+  background-color: rgba(230, 73, 128, 0.15);
+  color: var(--danger-color-dark);
+}
+
+.duplicate-user-error-icon {
+  font-size: 1.3rem;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.auth-form-input input.input-error {
+  border-color: var(--danger-color-light);
+  box-shadow: 0 0 0 2px rgba(220, 53, 69, 0.2);
+}
+
+body.dark .auth-form-input input.input-error {
+  border-color: var(--danger-color-dark);
+  box-shadow: 0 0 0 2px rgba(230, 73, 128, 0.2);
+}
+
+/* Media queries para responsive */
+@media (max-width: 768px) {
+  .auth-container h1 {
+    font-size: 2.5rem;
+  }
+  
+  .auth-form-container {
+    width: 90%;
+    padding: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .auth-container h1 {
+    font-size: 2rem;
+  }
+  
+  .auth-form-container {
+    width: 95%;
+    padding: 1.25rem;
+  }
+  
+  .auth-form-input-submit input {
+    font-size: 1.1rem;
+  }
 }
