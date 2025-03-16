@@ -13,7 +13,7 @@ const UserLists = () => {
   const [errors, setErrors] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Función para cargar las listas del usuario con useCallback para poder referirla en useEffect
+  // Función para cargar las listas del usuario
   const loadUserLists = useCallback(() => {
     setLoading(true);
     getUserLists(
@@ -42,7 +42,6 @@ const UserLists = () => {
   }, [loadUserLists]);
 
   // Actualizar las listas cuando la ventana obtiene el foco
-  // Esto garantiza que los contadores de películas estén actualizados después de añadir películas
   useEffect(() => {
     const handleFocus = () => {
       console.log("Ventana obtuvo el foco, actualizando listas...");
@@ -51,8 +50,7 @@ const UserLists = () => {
 
     window.addEventListener('focus', handleFocus);
     
-    // También podemos actualizar las listas cuando se muestra el componente
-    // usando la API de Visibility Change
+    // También actualizar cuando el documento se hace visible
     const handleVisibilityChange = () => {
       if (document.visibilityState === 'visible') {
         console.log("Documento visible, actualizando listas...");
@@ -78,12 +76,10 @@ const UserLists = () => {
       
       createList(
         newListName.trim(),
-        (newList) => {
-          // En lugar de añadir manualmente, recargar todas las listas
-          // para asegurar que todos los datos estén actualizados
+        () => {
+          // Recargar todas las listas para asegurar que todos los datos estén actualizados
           loadUserLists();
           setNewListName("");
-          setErrors(null);
         },
         (error) => {
           setErrors(error);
@@ -100,57 +96,87 @@ const UserLists = () => {
   };
 
   return (
-    <div className={`lists-container ${theme}`}>
-      <h2>Mis Listas de Películas</h2>
-      {errors && <Errors errors={errors} onClose={() => setErrors(null)} />}
+    <div className="user-lists-page">
+      <div className={`lists-container ${theme}`}>
+        <header className="lists-header">
+          <h1>Mis Listas de Películas</h1>
+          <p className="lists-description">
+            Organiza tus películas favoritas en listas personalizadas
+          </p>
+        </header>
+        
+        {errors && <Errors errors={errors} onClose={() => setErrors(null)} />}
 
-      {/* Formulario para crear nueva lista */}
-      <form className="create-list-form" onSubmit={handleSubmit}>
-        <input
-          type="text"
-          value={newListName}
-          onChange={(e) => setNewListName(e.target.value)}
-          placeholder="Nombre de la nueva lista"
-          className={theme}
-          disabled={loading}
-        />
-        <button 
-          type="submit" 
-          className={`list-button ${theme}`}
-          disabled={loading || !newListName.trim()}
-        >
-          Crear lista
-        </button>
-      </form>
-
-      {/* Mostrar listas o mensaje de carga */}
-      {loading ? (
-        <p className="loading-message">Cargando listas...</p>
-      ) : lists.length > 0 ? (
-        <div className="lists-grid">
-          {lists.map((list) => (
-            <div
-              key={list.id}
-              className={`list-card ${theme}`}
-              onClick={() => handleListClick(list.id)}
-            >
-              <h3>{list.name}</h3>
-              {(list.movieCount > 0 || (list.movies && list.movies.length > 0)) ? (
-                <p>
-                  {list.movieCount !== undefined 
-                    ? `${list.movieCount} película${list.movieCount !== 1 ? 's' : ''}` 
-                    : `${list.movies.length} película${list.movies.length !== 1 ? 's' : ''}`
-                  }
-                </p>
-              ) : (
-                <p className="empty-list">Todavía no tienes películas añadidas</p>
-              )}
+        {/* Formulario para crear nueva lista */}
+        <div className="create-list-section">
+          <h2>Crear nueva lista</h2>
+          <form className="create-list-form" onSubmit={handleSubmit}>
+            <div className="input-group">
+              <input
+                type="text"
+                value={newListName}
+                onChange={(e) => setNewListName(e.target.value)}
+                placeholder="Nombre de la nueva lista"
+                className={theme}
+                disabled={loading}
+              />
+              <button 
+                type="submit" 
+                className={`list-button primary ${theme}`}
+                disabled={loading || !newListName.trim()}
+              >
+                {loading ? "Creando..." : "Crear lista"}
+              </button>
             </div>
-          ))}
+          </form>
         </div>
-      ) : (
-        <p className="no-lists-message">No tienes listas creadas.</p>
-      )}
+
+        {/* Mostrar listas o mensaje de carga */}
+        <div className="lists-content">
+          <h2>Mis listas</h2>
+          
+          {loading ? (
+            <div className="loading-container">
+              <div className="loading-spinner"></div>
+              <p className="loading-message">Cargando tus listas...</p>
+            </div>
+          ) : lists.length > 0 ? (
+            // Renderizar las tarjetas directamente, sin el contenedor .lists-grid
+            lists.map((list) => (
+              <div
+                key={list.id}
+                className={`list-card ${theme}`}
+                onClick={() => handleListClick(list.id)}
+              >
+                <div className="list-card-inner">
+                  <h3>{list.name}</h3>
+                  <div className="list-card-footer">
+                    {(list.movieCount > 0 || (list.movies && list.movies.length > 0)) ? (
+                      <span className="movie-count">
+                        {list.movieCount !== undefined 
+                          ? `${list.movieCount} película${list.movieCount !== 1 ? 's' : ''}` 
+                          : `${list.movies.length} película${list.movies.length !== 1 ? 's' : ''}`
+                        }
+                      </span>
+                    ) : (
+                      <span className="empty-list">Lista vacía</span>
+                    )}
+                    <span className="view-list">Ver lista →</span>
+                  </div>
+                </div>
+              </div>
+            ))
+          ) : (
+            <div className="no-lists-container">
+              <div className="no-lists-icon">📋</div>
+              <p className="no-lists-message">No tienes listas creadas.</p>
+              <p className="no-lists-suggestion">
+                Crea tu primera lista para empezar a guardar tus películas favoritas.
+              </p>
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 };

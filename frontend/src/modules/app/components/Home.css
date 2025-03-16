@@ -35,36 +35,9 @@ body.dark {
   text-align: center;
 }
 
-.home-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 10px;
-  width: 100%;
-  background-color: var(--background-color-light);
-  color: var(--text-color-light);
-  transition: background-color var(--transition-duration), color var(--transition-duration);
-}
-
 .home-header.dark {
   background-color: var(--background-color-dark);
   color: var(--text-color-dark);
-}
-
-.home-title {
-  margin: 0;
-}
-
-.profile-container {
-  margin-left: auto;
-  cursor: pointer;
-}
-
-.profile-avatar {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  object-fit: cover;
 }
 
 .theme-toggle-button {

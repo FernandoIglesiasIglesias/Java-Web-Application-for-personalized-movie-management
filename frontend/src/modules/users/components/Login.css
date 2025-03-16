@@ -146,3 +146,108 @@ body.dark {
 .auth-form-input-submit .dark:hover {
   background-color: var(--button-hover-background-dark);
 }
+
+/* Nuevos estilos para validación de formularios y campos obligatorios */
+
+/* Campo requerido */
+.required-field {
+  color: var(--danger-color-light);
+  margin-left: 3px;
+}
+
+body.dark .required-field {
+  color: var(--danger-color-dark);
+}
+
+/* Mensaje de error de campo */
+.field-error {
+  color: var(--danger-color-light);
+  background-color: rgba(220, 53, 69, 0.1);
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+  margin-top: 0.25rem;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  animation: shake 0.6s cubic-bezier(.36,.07,.19,.97) both;
+  transform: translate3d(0, 0, 0);
+}
+
+body.dark .field-error {
+  color: var(--danger-color-dark);
+  background-color: rgba(230, 73, 128, 0.15);
+}
+
+.field-error::before {
+  content: "⚠️";
+}
+
+/* Animación para el mensaje de error */
+@keyframes shake {
+  10%, 90% { transform: translate3d(-1px, 0, 0); }
+  20%, 80% { transform: translate3d(2px, 0, 0); }
+  30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+  40%, 60% { transform: translate3d(4px, 0, 0); }
+}
+
+/* Estilo para campos con error */
+.auth-form-input input.input-error {
+  border-color: var(--danger-color-light);
+  box-shadow: 0 0 0 2px rgba(220, 53, 69, 0.2);
+}
+
+body.dark .auth-form-input input.input-error {
+  border-color: var(--danger-color-dark);
+  box-shadow: 0 0 0 2px rgba(230, 73, 128, 0.2);
+}
+
+/* Estilo para botones y campos deshabilitados */
+input:disabled, button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Nota de campos obligatorios */
+.form-footer-note {
+  color: var(--text-color-light);
+  font-size: 0.85rem;
+  margin-top: 1.5rem;
+  text-align: center;
+}
+
+body.dark .form-footer-note {
+  color: var(--text-color-dark);
+}
+
+/* Mejorar el aspecto del mensaje de error de login */
+.login-error-message {
+  background-color: rgba(220, 53, 69, 0.1);
+  border-left: 4px solid #dc3545;
+  color: #dc3545;
+  padding: 12px 15px;
+  margin-bottom: 20px;
+  border-radius: 8px;
+  text-align: left;
+  width: 100%;
+  font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.login-error-message .error-icon {
+  font-size: 1.2rem;
+}
+
+body.dark .login-error-message {
+  background-color: rgba(220, 53, 69, 0.2);
+  color: #ff6b6b;
+  border-left-color: #ff6b6b;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
