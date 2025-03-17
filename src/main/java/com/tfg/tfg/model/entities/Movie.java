@@ -27,6 +27,8 @@ public class Movie {
 
     private String imbdId;
     private String title;
+
+    @Column(name = "overview", columnDefinition = "TEXT")
     private String overview;
     private int releaseYear;
     
