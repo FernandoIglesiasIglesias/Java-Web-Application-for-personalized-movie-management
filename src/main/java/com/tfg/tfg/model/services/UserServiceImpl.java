@@ -56,6 +56,8 @@ public class UserServiceImpl implements UserService{
 		customListService.createList("Pendientes por ver", user);
 		customListService.createList("Películas vistas", user);
 		customListService.createList("Películas con las que lloré", user);
+
+		customListService.createList("Actores favoritos", user);
 	}
 
     /**

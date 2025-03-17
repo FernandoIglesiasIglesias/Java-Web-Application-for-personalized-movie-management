@@ -35,7 +35,7 @@ import com.tfg.tfg.model.services.exceptions.PermissionException;
 public class CustomListServiceTest {
 
     private final Long NON_EXISTENT_ID = -1L;
-    private final int DEFAULT_LISTS_COUNT = 4; 
+    private final int DEFAULT_LISTS_COUNT = 5; 
 
     @Autowired
     private CustomListService customListService;
@@ -85,7 +85,7 @@ public class CustomListServiceTest {
         
         List<CustomList> userLists = customListService.getUserLists(newUser.getId());
         
-        assertEquals(4, userLists.size());
+        assertEquals(5, userLists.size());
         
         Set<String> listNames = userLists.stream()
             .map(CustomList::getName)
@@ -95,6 +95,8 @@ public class CustomListServiceTest {
         assertTrue(listNames.contains("Pendientes por ver"));
         assertTrue(listNames.contains("Películas vistas"));
         assertTrue(listNames.contains("Películas con las que lloré"));
+
+        assertTrue(listNames.contains("Actores favoritos"));
     }
 
     @Test
@@ -143,6 +145,8 @@ public class CustomListServiceTest {
         assertTrue(listNames.contains("Pendientes por ver"));
         assertTrue(listNames.contains("Películas vistas"));
         assertTrue(listNames.contains("Películas con las que lloré"));
+
+        assertTrue(listNames.contains("Actores favoritos")); 
     }
 
     @Test

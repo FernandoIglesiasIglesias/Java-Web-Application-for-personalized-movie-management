@@ -52,6 +52,18 @@ public class UserServiceTest {
 		assertThrows(DuplicateInstanceException.class, () -> userService.signUp(user));
 		
 	}
+
+	@Test
+    public void testSignUpDuplicatedEmail() throws DuplicateInstanceException, DuplicateListNameException {
+        Users user = createUser("user1");
+        
+        userService.signUp(user);
+        
+        Users duplicatedUser = createUser("user2");
+        duplicatedUser.setEmail(user.getEmail());
+        
+        assertThrows(DuplicateInstanceException.class, () -> userService.signUp(duplicatedUser));
+    }
 	
 	@Test
 	public void testLoginFromNonExistentId() {
