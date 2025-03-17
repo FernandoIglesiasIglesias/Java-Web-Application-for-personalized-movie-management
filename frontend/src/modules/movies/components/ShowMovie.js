@@ -220,9 +220,13 @@ const ShowMovie = () => {
                     <h3>Reparto principal</h3>
                     <p className="cast-list">
                       {movie.cast.slice(0, 6).map((actor, index) => (
-                        <span key={index} className="cast-member">
+                        <span 
+                          key={index} 
+                          className="cast-member clickable"
+                          onClick={() => navigate(`/actors/${encodeURIComponent(`${actor.firstName} ${actor.lastName}`.trim())}`)}
+                        >
                           {`${actor.firstName} ${actor.lastName}`.trim()}
-                        </span>
+                      </span>
                       ))}
                       {movie.cast.length > 6 && <span className="cast-more">+{movie.cast.length - 6} más</span>}
                     </p>

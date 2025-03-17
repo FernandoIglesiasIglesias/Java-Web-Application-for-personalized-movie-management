@@ -9,6 +9,7 @@ import SignUp from "../../users/components/SignUp";
 import Title from "../../users/components/Title";
 import Home from "./Home";
 import ShowMovie from "../../movies/components/ShowMovie";
+import ShowActor from "../../movies/components/ShowActor";
 import UserLists from "../../list/components/UserLists";
 import ListDetails from "../../list/components/ListDetails";
 import Settings from "../../users/components/Settings";
@@ -71,7 +72,7 @@ const App = () => {
             
             {/* Rutas semi-protegidas - muestran contenido pero con funcionalidad limitada para usuarios no autenticados */}
             <Route path="/movies/:id" element={<ShowMovie />} />
-            
+            <Route path="/actors/:actorName" element={<ShowActor />} />
             {/* Ruta de fallback */}
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>
