@@ -28,13 +28,11 @@ const ListDetails = () => {
     getListById(
       id,
       (fetchedList) => {
-        console.log("Detalles de lista cargados:", fetchedList);
         setList(fetchedList);
         setListName(fetchedList.name);
         setLoading(false);
       },
       (error) => {
-        console.error("Error al cargar detalles de lista:", error);
         setErrors(error);
         setLoading(false);
       }
@@ -295,7 +293,7 @@ const ListDetails = () => {
                 <div 
                   key={movie.id} 
                   className={`movie-card ${theme}`} 
-                  onClick={() => handleMovieClick(movie.imbdId || movie.id)}
+                  onClick={() => handleMovieClick(movie.imdbId || movie.id)}
                 >
                   <div className="movie-poster-container">
                     <img

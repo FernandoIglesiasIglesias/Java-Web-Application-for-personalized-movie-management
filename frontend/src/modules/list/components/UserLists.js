@@ -18,7 +18,6 @@ const UserLists = () => {
     setLoading(true);
     getUserLists(
       (fetchedLists) => {
-        console.log("Listas cargadas:", fetchedLists);
         setLists(fetchedLists);
         setLoading(false);
       },
@@ -44,7 +43,6 @@ const UserLists = () => {
   // Actualizar las listas cuando la ventana obtiene el foco
   useEffect(() => {
     const handleFocus = () => {
-      console.log("Ventana obtuvo el foco, actualizando listas...");
       loadUserLists();
     };
 
@@ -53,7 +51,6 @@ const UserLists = () => {
     // También actualizar cuando el documento se hace visible
     const handleVisibilityChange = () => {
       if (document.visibilityState === 'visible') {
-        console.log("Documento visible, actualizando listas...");
         loadUserLists();
       }
     };
@@ -91,7 +88,6 @@ const UserLists = () => {
 
   // Navegar a la página de detalle de una lista
   const handleListClick = (listId) => {
-    console.log("Navegando a la lista con ID:", listId);
     navigate(`/lists/${listId}`);
   };
 

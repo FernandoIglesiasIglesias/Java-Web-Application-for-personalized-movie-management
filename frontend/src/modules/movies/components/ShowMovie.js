@@ -27,7 +27,7 @@ const ShowMovie = () => {
     };
   
     return {
-      imbdId: json.imdbId,
+      imdbId: json.imdbId,
       title: json.title,
       overview: json.overview,
       releaseYear: json.releaseYear,
@@ -73,7 +73,6 @@ const ShowMovie = () => {
         // Guardar película en base de datos local
         saveMovie(
           parsedData, 
-          () => console.log("Película guardada correctamente en la base de datos"), 
           (error) => console.error("Error guardando película", error)
         );
       })

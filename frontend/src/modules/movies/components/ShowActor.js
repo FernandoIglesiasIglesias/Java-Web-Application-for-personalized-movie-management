@@ -1,33 +1,49 @@
-import React, { useEffect, useState, useCallback } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import { useTheme } from "../../../context/ThemeContext";
-import { saveMovie } from "../../../backend/movieService";
-import "./ShowActor.css";
+import React, { useState, useEffect, useCallback } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { useTheme } from '../../../context/ThemeContext';
+import { updateActorByName } from '../../../backend/actorService';
+import './ShowActor.css';
 
-// Cache simple para almacenar respuestas de la API
+// Cache para reducir solicitudes a la API
 const apiCache = {
   idByName: {},
   actorDetails: {},
-  knownForMovies: {}, // Cache para películas conocidas básicas 
-  movieDetails: {} // Cache para detalles completos de películas
+  knownFor: {},
+  movieDetails: {}
 };
 
+// Función para obtener iniciales de un nombre
+const getInitials = (name) => {
+  if (!name) return '?';
+  return name
+    .split(' ')
+    .map(part => part[0])
+    .join('')
+    .substring(0, 2)
+    .toUpperCase();
+};
+
+// Componente principal
 const ShowActor = () => {
   const { actorName } = useParams();
   const navigate = useNavigate();
   const { theme } = useTheme();
-  const [actor, setActor] = useState(null);
-  const [error, setError] = useState(null);
+  
+  // Estados para gestionar datos y UI
+  const [actor, setActor] = useState({});
   const [loading, setLoading] = useState(true);
-  const [loadingStage, setLoadingStage] = useState("init"); // Para mostrar progreso más detallado
+  const [loadingStage, setLoadingStage] = useState('init');
+  const [error, setError] = useState(null);
   const [imageError, setImageError] = useState(false);
+  
+  // Estados para películas conocidas
   const [knownForMovies, setKnownForMovies] = useState([]);
-  const [loadingMovies, setLoadingMovies] = useState(false);
-  const [moviesError, setMoviesError] = useState(null);
   const [detailedMovies, setDetailedMovies] = useState([]);
+  const [loadingMovies, setLoadingMovies] = useState(false);
   const [loadingDetailedMovies, setLoadingDetailedMovies] = useState(false);
+  const [moviesError, setMoviesError] = useState(null);
 
-  // Función para obtener el ID del actor - con caché
+  // Función para obtener ID del actor - con caché
   const getActorId = useCallback(async (name) => {
     // Comprobar si ya tenemos este ID en caché
     if (apiCache.idByName[name]) {
@@ -37,40 +53,19 @@ const ShowActor = () => {
     
     setLoadingStage("id");
     
-    // Implementar reintentos para solicitudes fallidas
-    let retries = 2;
-    let idResponse;
-    
-    while (retries >= 0) {
-      try {
-        idResponse = await fetch(
-          `https://moviesminidatabase.p.rapidapi.com/actor/imdb_id_byName/${encodeURIComponent(name)}/`,
-          {
-            method: "GET",
-            headers: {
-              "x-rapidapi-host": "moviesminidatabase.p.rapidapi.com",
-              "x-rapidapi-key": "cb332fab10msh89e2fc877672ccfp14515bjsn3b00399489a8",
-            },
-          }
-        );
-        
-        if (idResponse.ok) break;
-        
-        // Si tenemos errores de límite de tarifa o servidor, esperar y reintentar
-        if (idResponse.status === 429 || idResponse.status >= 500) {
-          retries--;
-          if (retries >= 0) {
-            await new Promise(r => setTimeout(r, 1000)); // Esperar 1 segundo antes de reintentar
-            continue;
-          }
-        }
-        
-        throw new Error(`Error en la API: ${idResponse.status}`);
-      } catch (err) {
-        retries--;
-        if (retries < 0) throw err;
-        await new Promise(r => setTimeout(r, 1000));
+    const idResponse = await fetch(
+      `https://moviesminidatabase.p.rapidapi.com/actor/imdb_id_byName/${encodeURIComponent(name)}/`,
+      {
+        method: "GET",
+        headers: {
+          "x-rapidapi-host": "moviesminidatabase.p.rapidapi.com",
+          "x-rapidapi-key": "cb332fab10msh89e2fc877672ccfp14515bjsn3b00399489a8",
+        },
       }
+    );
+    
+    if (!idResponse.ok) {
+      throw new Error(`Error en la API de búsqueda: ${idResponse.status}`);
     }
     
     const idData = await idResponse.json();
@@ -128,174 +123,179 @@ const ShowActor = () => {
       } catch (err) {
         retries--;
         if (retries < 0) throw err;
-        await new Promise(r => setTimeout(r, 1000));
+        await new Promise(r => setTimeout(r, 1000)); // Esperar antes de reintentar
       }
     }
     
     const detailsData = await detailsResponse.json();
     
-    if (!detailsData.results) {
-      throw new Error("No se encontraron detalles para este actor.");
+    if (!detailsData.results || Object.keys(detailsData.results).length === 0) {
+      throw new Error("No se pudieron obtener los detalles del actor.");
     }
+    
+    const results = detailsData.results;
+    
+    // Procesar los datos del actor para nuestro formato
+    const formattedActor = {
+      id: actorId,
+      imdbId: actorId,
+      name: `${results.name || ''} ${results.surname || ''}`.trim(),
+      firstName: results.name || '',
+      lastName: results.surname || '',
+      image_url: results.image_url,
+      birth_date: results.birth_date,
+      birth_place: results.birth_place,
+      star_sign: results.star_sign,
+      height: results.height,
+      partial_bio: results.partial_bio || results.bio,
+      // Datos adicionales para guardar en nuestra BD
+      bio: results.bio || results.partial_bio || '',
+      tmdbId: results.tmdb_id || ''
+    };
     
     // Guardar en caché
-    apiCache.actorDetails[actorId] = detailsData.results;
+    apiCache.actorDetails[actorId] = formattedActor;
     
-    return detailsData.results;
+    // Actualizar información en nuestra base de datos
+    updateActorInDatabase(formattedActor);
+    
+    return formattedActor;
   }, []);
 
-  // Función para obtener las películas conocidas del actor
-  const getKnownForMovies = useCallback(async (actorId) => {
-    // Comprobar si ya tenemos estos datos en caché
-    if (apiCache.knownForMovies[actorId]) {
-      console.log("Usando películas conocidas desde caché");
-      return apiCache.knownForMovies[actorId];
+  // Función para actualizar el actor en la base de datos
+  const updateActorInDatabase = useCallback((actorData) => {
+    if (!actorData.firstName || !actorData.lastName) {
+      console.warn("No se puede actualizar el actor sin nombre completo:", actorData);
+      return;
     }
-    
-    // Implementar reintentos para solicitudes fallidas
-    let retries = 2;
-    let moviesResponse;
-    
-    while (retries >= 0) {
-      try {
-        moviesResponse = await fetch(
-          `https://moviesminidatabase.p.rapidapi.com/actor/id/${actorId}/movies_knownFor/`,
-          {
-            method: "GET",
-            headers: {
-              "x-rapidapi-host": "moviesminidatabase.p.rapidapi.com",
-              "x-rapidapi-key": "cb332fab10msh89e2fc877672ccfp14515bjsn3b00399489a8",
-            },
-          }
-        );
-        
-        if (moviesResponse.ok) break;
-        
-        // Si tenemos errores de límite de tarifa o servidor, esperar y reintentar
-        if (moviesResponse.status === 429 || moviesResponse.status >= 500) {
-          retries--;
-          if (retries >= 0) {
-            await new Promise(r => setTimeout(r, 1000)); // Esperar 1 segundo antes de reintentar
-            continue;
-          }
-        }
-        
-        throw new Error(`Error en la API: ${moviesResponse.status}`);
-      } catch (err) {
-        retries--;
-        if (retries < 0) throw err;
-        await new Promise(r => setTimeout(r, 1000));
+
+    const dbActorData = {
+      firstName: actorData.firstName,
+      lastName: actorData.lastName,
+      imdbId: actorData.imdbId,
+      tmdbId: actorData.tmdbId || '',
+      birthDate: actorData.birth_date || null,
+      birthPlace: actorData.birth_place || '',
+      starSign: actorData.star_sign || '',
+      height: actorData.height || '',
+      bio: actorData.bio || '',
+      imageUrl: actorData.image_url || ''
+    };
+
+    updateActorByName(
+      actorData.firstName,
+      actorData.lastName,
+      dbActorData,
+      (result) => {
+        console.log("Actor actualizado en la base de datos:", result);
+      },
+      (error) => {
+        console.error("Error actualizando actor en la base de datos:", error);
       }
-    }
-    
-    const moviesData = await moviesResponse.json();
-    
-    if (!moviesData.results || moviesData.results.length === 0) {
-      return []; // No hay películas conocidas
-    }
-    
-    // Procesar los datos para obtener una estructura más limpia
-    const processedMovies = moviesData.results.map(movieData => {
-      const [movieInfo] = movieData;
-      return {
-        imdbId: movieInfo.imdb_id,
-        title: movieInfo.title,
-        rating: movieInfo.rating
-      };
-    });
-    
-    // Guardar en caché
-    apiCache.knownForMovies[actorId] = processedMovies;
-    
-    return processedMovies;
+    );
   }, []);
 
-  // Función para obtener detalles completos de una película usando la API de streaming
+  // Función para obtener películas conocidas del actor - con caché
+  const getKnownForMovies = useCallback(async (actorId) => {
+    // Comprobar caché
+    if (apiCache.knownFor[actorId]) {
+      console.log("Usando películas conocidas desde caché");
+      return apiCache.knownFor[actorId];
+    }
+    
+    const knownForResponse = await fetch(
+      `https://moviesminidatabase.p.rapidapi.com/actor/id/${actorId}/movies_knownFor/`,
+      {
+        method: "GET",
+        headers: {
+          "x-rapidapi-host": "moviesminidatabase.p.rapidapi.com",
+          "x-rapidapi-key": "cb332fab10msh89e2fc877672ccfp14515bjsn3b00399489a8",
+        },
+      }
+    );
+    
+    if (!knownForResponse.ok) {
+      throw new Error(`Error obteniendo películas: ${knownForResponse.status}`);
+    }
+    
+    const knownForData = await knownForResponse.json();
+    
+    if (!knownForData.results || knownForData.results.length === 0) {
+      return [];
+    }
+    
+    // Procesar y ordenar por valoración
+    const movies = knownForData.results.map(movie => ({
+      imdbId: movie.imdb_id,
+      title: movie.title,
+      year: movie.year,
+      role: movie.role,
+      rating: parseFloat(movie.rating) || 0
+    })).sort((a, b) => b.rating - a.rating);
+    
+    // Guardar en caché
+    apiCache.knownFor[actorId] = movies;
+    
+    return movies;
+  }, []);
+
+  // Función para obtener detalles de una película - con caché
   const getMovieDetails = useCallback(async (imdbId) => {
-    // Comprobar si ya tenemos estos detalles en caché
+    // Comprobar caché
     if (apiCache.movieDetails[imdbId]) {
-      console.log(`Usando detalles de película ${imdbId} desde caché`);
       return apiCache.movieDetails[imdbId];
     }
     
     try {
-      const response = await fetch(
-        `https://streaming-availability.p.rapidapi.com/shows/${imdbId}?series_granularity=episode&output_language=es`,
+      const detailsResponse = await fetch(
+        `https://moviesminidatabase.p.rapidapi.com/movie/id/${imdbId}/`,
         {
           method: "GET",
           headers: {
-            "x-rapidapi-host": "streaming-availability.p.rapidapi.com",
+            "x-rapidapi-host": "moviesminidatabase.p.rapidapi.com",
             "x-rapidapi-key": "cb332fab10msh89e2fc877672ccfp14515bjsn3b00399489a8",
           },
         }
       );
       
-      if (!response.ok) {
-        throw new Error(`Error en la API: ${response.status}`);
+      if (!detailsResponse.ok) {
+        return null;
       }
       
-      const data = await response.json();
+      const detailsData = await detailsResponse.json();
       
-      if (data.message) {
-        throw new Error(data.message);
+      if (!detailsData.results) {
+        return null;
       }
       
-      const parsedData = parseMovieJson(data);
-      
-      // Guardar película en base de datos local
-      saveMovie(
-        parsedData, 
-        () => console.log(`Película ${imdbId} guardada correctamente en la base de datos`), 
-        (error) => console.error(`Error guardando película ${imdbId}`, error)
-      );
+      // Procesar datos de película
+      const movie = {
+        imdbId: imdbId,
+        title: detailsData.results.title,
+        year: detailsData.results.year,
+        image_url: detailsData.results.image_url,
+        plot: detailsData.results.plot,
+        contentRating: detailsData.results.content_rating,
+        rating: parseFloat(detailsData.results.rating) || 0,
+        genres: detailsData.results.gen?.map(g => g.genre) || []
+      };
       
       // Guardar en caché
-      apiCache.movieDetails[imdbId] = parsedData;
+      apiCache.movieDetails[imdbId] = movie;
       
-      return parsedData;
-    } catch (error) {
-      console.error(`Error al obtener detalles de película ${imdbId}:`, error);
+      return movie;
+    } catch (err) {
+      console.error("Error obteniendo detalles de película:", err);
       return null;
     }
   }, []);
 
-  // Función para parsear los datos de la película (similar a la de ShowMovie.js)
-  const parseMovieJson = (json) => {
-    const parseName = (name) => {
-      if (!name) return { firstName: '', lastName: '' };
-      
-      const [firstName, ...lastNameParts] = name.split(" ");
-      return {
-        firstName,
-        lastName: lastNameParts.join(" ")
-      };
-    };
-  
-    return {
-      imbdId: json.imdbId,
-      title: json.title,
-      overview: json.overview,
-      releaseYear: json.releaseYear,
-      verticalPoster: json.imageSet?.verticalPoster?.w240,
-      runtime: json.runtime,
-      imdbRating: json.imdbRating,
-      genres: json.genres?.map(genre => ({
-        name: genre.name
-      })) || [],
-      cast: json.cast?.map(parseName) || [],
-      directors: json.directors?.map(parseName) || [],
-      streamingOptions: json.streamingInfo
-    };
-  };
-
-  // Función para cargar detalles completos de todas las películas conocidas
-  const loadDetailedMovieInfo = useCallback(async (basicMovies) => {
-    if (!basicMovies || basicMovies.length === 0) return [];
-    
+  // Función para cargar detalles de películas conocidas
+  const loadDetailedMovieInfo = useCallback(async (movies) => {
     setLoadingDetailedMovies(true);
     
-    // Seleccionar solo las películas mejor valoradas (máximo 6)
-    const topMovies = [...basicMovies]
+    // Seleccionamos solo las 6 mejores películas
+    const topMovies = movies
       .sort((a, b) => b.rating - a.rating)
       .slice(0, 6);
     
@@ -332,7 +332,7 @@ const ShowActor = () => {
       setLoadingDetailedMovies(false);
     }
   }, [getMovieDetails]);
-  
+
   // Función principal para obtener todos los datos del actor
   const fetchActorDetails = useCallback(async () => {
     setLoading(true);
@@ -370,9 +370,17 @@ const ShowActor = () => {
     }
   }, [actorName, getActorId, getActorDetails, getKnownForMovies, loadDetailedMovieInfo]);
 
+  // Efecto para cargar datos inicialmente
   useEffect(() => {
-    fetchActorDetails();
-  }, [fetchActorDetails]);
+    if (actorName) {
+      fetchActorDetails();
+    }
+  }, [actorName, fetchActorDetails]);
+
+  // Manejadores de eventos
+  const handleImageError = () => {
+    setImageError(true);
+  };
 
   const handleBackClick = () => {
     navigate(-1);
@@ -380,26 +388,9 @@ const ShowActor = () => {
 
   const handleRetryClick = () => {
     setError(null);
+    setMoviesError(null);
+    setImageError(false);
     fetchActorDetails();
-  };
-
-  const getInitials = (name) => {
-    if (!name) return "?";
-    return name.split(' ')
-      .filter(word => word.length > 0)
-      .map(word => word[0])
-      .join('')
-      .slice(0, 2);
-  };
-
-  const handleImageError = () => {
-    console.log("Error al cargar la imagen del actor");
-    setImageError(true);
-  };
-
-  // Función para navegar a la página de una película
-  const handleMovieClick = (imdbId) => {
-    navigate(`/movies/${imdbId}`);
   };
 
   // Renderizar estado de error
@@ -553,81 +544,112 @@ const ShowActor = () => {
                       <div key={i} className="movie-card-skeleton">
                         <div className="movie-poster-skeleton"></div>
                         <div className="movie-title-skeleton"></div>
-                        <div className="movie-rating-skeleton"></div>
+                        <div className="movie-meta-skeleton"></div>
                       </div>
                     ))}
                   </div>
                 </div>
               ) : moviesError ? (
-                <p className="movies-error">
-                  No se pudieron cargar las películas destacadas.
-                </p>
-              ) : knownForMovies.length === 0 ? (
-                <p className="no-known-movies">
-                  No hay información disponible sobre películas destacadas.
-                </p>
-              ) : (
-                <div className="detailed-movies-section">
-                  {/* Si tenemos detalles mejorados, mostrarlos. Si no, mostrar versión básica */}
-                  {detailedMovies.length > 0 ? (
-                    <div className="detailed-movies-grid">
-                      {detailedMovies.map((movie) => (
-                        <div 
-                          key={movie.imbdId} 
-                          className={`detailed-movie-card ${theme}`}
-                          onClick={() => handleMovieClick(movie.imbdId)}
-                        >
-                          <div className="detailed-movie-poster-container">
-                            {movie.verticalPoster ? (
-                              <img
-                                src={movie.verticalPoster}
-                                alt={movie.title}
-                                className="detailed-movie-poster"
-                              />
-                            ) : (
-                              <div className="detailed-movie-poster-placeholder">
-                                <span>No disponible</span>
-                              </div>
-                            )}
-                            <div className="detailed-movie-overlay">
-                              <div className="detailed-movie-year">
-                                {movie.releaseYear || '??'}
-                              </div>
-                              <div className="detailed-movie-rating">
-                                {movie.imdbRating ? `★ ${movie.imdbRating.toFixed(1)}` : `★ ${movie.originalRating.toFixed(1)}`}
-                              </div>
-                            </div>
+                <div className="known-movies-error">
+                  <p>No se pudieron cargar las películas relacionadas.</p>
+                  <button 
+                    className={`actor-button small ${theme}`}
+                    onClick={() => {
+                      setMoviesError(null);
+                      setLoadingMovies(true);
+                      getKnownForMovies(actor.id)
+                        .then(setKnownForMovies)
+                        .catch(setMoviesError)
+                        .finally(() => setLoadingMovies(false));
+                    }}
+                  >
+                    Reintentar
+                  </button>
+                </div>
+              ) : detailedMovies.length > 0 ? (
+                <div className="known-movies-grid">
+                  {detailedMovies.map((movie) => (
+                    <div key={movie.imdbId} className={`movie-card ${theme}`}>
+                      <div className="movie-poster-container">
+                        {movie.image_url ? (
+                          <img 
+                            src={movie.image_url} 
+                            alt={movie.title} 
+                            className="movie-poster"
+                          />
+                        ) : (
+                          <div className="movie-poster-placeholder">
+                            🎬
                           </div>
-                          <div className="detailed-movie-info">
-                            <h3 className="detailed-movie-title">{movie.title}</h3>
-                            {movie.genres && movie.genres.length > 0 && (
-                              <p className="detailed-movie-genres">
-                                {movie.genres.slice(0, 2).map(g => g.name).join(', ')}
-                              </p>
-                            )}
-                          </div>
+                        )}
+                        <div className="movie-rating">
+                          <span className="rating-value">
+                            {movie.rating ? movie.rating.toFixed(1) : 'N/A'}
+                          </span>
                         </div>
-                      ))}
-                      {loadingDetailedMovies && <div className="loading-overlay">Cargando detalles...</div>}
+                      </div>
+                      <div className="movie-info">
+                        <h3 className="movie-title">{movie.title}</h3>
+                        <div className="movie-meta">
+                          <span className="movie-year">{movie.year}</span>
+                          {movie.genres && movie.genres.length > 0 && (
+                            <span className="movie-genres">
+                              {movie.genres.slice(0, 2).join(', ')}
+                            </span>
+                          )}
+                        </div>
+                        {movie.plot && (
+                          <p className="movie-plot">{movie.plot.substring(0, 100)}...</p>
+                        )}
+                      </div>
                     </div>
-                  ) : (
-                    <div className="known-movies-grid">
-                      {knownForMovies.map((movie) => (
-                        <div 
-                          key={movie.imdbId} 
-                          className={`known-movie-card ${theme}`}
-                          onClick={() => handleMovieClick(movie.imdbId)}
-                        >
-                          <div className="known-movie-rating">★ {movie.rating.toFixed(1)}</div>
-                          <h3 className="known-movie-title">{movie.title}</h3>
-                        </div>
-                      ))}
-                      {loadingDetailedMovies && <div className="loading-detailed-movies">Cargando más detalles...</div>}
+                  ))}
+                </div>
+              ) : knownForMovies.length > 0 ? (
+                <div className="known-movies-basic">
+                  <ul>
+                    {knownForMovies.slice(0, 5).map(movie => (
+                      <li key={movie.imdbId}>
+                        <strong>{movie.title}</strong> ({movie.year}) 
+                        - Rating: {movie.rating}
+                        {movie.role && <span className="movie-role"> as {movie.role}</span>}
+                      </li>
+                    ))}
+                  </ul>
+                  {loadingDetailedMovies && (
+                    <div className="loading-inline">
+                      <div className="loading-spinner small"></div>
+                      <span>Cargando más detalles...</span>
                     </div>
                   )}
                 </div>
+              ) : (
+                <p className="no-movies-message">
+                  No se encontraron películas destacadas para este actor.
+                </p>
               )}
             </div>
+          </div>
+        </div>
+        
+        {/* Pie de página con información adicional */}
+        <div className="actor-footer">
+          <div className={`actor-footer-content ${theme}`}>
+            <p className="actor-disclaimer">
+              Información proporcionada por bases de datos de películas externas.
+            </p>
+            <p className="actor-imdb-link">
+              {actor.imdbId && (
+                <a 
+                  href={`https://www.imdb.com/name/${actor.imdbId}/`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={`imdb-button ${theme}`}
+                >
+                  Ver en IMDB
+                </a>
+              )}
+            </p>
           </div>
         </div>
       </div>
