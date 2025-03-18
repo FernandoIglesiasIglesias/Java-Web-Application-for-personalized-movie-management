@@ -50,6 +50,12 @@ public class SecurityConfig {
                 .requestMatchers(antMatcher("/lists/{id}")).hasRole(USER)
                 .requestMatchers(antMatcher("/lists/{listId}/movies")).hasRole(USER)
                 .requestMatchers(antMatcher("/lists/{listId}/movies/{movieId}")).hasRole(USER)
+                // Actor endpoints
+                .requestMatchers(antMatcher("/actors/all")).permitAll()
+                .requestMatchers(antMatcher("/actors/{id}")).permitAll()
+                .requestMatchers(antMatcher("/actors/name")).permitAll()
+                // New IMDB-based actor endpoints
+                .requestMatchers(antMatcher("/name/{firstName}/{lastName}")).permitAll()
                 .anyRequest().authenticated()
             )
             .headers(headers -> headers.frameOptions().disable()) // Permitir cargar la consola H2 en un iframe

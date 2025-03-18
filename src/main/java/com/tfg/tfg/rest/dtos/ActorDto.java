@@ -14,7 +14,7 @@ public class ActorDto {
     private String height;
     private String bio;
     private String imageUrl;
-    private String tmdbId;
+    private String imdbId;
     private List<MovieDto> movies;
 
     public ActorDto() {
@@ -26,7 +26,7 @@ public class ActorDto {
         this.lastName = lastName;
     }
 
-    public ActorDto(Long id, String firstName, String lastName, Date birthDate, String birthPlace, String starSign, String height, String bio, String imageUrl, String tmdbId, List<MovieDto> movies) {
+    public ActorDto(Long id, String firstName, String lastName, Date birthDate, String birthPlace, String starSign, String height, String bio, String imageUrl, String imdbId, List<MovieDto> movies) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -36,7 +36,7 @@ public class ActorDto {
         this.height = height;
         this.bio = bio;
         this.imageUrl = imageUrl;
-        this.tmdbId = tmdbId;
+        this.imdbId = imdbId;
         this.movies = movies;
     }
 
@@ -112,12 +112,12 @@ public class ActorDto {
         this.imageUrl = imageUrl;
     }
     
-    public String getTmdbId() {
-        return tmdbId;
+    public String getImdbId() {
+        return imdbId;
     }
     
-    public void setTmdbId(String tmdbId) {
-        this.tmdbId = tmdbId;
+    public void setImdbId(String imdbId) {
+        this.imdbId = imdbId;
     }
 
     public List<MovieDto> getMovies() {

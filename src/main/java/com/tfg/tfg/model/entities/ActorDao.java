@@ -22,12 +22,12 @@ public interface ActorDao extends JpaRepository<Actor, Long> {
     Optional<Actor> findByFirstNameAndLastName(String firstName, String lastName);
     
     /**
-     * Find an actor by their TMDB ID.
+     * Find an actor by their imdb ID.
      * 
-     * @param tmdbId The actor's TMDB ID
+     * @param imdbId The actor's imdb ID
      * @return The actor if found, empty otherwise
      */
-    Optional<Actor> findByTmdbId(String tmdbId);
+    Optional<Actor> findByImdbId(String imdbId);
     
     /**
      * Find all actors

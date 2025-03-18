@@ -17,6 +17,8 @@ public class Actor {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private String imdbId;
+
     private String firstName;
     private String lastName;
 
@@ -31,7 +33,6 @@ public class Actor {
     private String bio;
     
     private String imageUrl;
-    private String tmdbId;
 
     @JsonBackReference
     @ManyToMany(mappedBy = "actors")
@@ -60,7 +61,7 @@ public class Actor {
      */
     public Actor(String firstName, String lastName, Date birthDate, 
                 String birthPlace, String starSign, String height, 
-                String bio, String imageUrl, String tmdbId, List<Movie> movies) {
+                String bio, String imageUrl, String imdbId, List<Movie> movies) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.birthDate = birthDate;
@@ -69,7 +70,7 @@ public class Actor {
         this.height = height;
         this.bio = bio;
         this.imageUrl = imageUrl;
-        this.tmdbId = tmdbId;
+        this.imdbId = imdbId;
         this.movies = movies;
     }
 
@@ -204,12 +205,12 @@ public class Actor {
         this.imageUrl = imageUrl;
     }
     
-    public String getTmdbId() {
-        return tmdbId;
+    public String getImdbId() {
+        return imdbId;
     }
     
-    public void setTmdbId(String tmdbId) {
-        this.tmdbId = tmdbId;
+    public void setImdbId(String imdbId) {
+        this.imdbId = imdbId;
     }
 
 }

@@ -11,12 +11,14 @@ import java.util.List;
 public interface ActorService {
     
     /**
-     * Creates or updates an actor.
+     * Updates an actor with new information.
+     * The actor must already exist in the database and is identified by first and last name.
      *
-     * @param actor the actor to create or update
-     * @return the saved actor
+     * @param actor the actor with updated information
+     * @return the updated actor
+     * @throws InstanceNotFoundException if the actor does not exist
      */
-    public Actor createOrUpdateActor(Actor actor);
+    public Actor updateActor(Actor actor) throws InstanceNotFoundException;
     
     /**
      * Finds an actor by ID.
@@ -38,13 +40,13 @@ public interface ActorService {
     public Actor findByFirstNameAndLastName(String firstName, String lastName) throws InstanceNotFoundException;
     
     /**
-     * Finds an actor by TMDB ID.
+     * Finds an actor by imdb ID.
      *
-     * @param tmdbId the TMDB ID of the actor
+     * @param imdbId the imdb ID of the actor
      * @return the actor if found
      * @throws InstanceNotFoundException if the actor is not found
      */
-    public Actor findByTmdbId(String tmdbId) throws InstanceNotFoundException;
+    public Actor findByImdbId(String imdbId) throws InstanceNotFoundException;
     
     /**
      * Gets all actors.

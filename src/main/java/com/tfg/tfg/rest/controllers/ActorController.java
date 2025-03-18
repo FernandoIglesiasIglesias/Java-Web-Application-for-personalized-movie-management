@@ -15,29 +15,25 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Locale;
-import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/actors")
+@RequestMapping("/actors")
 public class ActorController {
 
     private static final String INSTANCE_NOT_FOUND_EXCEPTION_CODE = "project.exceptions.InstanceNotFoundException";
     
     private final ActorService actorService;
     private final MessageSource messageSource;
-    private final ActorDao actorDao;
 
     /**
      * Constructor with dependency injection.
      *
      * @param actorService the service for actor operations
      * @param messageSource source for localized messages
-     * @param actorDao the data access object for actors
      */
-    public ActorController(ActorService actorService, MessageSource messageSource, ActorDao actorDao) {
+    public ActorController(ActorService actorService, MessageSource messageSource) {
         this.actorService = actorService;
         this.messageSource = messageSource;
-        this.actorDao = actorDao;
     }
 
     /**
@@ -71,7 +67,7 @@ public class ActorController {
                 .toList();
     }
 
-        /**
+    /**
      * Endpoint to get an actor by ID.
      *
      * @param id the actor's ID
@@ -84,17 +80,19 @@ public class ActorController {
     }
 
     /**
-     * Endpoint to get an actor by TMDB ID.
+     * Endpoint to get an actor by IMDB ID.
      *
-     * @param tmdbId the actor's TMDB ID
+     * @param imdbId the actor's IMDB ID
      * @return the actor if found, or a 404 status if not found
      */
-    @GetMapping("/tmdb/{tmdbId}")
-    public ResponseEntity<ActorDto> getActorByTmdbId(@PathVariable String tmdbId) {
-        Optional<Actor> actor = actorDao.findByTmdbId(tmdbId);
-        
-        return actor.map(value -> ResponseEntity.ok(ActorConversor.toActorDtoExpanded(value)))
-                    .orElseGet(() -> ResponseEntity.notFound().build());
+    @GetMapping("/imdb/{imdbId}")
+    public ResponseEntity<ActorDto> getActorByImdbId(@PathVariable String imdbId) {
+        try {
+            Actor actor = actorService.findByImdbId(imdbId);
+            return ResponseEntity.ok(ActorConversor.toActorDtoExpanded(actor));
+        } catch (InstanceNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     /**
@@ -114,37 +112,26 @@ public class ActorController {
     }
 
     /**
-     * Endpoint to create or update an actor.
+     * Endpoint to update an actor by name.
      *
-     * @param actorDto the actor data transfer object
-     * @return the saved actor
-     */
-    @PostMapping("/")
-    @ResponseStatus(HttpStatus.CREATED)
-    public ActorDto createOrUpdateActor(@RequestBody ActorDto actorDto) {
-        Actor actor = ActorConversor.toActor(actorDto);
-        Actor savedActor = actorService.createOrUpdateActor(actor);
-        return ActorConversor.toActorDto(savedActor);
-    }
-
-    /**
-     * Endpoint to update an actor's details.
-     *
-     * @param id the ID of the actor to update
+     * @param firstName the first name of the actor
+     * @param lastName the last name of the actor
      * @param actorDto the actor data transfer object with updated information
      * @return the updated actor
      * @throws InstanceNotFoundException if the actor is not found
      */
-    @PutMapping("/{id}")
-    public ActorDto updateActor(
-            @PathVariable Long id, 
+    @PutMapping("/name/{firstName}/{lastName}")
+    public ActorDto updateActorByName(
+            @PathVariable String firstName, 
+            @PathVariable String lastName, 
             @RequestBody ActorDto actorDto) throws InstanceNotFoundException {
         
-        actorService.findById(id);
+        // Ensure the name in the path matches the one in the DTO
+        actorDto.setFirstName(firstName);
+        actorDto.setLastName(lastName);
         
-        actorDto.setId(id);
         Actor actor = ActorConversor.toActor(actorDto);
-        Actor updatedActor = actorService.createOrUpdateActor(actor);
+        Actor updatedActor = actorService.updateActor(actor);
         return ActorConversor.toActorDto(updatedActor);
     }
 

@@ -27,7 +27,7 @@ public class ActorConversor {
         actorDto.setHeight(actor.getHeight());
         actorDto.setBio(actor.getBio());
         actorDto.setImageUrl(actor.getImageUrl());
-        actorDto.setTmdbId(actor.getTmdbId());
+        actorDto.setImdbId(actor.getImdbId());
         if (actor.getMovies() != null && !actor.getMovies().isEmpty()) {
             actorDto.setMovies(actor.getMovies().stream()
                 .map(MovieConversor::toMovieDto)
@@ -50,7 +50,7 @@ public class ActorConversor {
         actor.setHeight(actorDto.getHeight());
         actor.setBio(actorDto.getBio());
         actor.setImageUrl(actorDto.getImageUrl());
-        actor.setTmdbId(actorDto.getTmdbId());
+        actor.setImdbId(actorDto.getImdbId());
         
         return actor;
     }

@@ -38,7 +38,7 @@ public class MovieConversor {
         
         return new MovieDto(
             movie.getId(), 
-            movie.getImbdId(), 
+            movie.getImdbId(), 
             movie.getTitle(), 
             movie.getOverview(), 
             movie.getReleaseYear(), 
@@ -105,7 +105,7 @@ public class MovieConversor {
         }
         
         return new Movie(
-            movieDto.getImbdId(), 
+            movieDto.getImdbId(), 
             movieDto.getTitle(), 
             movieDto.getOverview(), 
             movieDto.getReleaseYear(), 

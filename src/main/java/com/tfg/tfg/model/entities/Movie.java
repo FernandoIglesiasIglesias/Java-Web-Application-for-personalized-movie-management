@@ -25,7 +25,7 @@ public class Movie {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String imbdId;
+    private String imdbId;
     private String title;
 
     @Column(name = "overview", columnDefinition = "TEXT")
@@ -71,7 +71,7 @@ public class Movie {
     /**
      * Parameterized constructor to create a Movie with the specified details.
      *
-     * @param imbdId the imbdId of the movie
+     * @param imdbId the imdbId of the movie
      * @param title the title of the movie
      * @param overview the overview of the movie
      * @param releaseYear the release year of the movie
@@ -81,8 +81,8 @@ public class Movie {
      * @param actors the actors of the movie
      * @param directors the directors of the movie
      */
-    public Movie(String imbdId, String title, String overview, int releaseYear, String verticalPoster, int runtime, List<Genre> genres, List<Actor> actors, List<Director> directors) {
-        this.imbdId = imbdId;
+    public Movie(String imdbId, String title, String overview, int releaseYear, String verticalPoster, int runtime, List<Genre> genres, List<Actor> actors, List<Director> directors) {
+        this.imdbId = imdbId;
         this.title = title;
         this.overview = overview;
         this.releaseYear = releaseYear;
@@ -101,12 +101,12 @@ public class Movie {
         this.id = id;
     }
 
-    public String getImbdId() {
-        return imbdId;
+    public String getImdbId() {
+        return imdbId;
     }
 
-    public void setImbdId(String imbdId) {
-        this.imbdId = imbdId;
+    public void setImdbId(String imdbId) {
+        this.imdbId = imdbId;
     }
 
     public String getTitle() {

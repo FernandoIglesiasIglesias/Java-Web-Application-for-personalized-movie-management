@@ -2,9 +2,7 @@ package com.tfg.tfg.model.services;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,7 +13,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.tfg.tfg.model.entities.Actor;
 import com.tfg.tfg.model.entities.ActorDao;
-import com.tfg.tfg.model.entities.Movie;
 import com.tfg.tfg.model.services.exceptions.InstanceNotFoundException;
 
 @SpringBootTest
@@ -42,7 +39,7 @@ public class ActorServiceTest {
         testActor = new Actor();
         testActor.setFirstName("Robert");
         testActor.setLastName("Downey Jr.");
-        testActor.setTmdbId("nm0000375");
+        testActor.setImdbId("nm0000375");
         testActor.setBirthDate(new java.sql.Date(System.currentTimeMillis())); // Fecha actual como ejemplo
         testActor.setBirthPlace("New York City, New York, USA");
         testActor.setStarSign("Aries");
@@ -62,7 +59,7 @@ public class ActorServiceTest {
         assertEquals(testActor.getId(), actor.getId());
         assertEquals("Robert", actor.getFirstName());
         assertEquals("Downey Jr.", actor.getLastName());
-        assertEquals("nm0000375", actor.getTmdbId());
+        assertEquals("nm0000375", actor.getImdbId());
     }
     
     @Test
@@ -78,7 +75,7 @@ public class ActorServiceTest {
         
         assertNotNull(actor);
         assertEquals(testActor.getId(), actor.getId());
-        assertEquals("nm0000375", actor.getTmdbId());
+        assertEquals("nm0000375", actor.getImdbId());
     }
     
     @Test
@@ -89,8 +86,8 @@ public class ActorServiceTest {
     }
     
     @Test
-    public void testFindByTmdbId() throws InstanceNotFoundException {
-        Actor actor = actorService.findByTmdbId("nm0000375");
+    public void testFindByImdbId() throws InstanceNotFoundException {
+        Actor actor = actorService.findByImdbId("nm0000375");
         
         assertNotNull(actor);
         assertEquals(testActor.getId(), actor.getId());
@@ -99,9 +96,9 @@ public class ActorServiceTest {
     }
     
     @Test
-    public void testFindByTmdbIdNotFound() {
+    public void testFindByImdbIdNotFound() {
         assertThrows(InstanceNotFoundException.class, () -> {
-            actorService.findByTmdbId("non_existent_tmdb_id");
+            actorService.findByImdbId("non_existent_imdb_id");
         });
     }
     
@@ -111,75 +108,63 @@ public class ActorServiceTest {
         Actor secondActor = new Actor();
         secondActor.setFirstName("Chris");
         secondActor.setLastName("Evans");
-        secondActor.setTmdbId("nm0262635");
+        secondActor.setImdbId("nm0262635");
         actorDao.save(secondActor);
         
         List<Actor> actors = actorService.getAllActors();
         
         assertEquals(2, actors.size());
-        assertTrue(actors.stream().anyMatch(a -> a.getTmdbId().equals("nm0000375")));
-        assertTrue(actors.stream().anyMatch(a -> a.getTmdbId().equals("nm0262635")));
+        assertTrue(actors.stream().anyMatch(a -> a.getImdbId().equals("nm0000375")));
+        assertTrue(actors.stream().anyMatch(a -> a.getImdbId().equals("nm0262635")));
     }
     
     @Test
-    public void testCreateActor() {
-        Actor newActor = new Actor();
-        newActor.setFirstName("Chris");
-        newActor.setLastName("Hemsworth");
-        newActor.setTmdbId("nm1165110");
-        newActor.setBirthDate(new java.sql.Date(System.currentTimeMillis()));
-        newActor.setBirthPlace("Melbourne, Victoria, Australia");
-        
-        Actor savedActor = actorService.createOrUpdateActor(newActor);
-        
-        assertNotNull(savedActor);
-        assertNotNull(savedActor.getId());
-        assertEquals("Chris", savedActor.getFirstName());
-        assertEquals("Hemsworth", savedActor.getLastName());
-        assertEquals("nm1165110", savedActor.getTmdbId());
-        assertEquals("Melbourne, Victoria, Australia", savedActor.getBirthPlace());
-        
-        // Verificar que está en la base de datos
-        assertTrue(actorDao.findById(savedActor.getId()).isPresent());
-    }
-    
-    @Test
-    public void testUpdateActorWithExistingTmdbId() {
-        // Crear un actor con los mismos datos básicos pero información adicional
+    public void testUpdateActor() throws InstanceNotFoundException {
+        // Crear una copia del actor con datos actualizados
         Actor updatedData = new Actor();
-        updatedData.setFirstName("Robert");
-        updatedData.setLastName("Downey Jr.");
-        updatedData.setTmdbId("nm0000375");
-        updatedData.setStarSign("Aries"); // Mismo valor
-        updatedData.setHeight("1.75 m"); // Valor diferente, no debería actualizarse
-        updatedData.setBio("New biography text"); // Nuevo valor
+        updatedData.setFirstName("Robert");  // Necesario para encontrar el actor
+        updatedData.setLastName("Downey Jr."); // Necesario para encontrar el actor
+        updatedData.setImdbId("nm0000376"); // Actualizar el IMDB ID
+        updatedData.setBio("New biography text"); // Actualizar la biografía
+        updatedData.setHeight("1.75 m"); // Actualizar la altura
         
-        Actor result = actorService.createOrUpdateActor(updatedData);
+        Actor result = actorService.updateActor(updatedData);
         
-        assertEquals(testActor.getId(), result.getId()); // Debe ser el mismo actor
+        assertNotNull(result);
+        assertEquals(testActor.getId(), result.getId());
         assertEquals("Robert", result.getFirstName());
         assertEquals("Downey Jr.", result.getLastName());
-        assertEquals("nm0000375", result.getTmdbId());
-        assertEquals("1.75 m", result.getHeight()); // No debe actualizarse
+        assertEquals("nm0000376", result.getImdbId()); // Debe actualizarse
+        assertEquals("1.75 m", result.getHeight()); // Debe actualizarse
         assertEquals("New biography text", result.getBio()); // Debe actualizarse
     }
     
     @Test
-    public void testUpdateNonExistingFields() {
+    public void testUpdateActorNotFound() {
+        Actor nonExistentActor = new Actor();
+        nonExistentActor.setFirstName("Non");
+        nonExistentActor.setLastName("Existent");
+        
+        assertThrows(InstanceNotFoundException.class, () -> {
+            actorService.updateActor(nonExistentActor);
+        });
+    }
+    
+    @Test
+    public void testUpdateNonExistingFields() throws InstanceNotFoundException {
         // Eliminamos algunos campos del actor de prueba
         testActor.setBio(null);
         testActor.setHeight(null);
         testActor = actorDao.save(testActor);
         
-        // Crear un actor con los mismos datos básicos pero información adicional
+        // Crear un actor con datos a actualizar
         Actor updatedData = new Actor();
-        updatedData.setFirstName("Robert");
-        updatedData.setLastName("Downey Jr.");
-        updatedData.setTmdbId("nm0000375");
+        updatedData.setFirstName("Robert");  // Añadimos firstName para encontrar el actor
+        updatedData.setLastName("Downey Jr."); // Añadimos lastName para encontrar el actor
         updatedData.setHeight("1.75 m"); // Nuevo valor para campo vacío
         updatedData.setBio("New biography text"); // Nuevo valor para campo vacío
         
-        Actor result = actorService.createOrUpdateActor(updatedData);
+        Actor result = actorService.updateActor(updatedData);
         
         assertEquals(testActor.getId(), result.getId());
         assertEquals("1.75 m", result.getHeight()); // Debe actualizarse
@@ -187,19 +172,28 @@ public class ActorServiceTest {
     }
     
     @Test
-    public void testUpdateActorWithEmptyFields() {
+    public void testUpdateActorWithEmptyFields() throws InstanceNotFoundException {
         // Crear un actor con algunos campos vacíos
         Actor updatedData = new Actor();
-        updatedData.setFirstName("Robert");
-        updatedData.setLastName("Downey Jr.");
-        updatedData.setTmdbId("nm0000375");
+        updatedData.setFirstName("Robert");  // Añadimos firstName para encontrar el actor
+        updatedData.setLastName("Downey Jr."); // Añadimos lastName para encontrar el actor
         updatedData.setHeight(""); // Campo vacío
         updatedData.setBio(""); // Campo vacío
         
-        Actor result = actorService.createOrUpdateActor(updatedData);
+        Actor result = actorService.updateActor(updatedData);
         
         assertEquals(testActor.getId(), result.getId());
         assertEquals("1.74 m", result.getHeight()); // No debe cambiar
         assertEquals("Robert John Downey Jr. (born April 4, 1965) is an American actor and producer.", result.getBio()); // No debe cambiar
+    }
+    
+    @Test
+    public void testUpdateActorWithNullName() {
+        Actor actorWithNullName = new Actor();
+        // No establecemos firstName ni lastName
+        
+        assertThrows(IllegalArgumentException.class, () -> {
+            actorService.updateActor(actorWithNullName);
+        });
     }
 }
