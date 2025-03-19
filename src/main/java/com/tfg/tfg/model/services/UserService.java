@@ -9,7 +9,7 @@ import com.tfg.tfg.model.services.exceptions.InstanceNotFoundException;
 
 public interface UserService {
     
-    void signUp(Users user) throws DuplicateInstanceException, DuplicateListNameException;
+    void signUp(Users user) throws DuplicateInstanceException, DuplicateListNameException, InstanceNotFoundException;
 	
 	Users login(String userName, String password) throws IncorrectLoginException;
 	
