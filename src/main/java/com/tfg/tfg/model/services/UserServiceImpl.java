@@ -22,13 +22,15 @@ public class UserServiceImpl implements UserService{
 	private final UsersDao userDao;
 	private final CustomListService customListService;
 	private final ActorListService actorListService;
+	private final DirectorListService directorListService;
 
-	public UserServiceImpl(PermissionChecker permissionChecker, BCryptPasswordEncoder passwordEncoder, UsersDao userDao, CustomListService customListService, ActorListService actorListService) {
+	public UserServiceImpl(PermissionChecker permissionChecker, BCryptPasswordEncoder passwordEncoder, UsersDao userDao, CustomListService customListService, ActorListService actorListService, DirectorListService directorListService) {
 		this.permissionChecker = permissionChecker;
 		this.passwordEncoder = passwordEncoder;
 		this.userDao = userDao;
 		this.customListService = customListService;
 		this.actorListService = actorListService;
+		this.directorListService = directorListService;
 	}
 	
 	/**
@@ -61,6 +63,8 @@ public class UserServiceImpl implements UserService{
 		customListService.createList("Películas con las que lloré", user);
 
 		actorListService.createActorList(user.getId(), "Actores favoritos");
+
+		directorListService.createDirectorList(user.getId(), "Directores favoritos");
 	}
 
     /**
