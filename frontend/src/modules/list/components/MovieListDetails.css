@@ -92,7 +92,6 @@ body.dark .list-header h1 {
   background-size: 200% auto;
   background-clip: text;
   -webkit-background-clip: text;
-  color: transparent;
 }
 
 .list-actions {

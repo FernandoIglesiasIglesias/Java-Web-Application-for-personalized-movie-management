@@ -8,9 +8,9 @@ import {
 } from "../../../backend/listService";
 import { useTheme } from "../../../context/ThemeContext";
 import { Errors } from "../../common";
-import "./ListDetails.css";
+import "./MovieListDetails.css";
 
-const ListDetails = () => {
+const MovieListDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { theme } = useTheme();
@@ -23,7 +23,7 @@ const ListDetails = () => {
   const [isConfirmClearOpen, setIsConfirmClearOpen] = useState(false);
 
   // Función para cargar los detalles de la lista
-  const loadListDetails = useCallback(() => {
+  const loadMovieListDetails = useCallback(() => {
     setLoading(true);
     getListById(
       id,
@@ -42,9 +42,9 @@ const ListDetails = () => {
   // Cargar los detalles de la lista al montar el componente o cambiar el ID
   useEffect(() => {
     if (id) {
-      loadListDetails();
+      loadMovieListDetails();
     }
-  }, [id, loadListDetails]);
+  }, [id, loadMovieListDetails]);
 
   // Manejar actualización del nombre de la lista
   const handleUpdateList = () => {
@@ -142,7 +142,7 @@ const ListDetails = () => {
       
       Promise.all(removeMoviePromises)
         .then(() => {
-          loadListDetails();
+          loadMovieListDetails();
           setIsConfirmClearOpen(false);
         })
         .catch((error) => {
@@ -365,4 +365,4 @@ const ListDetails = () => {
   );
 };
 
-export default ListDetails;
+export default MovieListDetails;

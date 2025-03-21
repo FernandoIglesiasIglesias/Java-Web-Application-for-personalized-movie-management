@@ -1,0 +1,469 @@
+/* Estructura similar a MovieListDetails.css */
+.list-details-page {
+    min-height: 100vh;
+    padding-top: var(--header-height, 60px);
+    width: 100%;
+  }
+  
+  .list-details-container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+  
+  .list-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+  }
+  
+  .list-header h1 {
+    font-size: 2.5rem;
+    margin: 0;
+    color: var(--text-color-light);
+  }
+  
+  body.dark .list-header h1 {
+    color: var(--text-color-dark);
+  }
+  
+  .list-actions {
+    display: flex;
+    gap: 1rem;
+  }
+  
+  .edit-list-name {
+    width: 100%;
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  
+  .edit-list-name input {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    font-size: 1.2rem;
+    border: 1px solid var(--border-color-light);
+    border-radius: 8px;
+    background-color: var(--input-background-light);
+    color: var(--text-color-light);
+  }
+  
+  body.dark .edit-list-name input {
+    border-color: var(--border-color-dark);
+    background-color: var(--input-background-dark);
+    color: var(--text-color-dark);
+  }
+  
+  .edit-list-name input:focus {
+    outline: none;
+    border-color: var(--primary-color-light);
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.2);
+  }
+  
+  body.dark .edit-list-name input:focus {
+    border-color: var(--primary-color-dark);
+    box-shadow: 0 0 0 2px rgba(121, 82, 179, 0.2);
+  }
+  
+  .edit-actions {
+    display: flex;
+    gap: 1rem;
+  }
+  
+  .list-content-container {
+    margin-bottom: 3rem;
+  }
+  
+  .list-content-container h2 {
+    font-size: 1.8rem;
+    margin-bottom: 1.5rem;
+    color: var(--text-color-light);
+  }
+  
+  body.dark .list-content-container h2 {
+    color: var(--text-color-dark);
+  }
+  
+  /* Botones */
+  .list-button {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 8px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+  }
+  
+  .list-button.primary {
+    background-color: var(--primary-color-light);
+    color: white;
+  }
+  
+  .list-button.primary:hover:not(:disabled) {
+    background-color: var(--primary-hover-light);
+    transform: translateY(-2px);
+  }
+  
+  body.dark .list-button.primary {
+    background-color: var(--primary-color-dark);
+  }
+  
+  body.dark .list-button.primary:hover:not(:disabled) {
+    background-color: var(--primary-hover-dark);
+  }
+  
+  .list-button.secondary {
+    background-color: var(--secondary-background-light);
+    color: var(--text-color-light);
+  }
+  
+  .list-button.secondary:hover:not(:disabled) {
+    background-color: var(--secondary-hover-light);
+    transform: translateY(-2px);
+  }
+  
+  body.dark .list-button.secondary {
+    background-color: var(--secondary-background-dark);
+    color: var(--text-color-dark);
+  }
+  
+  body.dark .list-button.secondary:hover:not(:disabled) {
+    background-color: var(--secondary-hover-dark);
+  }
+  
+  .confirm-actions .list-button.danger {
+    background-color: var(--danger-color-light);
+    color: white;
+    box-shadow: 0 8px 15px rgba(220, 53, 69, 0.25);
+  }
+  
+  .confirm-actions .list-button.danger:hover {
+    background-color: var(--danger-hover-light);
+    transform: translateY(-5px);
+    box-shadow: 0 12px 20px rgba(220, 53, 69, 0.35);
+  }
+  
+  body.dark .confirm-actions .list-button.danger {
+    background-color: var(--danger-color-dark);
+    box-shadow: 0 8px 15px rgba(230, 73, 128, 0.3);
+  }
+  
+  body.dark .confirm-actions .list-button.danger:hover {
+    background-color: var(--danger-hover-dark);
+    box-shadow: 0 12px 20px rgba(230, 73, 128, 0.4);
+  }
+  
+  .list-button.danger:hover:not(:disabled) {
+    background-color: var(--danger-hover-color);
+    transform: translateY(-2px);
+  }
+  
+  .list-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+  
+  /* Grid de actores */
+  .actors-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+  }
+  
+  .actor-card {
+    background-color: var(--card-background-light);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    position: relative;
+    cursor: pointer;
+  }
+  
+  .actor-card.removing {
+    transform: translateY(10px);
+    opacity: 0;
+    transition: transform 0.5s ease, opacity 0.5s ease;
+  }
+  
+  body.dark .actor-card {
+    background-color: var(--card-background-dark);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+  }
+  
+  .actor-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+  }
+  
+  body.dark .actor-card:hover {
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+  }
+  
+  .actor-card-inner {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+  
+  .actor-image-container {
+    width: 100%;
+    height: 250px;
+    overflow: hidden;
+    position: relative;
+  }
+  
+  .actor-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+  }
+  
+  .actor-card:hover .actor-image {
+    transform: scale(1.05);
+  }
+  
+  .actor-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f0f0f0;
+    color: #666;
+    font-size: 2.5rem;
+    font-weight: bold;
+  }
+  
+  body.dark .actor-placeholder {
+    background-color: #333;
+    color: #ccc;
+  }
+  
+  .actor-info {
+    padding: 1rem;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .actor-info h3 {
+    margin: 0 0 0.5rem;
+    font-size: 1.1rem;
+    color: var(--text-color-light);
+  }
+  
+  body.dark .actor-info h3 {
+    color: var(--text-color-dark);
+  }
+  
+  .actor-meta {
+    font-size: 0.9rem;
+    color: var(--text-secondary-light);
+  }
+  
+  body.dark .actor-meta {
+    color: var(--text-secondary-dark);
+  }
+  
+  .remove-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background-color: rgba(0, 0, 0, 0.6);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    font-size: 1.5rem;
+    font-weight: bold;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    z-index: 1;
+  }
+  
+  .actor-card:hover .remove-button {
+    opacity: 1;
+  }
+  
+  .remove-button:hover {
+    transform: scale(1.1);
+    background-color: rgba(220, 53, 69, 0.9);
+  }
+  
+  /* Mensaje cuando no hay actores */
+  .no-items-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 4rem 2rem;
+    text-align: center;
+  }
+  
+  .no-items-icon {
+    font-size: 4rem;
+    margin-bottom: 1.5rem;
+    opacity: 0.7;
+  }
+  
+  .no-actors-message {
+    font-size: 1.4rem;
+    margin-bottom: 1rem;
+    color: var(--text-color-light);
+  }
+  
+  body.dark .no-actors-message {
+    color: var(--text-color-dark);
+  }
+  
+  .no-actors-suggestion {
+    font-size: 1.1rem;
+    color: var(--text-secondary-light);
+    max-width: 500px;
+  }
+  
+  body.dark .no-actors-suggestion {
+    color: var(--text-secondary-dark);
+  }
+  
+  /* Diálogo de confirmación */
+  .confirm-dialog-overlay {
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+  }
+  
+  .confirm-dialog {
+    background-color: var(--card-background-light);
+    border-radius: 12px;
+    padding: 2rem;
+    max-width: 500px;
+    width: 90%;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  }
+  
+  body.dark .confirm-dialog {
+    background-color: var(--card-background-dark);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+  }
+  
+  .confirm-dialog h2 {
+    margin-top: 0;
+    color: var(--text-color-light);
+  }
+  
+  body.dark .confirm-dialog h2 {
+    color: var(--text-color-dark);
+  }
+  
+  .confirm-dialog p {
+    margin-bottom: 1.5rem;
+    color: var(--text-secondary-light);
+  }
+  
+  body.dark .confirm-dialog p {
+    color: var(--text-secondary-dark);
+  }
+  
+  .confirm-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+  }
+  
+  /* Bottom actions */
+  .list-bottom-actions {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 3rem;
+  }
+  
+  /* Carga */
+  .loading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 4rem 0;
+  }
+  
+  .loading-spinner {
+    width: 50px;
+    height: 50px;
+    border: 4px solid rgba(0, 0, 0, 0.1);
+    border-radius: 50%;
+    border-left-color: var(--primary-color-light);
+    animation: spin 1s linear infinite;
+    margin-bottom: 1.5rem;
+  }
+  
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  
+  body.dark .loading-spinner {
+    border: 4px solid rgba(255, 255, 255, 0.1);
+    border-left-color: var(--primary-color-dark);
+  }
+  
+  .loading-message {
+    font-size: 1.2rem;
+    color: var(--text-secondary-light);
+  }
+  
+  body.dark .loading-message {
+    color: var(--text-secondary-dark);
+  }
+  
+  /* Responsive */
+  @media (max-width: 768px) {
+    .list-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 1rem;
+    }
+    
+    .list-actions {
+      width: 100%;
+    }
+    
+    .edit-list-name {
+      flex-direction: column;
+    }
+    
+    .edit-actions {
+      width: 100%;
+    }
+    
+    .actors-grid {
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    }
+    
+    .list-bottom-actions {
+      flex-direction: column;
+      align-items: center;
+    }
+    
+    .list-button {
+      width: 100%;
+    }
+  }

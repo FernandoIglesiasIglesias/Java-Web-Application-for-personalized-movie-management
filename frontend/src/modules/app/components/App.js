@@ -11,7 +11,9 @@ import Home from "./Home";
 import ShowMovie from "../../movies/components/ShowMovie";
 import ShowActor from "../../movies/components/ShowActor";
 import UserLists from "../../list/components/UserLists";
-import ListDetails from "../../list/components/ListDetails";
+import MovieListDetails from "../../list/components/MovieListDetails";
+import ActorListDetails from "../../list/components/ActorListDetails";
+import DirectorListDetails from "../../list/components/DirectorListDetails";
 import Settings from "../../users/components/Settings";
 import '../../../Global.css';
 import '../../../themes.css';
@@ -53,10 +55,8 @@ const App = () => {
       toggleTheme: () => setTheme(prev => prev === 'light' ? 'dark' : 'light') 
     }}>
       <Router>
-        {}
         {authenticatedUser && <Header user={authenticatedUser.user} />}
         
-        {}
         <div className="app-content">
           <Routes>
             {/* Rutas públicas */}
@@ -68,7 +68,9 @@ const App = () => {
             <Route path="/home" element={authenticatedUser ? <Home user={authenticatedUser.user} /> : <Navigate to="/login" />} />
             <Route path="/settings" element={authenticatedUser ? <Settings user={authenticatedUser.user} setAuthenticatedUser={setAuthenticatedUser}/> : <Navigate to="/login" />} />
             <Route path="/user/lists" element={authenticatedUser ? <UserLists /> : <Navigate to="/login" />} />
-            <Route path="/lists/:id" element={authenticatedUser ? <ListDetails /> : <Navigate to="/login" />} />
+            <Route path="/lists/:id" element={authenticatedUser ? <MovieListDetails /> : <Navigate to="/login" />} />
+            <Route path="/actor-lists/:id" element={authenticatedUser ? <ActorListDetails /> : <Navigate to="/login" />} />
+            <Route path="/director-lists/:id" element={authenticatedUser ? <DirectorListDetails /> : <Navigate to="/login" />} />
             
             {/* Rutas semi-protegidas - muestran contenido pero con funcionalidad limitada para usuarios no autenticados */}
             <Route path="/movies/:id" element={<ShowMovie />} />
