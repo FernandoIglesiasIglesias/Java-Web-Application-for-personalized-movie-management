@@ -1,7 +1,6 @@
 package com.tfg.tfg.rest.controllers;
 
 import com.tfg.tfg.model.entities.Actor;
-import com.tfg.tfg.model.entities.ActorDao;
 import com.tfg.tfg.model.services.ActorService;
 import com.tfg.tfg.model.services.exceptions.InstanceNotFoundException;
 import com.tfg.tfg.rest.common.ErrorsDto;
