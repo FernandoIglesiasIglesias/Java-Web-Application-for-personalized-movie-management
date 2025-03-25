@@ -59,19 +59,19 @@ public class SecurityConfig {
                 .requestMatchers(antMatcher("/actors/name")).permitAll()
                 .requestMatchers(antMatcher("/actors/name/{firstName}/{lastName}")).permitAll()
 
+                // Director endpoints
+                .requestMatchers(antMatcher("/directors/all")).permitAll()
+                .requestMatchers(antMatcher("/directors/{id}")).permitAll()
+                .requestMatchers(antMatcher("/directors/name")).permitAll()
+                .requestMatchers(antMatcher("/directors/name/{firstName}/{lastName}")).permitAll()
+
                 // ActorList endpoints
                 .requestMatchers(antMatcher("/actor-lists/user/{userId}")).hasRole(USER)
                 .requestMatchers(antMatcher("/actor-lists/{listId}")).hasRole(USER)
                 .requestMatchers(antMatcher("/actor-lists")).hasRole(USER)
                 .requestMatchers(antMatcher("/actor-lists/{listId}/actors/{actorId}")).hasRole(USER)
 
-                // DirectorList endpoints (nuevos)
-                .requestMatchers(antMatcher("/director-lists/user/{userId}")).hasRole(USER)
-                .requestMatchers(antMatcher("/director-lists/{listId}")).hasRole(USER)
-                .requestMatchers(antMatcher("/director-lists")).hasRole(USER)
-                .requestMatchers(antMatcher("/director-lists/{listId}/directors/{directorId}")).hasRole(USER)
-
-                // DirectorList endpoints (nuevos)
+                // DirectorList endpoints
                 .requestMatchers(antMatcher("/director-lists/user/{userId}")).hasRole(USER)
                 .requestMatchers(antMatcher("/director-lists/{listId}")).hasRole(USER)
                 .requestMatchers(antMatcher("/director-lists")).hasRole(USER)
