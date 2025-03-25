@@ -198,12 +198,16 @@ const ShowMovie = () => {
             <div className="movie-section">
               <h2>Detalles</h2>
               <div className="movie-details-grid">
-                {movie.directors && movie.directors.length > 0 && (
+              {movie.directors && movie.directors.length > 0 && (
                   <div className="detail-item">
                     <h3>Dirección</h3>
                     <p className="directors-list">
                       {movie.directors.map((director, index) => (
-                        <span key={index} className="director-member">
+                        <span 
+                          key={index} 
+                          className="director-member clickable"
+                          onClick={() => navigate(`/directors/${encodeURIComponent(`${director.firstName} ${director.lastName}`.trim())}`)}
+                        >
                           {`${director.firstName} ${director.lastName}`.trim()}
                         </span>
                       ))}

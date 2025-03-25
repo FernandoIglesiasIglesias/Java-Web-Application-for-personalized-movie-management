@@ -1,0 +1,482 @@
+/* Estilos para la página de detalles del director */
+.director-detail-page {
+    min-height: 100vh;
+    padding: 20px;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+  }
+  
+  .director-detail-page.dark {
+    --bg-color: #121212;
+    --text-color: #ffffff;
+    --card-bg: #1e1e1e;
+    --accent-color: #4dabf7;
+    --border-color: #333;
+    --placeholder-bg: #333;
+    --placeholder-text: #ddd;
+    --section-bg: #242424;
+    --error-bg: #301b1b;
+    --error-text: #f07373;
+    --button-bg: #2b2b2b;
+    --button-hover: #3a3a3a;
+  }
+  
+  .director-detail-page.light {
+    --bg-color: #f8f9fa;
+    --text-color: #212529;
+    --card-bg: #ffffff;
+    --accent-color: #0d6efd;
+    --border-color: #dee2e6;
+    --placeholder-bg: #e9ecef;
+    --placeholder-text: #6c757d;
+    --section-bg: #ffffff;
+    --error-bg: #f8d7da;
+    --error-text: #842029;
+    --button-bg: #e9ecef;
+    --button-hover: #ced4da;
+  }
+  
+  /* Navegación */
+  .director-detail-nav {
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+  }
+  
+  .back-button {
+    background: var(--button-bg);
+    border: none;
+    border-radius: 4px;
+    padding: 8px 16px;
+    color: var(--text-color);
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  .back-button:hover {
+    background: var(--button-hover);
+  }
+  
+  /* Contenedor principal */
+  .director-detail-container {
+    max-width: 1000px;
+    margin: 0 auto;
+    background: var(--card-bg);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Cabecera del director */
+  .director-header {
+    display: flex;
+    padding: 24px;
+    gap: 24px;
+    flex-wrap: wrap;
+    border-bottom: 1px solid var(--border-color);
+  }
+  
+  .director-image-container {
+    flex-shrink: 0;
+    width: 160px;
+    height: 200px;
+    border-radius: 8px;
+    overflow: hidden;
+    background: var(--placeholder-bg);
+  }
+  
+  .director-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  
+  .director-image-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: var(--placeholder-bg);
+    color: var(--placeholder-text);
+    font-size: 32px;
+    font-weight: bold;
+  }
+  
+  .director-info {
+    flex: 1;
+    min-width: 300px;
+  }
+  
+  .director-name {
+    font-size: 28px;
+    margin: 0 0 16px 0;
+    line-height: 1.2;
+  }
+  
+  /* Metadatos del director */
+  .director-meta {
+    display: grid;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+  
+  .meta-item {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  
+  .meta-label {
+    font-weight: 500;
+    color: var(--placeholder-text);
+  }
+  
+  .meta-value {
+    color: var(--text-color);
+  }
+  
+  /* Sección de biografía */
+  .director-bio-section {
+    padding: 24px;
+    border-bottom: 1px solid var(--border-color);
+  }
+  
+  .director-bio-section h2 {
+    margin-top: 0;
+    margin-bottom: 16px;
+    font-size: 20px;
+  }
+  
+  .director-bio {
+    line-height: 1.6;
+    margin: 0;
+    text-align: justify;
+  }
+  
+  /* Sección de películas */
+  .director-movies-section {
+    padding: 24px;
+  }
+  
+  .director-movies-section h2 {
+    margin-top: 0;
+    margin-bottom: 20px;
+    font-size: 20px;
+  }
+  
+  .movies-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 20px;
+  }
+  
+  .movie-card {
+    border-radius: 8px;
+    overflow: hidden;
+    background: var(--section-bg);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s, box-shadow 0.2s;
+    cursor: pointer;
+  }
+  
+  .movie-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+  
+  .movie-poster {
+    width: 100%;
+    aspect-ratio: 2/3;
+    object-fit: cover;
+  }
+  
+  .movie-poster-placeholder {
+    width: 100%;
+    aspect-ratio: 2/3;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: var(--placeholder-bg);
+    color: var(--placeholder-text);
+    font-size: 24px;
+    font-weight: bold;
+  }
+  
+  .movie-info {
+    padding: 12px;
+  }
+  
+  .movie-title {
+    margin: 0 0 8px 0;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1.3;
+    /* Limitar a dos líneas */
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  
+  .movie-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+    font-size: 12px;
+  }
+  
+  .movie-year {
+    color: var(--placeholder-text);
+  }
+  
+  .movie-rating {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+  }
+  
+  .star-icon {
+    color: #ffc107;
+  }
+  
+  .movie-genres {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+  
+  .genre-pill {
+    font-size: 10px;
+    padding: 2px 6px;
+    background: var(--placeholder-bg);
+    color: var(--placeholder-text);
+    border-radius: 10px;
+    white-space: nowrap;
+  }
+  
+  /* Estados de carga */
+  .director-loading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 400px;
+    padding: 24px;
+  }
+  
+  .loading-spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid rgba(0, 0, 0, 0.1);
+    border-radius: 50%;
+    border-top-color: var(--accent-color);
+    animation: spin 1s ease-in-out infinite;
+    margin-bottom: 16px;
+  }
+  
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+  
+  .dark .loading-spinner {
+    border-color: rgba(255, 255, 255, 0.1);
+    border-top-color: var(--accent-color);
+  }
+  
+  .loading-text {
+    font-size: 16px;
+    margin-bottom: 8px;
+  }
+  
+  .loading-progress {
+    font-size: 14px;
+    color: var(--placeholder-text);
+  }
+  
+  /* Skeleton loaders */
+  .director-skeleton {
+    width: 100%;
+    max-width: 800px;
+    margin-top: 24px;
+  }
+  
+  .director-skeleton-header {
+    height: 40px;
+    background: var(--placeholder-bg);
+    border-radius: 8px;
+    margin-bottom: 24px;
+  }
+  
+  .director-skeleton-content {
+    display: flex;
+    gap: 24px;
+  }
+  
+  .director-skeleton-image {
+    width: 160px;
+    height: 200px;
+    background: var(--placeholder-bg);
+    border-radius: 8px;
+  }
+  
+  .director-skeleton-info {
+    flex: 1;
+  }
+  
+  .director-skeleton-title {
+    height: 32px;
+    background: var(--placeholder-bg);
+    border-radius: 8px;
+    margin-bottom: 24px;
+  }
+  
+  .director-skeleton-meta {
+    height: 16px;
+    background: var(--placeholder-bg);
+    border-radius: 4px;
+    margin-bottom: 12px;
+    width: 70%;
+  }
+  
+  .director-skeleton-meta:last-child {
+    width: 50%;
+  }
+  
+  /* Estados de error */
+  .director-error-container {
+    min-height: 400px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+  
+  .director-error-content {
+    background: var(--error-bg);
+    padding: 24px;
+    border-radius: 8px;
+    text-align: center;
+    max-width: 500px;
+  }
+  
+  .director-error-icon {
+    font-size: 36px;
+    margin-bottom: 16px;
+  }
+  
+  .error-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    margin-top: 24px;
+  }
+  
+  .director-button {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+  
+  .director-button.primary {
+    background: var(--accent-color);
+    color: white;
+  }
+  
+  .director-button.primary:hover {
+    background: #3b8de3;
+  }
+  
+  .director-button.secondary {
+    background: var(--button-bg);
+    color: var(--text-color);
+  }
+  
+  .director-button.secondary:hover {
+    background: var(--button-hover);
+  }
+  
+  /* Estados específicos */
+  .movies-loading, .movies-error, .no-movies {
+    padding: 24px;
+    text-align: center;
+    background: var(--section-bg);
+    border-radius: 8px;
+  }
+  
+  .movies-spinner-small {
+    width: 24px;
+    height: 24px;
+    margin-bottom: 8px;
+  }
+  
+  .movie-card-skeleton {
+    border-radius: 8px;
+    overflow: hidden;
+    background: var(--section-bg);
+  }
+  
+  .movie-poster-skeleton {
+    width: 100%;
+    aspect-ratio: 2/3;
+    background: var(--placeholder-bg);
+  }
+  
+  .movie-title-skeleton {
+    height: 16px;
+    background: var(--placeholder-bg);
+    margin: 12px 12px 8px 12px;
+    border-radius: 4px;
+  }
+  
+  .movie-meta-skeleton {
+    height: 10px;
+    background: var(--placeholder-bg);
+    margin: 0 12px 12px 12px;
+    border-radius: 4px;
+    width: 60%;
+  }
+  
+  /* Responsive */
+  @media (max-width: 768px) {
+    .director-header {
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+    
+    .director-image-container {
+      width: 140px;
+      height: 180px;
+    }
+    
+    .director-info {
+      width: 100%;
+    }
+    
+    .meta-item {
+      justify-content: center;
+    }
+    
+    .movies-grid {
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .director-detail-page {
+      padding: 12px;
+    }
+    
+    .movies-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }

@@ -10,6 +10,7 @@ import Title from "../../users/components/Title";
 import Home from "./Home";
 import ShowMovie from "../../movies/components/ShowMovie";
 import ShowActor from "../../movies/components/ShowActor";
+import ShowDirector from "../../movies/components/ShowDirector";
 import UserLists from "../../list/components/UserLists";
 import MovieListDetails from "../../list/components/MovieListDetails";
 import ActorListDetails from "../../list/components/ActorListDetails";
@@ -75,6 +76,7 @@ const App = () => {
             {/* Rutas semi-protegidas - muestran contenido pero con funcionalidad limitada para usuarios no autenticados */}
             <Route path="/movies/:id" element={<ShowMovie />} />
             <Route path="/actors/:actorName" element={<ShowActor />} />
+            <Route path="/directors/:directorName" element={<ShowDirector />} />
             {/* Ruta de fallback */}
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>
