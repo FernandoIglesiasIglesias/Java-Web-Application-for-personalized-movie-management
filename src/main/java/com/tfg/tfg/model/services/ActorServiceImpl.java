@@ -1,6 +1,7 @@
 package com.tfg.tfg.model.services;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
@@ -23,13 +24,17 @@ public class ActorServiceImpl implements ActorService {
 
     @Override
     public Actor updateActor(Actor actor) throws InstanceNotFoundException {
-        if (actor.getFirstName() == null || actor.getFirstName().isEmpty() || 
-            actor.getLastName() == null || actor.getLastName().isEmpty()) {
-            throw new IllegalArgumentException("First name and last name cannot be null or empty for actor updates");
+        if (actor.getName() == null) {
+            throw new IllegalArgumentException("Actor name cannot be null");
         }
         
-        // Find the actor by first name and last name to ensure it exists
-        Actor existingActor = findByFirstNameAndLastName(actor.getFirstName(), actor.getLastName());
+        Optional<Actor> optionalActor = actorDao.findByName(actor.getName());
+
+        if (!optionalActor.isPresent()) {
+            throw new InstanceNotFoundException(ENTITY_TYPE, actor.getName());
+        }   
+        
+        Actor existingActor = optionalActor.get();
         
         // Update the existing actor's fields
         return updateExistingActor(existingActor, actor);
@@ -75,9 +80,12 @@ public class ActorServiceImpl implements ActorService {
     }
     
     @Override
-    public Actor findByFirstNameAndLastName(String firstName, String lastName) throws InstanceNotFoundException {
-        return actorDao.findByFirstNameAndLastName(firstName, lastName)
-            .orElseThrow(() -> new InstanceNotFoundException(ENTITY_TYPE, firstName + " " + lastName));
+    public Actor findByName(String name) throws InstanceNotFoundException {
+        Optional<Actor> optActor = actorDao.findByName(name);
+        if (optActor.isPresent()) {
+            return optActor.get();
+        }
+        throw new InstanceNotFoundException(ENTITY_TYPE, name);
     }
     
     @Override

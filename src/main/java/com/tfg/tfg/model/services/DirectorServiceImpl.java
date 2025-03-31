@@ -1,9 +1,11 @@
 package com.tfg.tfg.model.services;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
+import com.tfg.tfg.model.entities.Actor;
 import com.tfg.tfg.model.entities.Director;
 import com.tfg.tfg.model.entities.DirectorDao;
 import com.tfg.tfg.model.services.exceptions.InstanceNotFoundException;
@@ -23,12 +25,17 @@ public class DirectorServiceImpl implements DirectorService {
 
     @Override
     public Director updateDirector(Director director) throws InstanceNotFoundException {
-        if (director.getFirstName() == null || director.getFirstName().isEmpty() || 
-            director.getLastName() == null || director.getLastName().isEmpty()) {
-            throw new IllegalArgumentException("First name and last name cannot be null or empty for director updates");
+        if (director.getName() == null) {
+            throw new IllegalArgumentException("Director name cannot be null");
         }
         
-        Director existingDirector = findByFirstNameAndLastName(director.getFirstName(), director.getLastName());
+        Optional<Director> optionalDirector = directorDao.findByName(director.getName());
+
+        if (!optionalDirector.isPresent()) {
+            throw new InstanceNotFoundException(ENTITY_TYPE, director.getName());
+        }   
+        
+        Director existingDirector = optionalDirector.get();
         
         return updateExistingDirector(existingDirector, director);
     }
@@ -73,9 +80,9 @@ public class DirectorServiceImpl implements DirectorService {
     }
     
     @Override
-    public Director findByFirstNameAndLastName(String firstName, String lastName) throws InstanceNotFoundException {
-        return directorDao.findByFirstNameAndLastName(firstName, lastName)
-            .orElseThrow(() -> new InstanceNotFoundException(ENTITY_TYPE, firstName + " " + lastName));
+    public Director findByName(String name) throws InstanceNotFoundException {
+        return directorDao.findByName(name)
+            .orElseThrow(() -> new InstanceNotFoundException(ENTITY_TYPE, name));
     }
     
     @Override

@@ -15,11 +15,10 @@ public interface ActorDao extends JpaRepository<Actor, Long> {
     /**
      * Find an actor by their first and last name.
      * 
-     * @param firstName The actor's first name
-     * @param lastName The actor's last name
+     * @param name The actor's name
      * @return The actor if found, empty otherwise
      */
-    Optional<Actor> findByFirstNameAndLastName(String firstName, String lastName);
+    Optional<Actor> findByName(String name);
     
     /**
      * Find an actor by their imdb ID.

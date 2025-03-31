@@ -5,8 +5,7 @@ import java.util.List;
 
 public class ActorDto {
     private Long id;
-    private String firstName;
-    private String lastName;
+    private String name;
 
     private Date birthDate;
     private String birthPlace;
@@ -20,24 +19,24 @@ public class ActorDto {
     public ActorDto() {
     }
 
-    public ActorDto(Long id, String firstName, String lastName) {
+    public ActorDto(Long id, String name) {
         this.id = id;
-        this.firstName = firstName;
-        this.lastName = lastName;
+        this.name = name;
     }
 
-    public ActorDto(Long id, String firstName, String lastName, Date birthDate, String birthPlace, String starSign, String height, String bio, String imageUrl, String imdbId, List<MovieDto> movies) {
+    public ActorDto(Long id, String name, String imdbId, 
+                   Date birthDate, String birthPlace, 
+                   String starSign, String height, 
+                   String bio, String imageUrl) {
         this.id = id;
-        this.firstName = firstName;
-        this.lastName = lastName;
+        this.name = name;
+        this.imdbId = imdbId;
         this.birthDate = birthDate;
         this.birthPlace = birthPlace;
         this.starSign = starSign;
         this.height = height;
         this.bio = bio;
         this.imageUrl = imageUrl;
-        this.imdbId = imdbId;
-        this.movies = movies;
     }
 
     public Long getId() {
@@ -48,20 +47,12 @@ public class ActorDto {
         this.id = id;
     }
 
-    public String getFirstName() {
-        return firstName;
+    public String getName() {
+        return name;
     }
-
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
+    
+    public void setName(String name) {
+        this.name = name;
     }
 
     public Date getBirthDate() {

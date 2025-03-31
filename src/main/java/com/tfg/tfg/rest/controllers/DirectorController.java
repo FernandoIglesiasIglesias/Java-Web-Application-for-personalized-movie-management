@@ -97,17 +97,15 @@ public class DirectorController {
     /**
      * Endpoint to get a director by first name and last name.
      *
-     * @param firstName the director's first name
-     * @param lastName the director's last name
+     * @param name the director's first name
      * @return the director if found
      * @throws InstanceNotFoundException if the director is not found
      */
     @GetMapping("/name")
     public DirectorDto getDirectorByName(
-            @RequestParam String firstName, 
-            @RequestParam String lastName) throws InstanceNotFoundException {
+            @RequestParam String name) throws InstanceNotFoundException {
         
-        return DirectorConversor.toDirectorDto(directorService.findByFirstNameAndLastName(firstName, lastName));
+        return DirectorConversor.toDirectorDto(directorService.findByName(name));
     }
 
     /**
@@ -119,15 +117,12 @@ public class DirectorController {
      * @return the updated director
      * @throws InstanceNotFoundException if the director is not found
      */
-    @PutMapping("/name/{firstName}/{lastName}")
+    @PutMapping("/name/{name}")
     public DirectorDto updateDirectorByName(
-            @PathVariable String firstName, 
-            @PathVariable String lastName, 
+            @PathVariable String name, 
             @RequestBody DirectorDto directorDto) throws InstanceNotFoundException {
         
-        // Ensure the name in the path matches the one in the DTO
-        directorDto.setFirstName(firstName);
-        directorDto.setLastName(lastName);
+        directorDto.setName(name);
         
         Director director = DirectorConversor.toDirector(directorDto);
         Director updatedDirector = directorService.updateDirector(director);

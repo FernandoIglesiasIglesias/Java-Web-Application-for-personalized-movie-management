@@ -59,8 +59,7 @@ public class ActorListServiceTest {
         
         // Create test actor
         testActor = new Actor();
-        testActor.setFirstName("Robert");
-        testActor.setLastName("Downey Jr.");
+        testActor.setName("Robert Downey Jr.");
         testActor.setImdbId("nm0000375");
         testActor = actorDao.save(testActor);
     }

@@ -35,8 +35,7 @@ public class DirectorServiceTest {
         directorDao.deleteAll();
         
         testDirector = new Director();
-        testDirector.setFirstName("Steven");
-        testDirector.setLastName("Spielberg");
+        testDirector.setName("Steven Spielberg");
         testDirector.setImdbId("nm0000229");
         testDirector.setBirthDate(new java.sql.Date(System.currentTimeMillis())); // Fecha actual como ejemplo
         testDirector.setBirthPlace("Cincinnati, Ohio, USA");
@@ -54,8 +53,7 @@ public class DirectorServiceTest {
         
         assertNotNull(director);
         assertEquals(testDirector.getId(), director.getId());
-        assertEquals("Steven", director.getFirstName());
-        assertEquals("Spielberg", director.getLastName());
+        assertEquals("Steven Spielberg", director.getName());
         assertEquals("nm0000229", director.getImdbId());
     }
     
@@ -67,8 +65,8 @@ public class DirectorServiceTest {
     }
     
     @Test
-    public void testFindByFirstNameAndLastName() throws InstanceNotFoundException {
-        Director director = directorService.findByFirstNameAndLastName("Steven", "Spielberg");
+    public void testFindByName() throws InstanceNotFoundException {
+        Director director = directorService.findByName("Steven Spielberg");
         
         assertNotNull(director);
         assertEquals(testDirector.getId(), director.getId());
@@ -76,9 +74,9 @@ public class DirectorServiceTest {
     }
     
     @Test
-    public void testFindByFirstNameAndLastNameNotFound() {
+    public void testFindByNameNotFound() {
         assertThrows(InstanceNotFoundException.class, () -> {
-            directorService.findByFirstNameAndLastName("Non", "Existent");
+            directorService.findByName("Non Existent");
         });
     }
     
@@ -88,8 +86,7 @@ public class DirectorServiceTest {
         
         assertNotNull(director);
         assertEquals(testDirector.getId(), director.getId());
-        assertEquals("Steven", director.getFirstName());
-        assertEquals("Spielberg", director.getLastName());
+        assertEquals("Steven Spielberg", director.getName());
     }
     
     @Test
@@ -102,8 +99,7 @@ public class DirectorServiceTest {
     @Test
     public void testGetAllDirectors() {
         Director secondDirector = new Director();
-        secondDirector.setFirstName("Christopher");
-        secondDirector.setLastName("Nolan");
+        secondDirector.setName("Christopher Nolan");
         secondDirector.setImdbId("nm0634240");
         directorDao.save(secondDirector);
         
@@ -117,8 +113,7 @@ public class DirectorServiceTest {
     @Test
     public void testUpdateDirector() throws InstanceNotFoundException {
         Director updatedData = new Director();
-        updatedData.setFirstName("Steven");  
-        updatedData.setLastName("Spielberg");
+        updatedData.setName("Steven Spielberg");
         updatedData.setImdbId("nm0000230"); 
         updatedData.setBio("New biography text"); 
         updatedData.setHeight("1.71 m");
@@ -127,8 +122,7 @@ public class DirectorServiceTest {
         
         assertNotNull(result);
         assertEquals(testDirector.getId(), result.getId());
-        assertEquals("Steven", result.getFirstName());
-        assertEquals("Spielberg", result.getLastName());
+        assertEquals("Steven Spielberg", result.getName());
         assertEquals("nm0000230", result.getImdbId()); // Debe actualizarse
         assertEquals("1.71 m", result.getHeight()); // Debe actualizarse
         assertEquals("New biography text", result.getBio()); // Debe actualizarse
@@ -137,8 +131,7 @@ public class DirectorServiceTest {
     @Test
     public void testUpdateDirectorNotFound() {
         Director nonExistentDirector = new Director();
-        nonExistentDirector.setFirstName("Non");
-        nonExistentDirector.setLastName("Existent");
+        nonExistentDirector.setName("Non Existent");
         
         assertThrows(InstanceNotFoundException.class, () -> {
             directorService.updateDirector(nonExistentDirector);
@@ -152,8 +145,7 @@ public class DirectorServiceTest {
         testDirector = directorDao.save(testDirector);
         
         Director updatedData = new Director();
-        updatedData.setFirstName("Steven"); 
-        updatedData.setLastName("Spielberg");
+        updatedData.setName("Steven Spielberg");
         updatedData.setHeight("1.71 m");
         updatedData.setBio("New biography text");
         
@@ -168,8 +160,7 @@ public class DirectorServiceTest {
     public void testUpdateDirectorWithEmptyFields() throws InstanceNotFoundException {
         // Crear un director con algunos campos vacíos
         Director updatedData = new Director();
-        updatedData.setFirstName("Steven"); 
-        updatedData.setLastName("Spielberg"); 
+        updatedData.setName("Steven Spielberg");
         updatedData.setHeight(""); 
         updatedData.setBio("");
 
@@ -183,6 +174,7 @@ public class DirectorServiceTest {
     @Test
     public void testUpdateDirectorWithNullName() {
         Director directorWithNullName = new Director();
+        // No establecemos el nombre
         
         assertThrows(IllegalArgumentException.class, () -> {
             directorService.updateDirector(directorWithNullName);

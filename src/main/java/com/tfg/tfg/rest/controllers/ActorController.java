@@ -102,32 +102,23 @@ public class ActorController {
      * @return the actor if found
      * @throws InstanceNotFoundException if the actor is not found
      */
-    @GetMapping("/name")
-    public ActorDto getActorByName(
-            @RequestParam String firstName, 
-            @RequestParam String lastName) throws InstanceNotFoundException {
-        
-        return ActorConversor.toActorDto(actorService.findByFirstNameAndLastName(firstName, lastName));
+    @GetMapping("/name/{name}")
+    public ActorDto getActorByName(@PathVariable String name) throws InstanceNotFoundException {
+        return ActorConversor.toActorDto(actorService.findByName(name));
     }
 
     /**
      * Endpoint to update an actor by name.
      *
-     * @param firstName the first name of the actor
-     * @param lastName the last name of the actor
+     * @param name the name of the actor
      * @param actorDto the actor data transfer object with updated information
      * @return the updated actor
      * @throws InstanceNotFoundException if the actor is not found
      */
-    @PutMapping("/name/{firstName}/{lastName}")
-    public ActorDto updateActorByName(
-            @PathVariable String firstName, 
-            @PathVariable String lastName, 
-            @RequestBody ActorDto actorDto) throws InstanceNotFoundException {
-        
+    @PutMapping("/name/{name}")
+    public ActorDto updateActorByName(@PathVariable String name, @RequestBody ActorDto actorDto) throws InstanceNotFoundException {
         // Ensure the name in the path matches the one in the DTO
-        actorDto.setFirstName(firstName);
-        actorDto.setLastName(lastName);
+        actorDto.setName(name);
         
         Actor actor = ActorConversor.toActor(actorDto);
         Actor updatedActor = actorService.updateActor(actor);

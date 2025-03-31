@@ -19,8 +19,7 @@ public class Actor {
 
     private String imdbId;
 
-    private String firstName;
-    private String lastName;
+    private String name;
 
     @Temporal(TemporalType.DATE)
     private Date birthDate;
@@ -46,24 +45,21 @@ public class Actor {
     /**
      * Parameterized constructor to create an Actor with the specified details.
      *
-     * @param firstName the first name of the actor
-     * @param lastName the last name of the actor
+     * @param name the name of the actor
      * @param movies the movies of the actor
      */
-    public Actor(String firstName, String lastName, List<Movie> movies) {
-        this.firstName = firstName;
-        this.lastName = lastName;
+    public Actor(String name, List<Movie> movies) {
+        this.name = name;
         this.movies = movies;
     }
 
     /**
      * Extended constructor with all actor details.
      */
-    public Actor(String firstName, String lastName, Date birthDate, 
-                String birthPlace, String starSign, String height, 
-                String bio, String imageUrl, String imdbId, List<Movie> movies) {
-        this.firstName = firstName;
-        this.lastName = lastName;
+    public Actor(String name, Date birthDate, String birthPlace, 
+                String starSign, String height, String bio, 
+                String imageUrl, String imdbId, List<Movie> movies) {
+        this.name = name;
         this.birthDate = birthDate;
         this.birthPlace = birthPlace;
         this.starSign = starSign;
@@ -95,37 +91,19 @@ public class Actor {
     /**
      * Gets the first name of the actor.
      *
-     * @return the first name of the actor
+     * @return the name of the actor
      */
-    public String getFirstName() {
-        return firstName;
+    public String getName() {
+        return name;
     }
 
     /**
      * Sets the first name of the actor.
      *
-     * @param firstName the first name to set
+     * @param name the name to set
      */
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    /**
-     * Gets the last name of the actor.
-     *
-     * @return the last name of the actor
-     */
-    public String getLastName() {
-        return lastName;
-    }
-
-    /**
-     * Sets the last name of the actor.
-     *
-     * @param lastName the last name to set
-     */
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
+    public void setName(String name) {
+        this.name = name;
     }
 
     /**

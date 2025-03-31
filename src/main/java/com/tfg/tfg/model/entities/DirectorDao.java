@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface DirectorDao extends JpaRepository<Director, Long> {
 
-    Optional<Director> findByFirstNameAndLastName(String firstName, String lastName);
+    Optional<Director> findByName(String name);
     
     Optional<Director> findByImdbId(String imdbId);
 

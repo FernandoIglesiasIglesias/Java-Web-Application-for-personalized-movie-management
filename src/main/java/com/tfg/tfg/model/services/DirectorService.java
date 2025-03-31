@@ -28,12 +28,11 @@ public interface DirectorService {
     /**
      * Finds a director by their first and last name.
      *
-     * @param firstName The first name of the director
-     * @param lastName The last name of the director
+     * @param name The name of the director
      * @return The director entity if found
      * @throws InstanceNotFoundException If no director with the given name exists
      */
-    Director findByFirstNameAndLastName(String firstName, String lastName) throws InstanceNotFoundException;
+    Director findByName(String name) throws InstanceNotFoundException;
 
     /**
      * Finds a director by their IMDB identifier.

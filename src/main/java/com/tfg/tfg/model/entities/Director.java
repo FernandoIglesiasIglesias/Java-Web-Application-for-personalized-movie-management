@@ -19,7 +19,7 @@ public class Director {
     private Long id;
 
     private String imdbId;
-    private String firstName;
+    private String name;
     private String lastName;
     
     @Temporal(TemporalType.DATE)
@@ -46,12 +46,27 @@ public class Director {
     /**
      * Parameterized constructor to create a Director with the specified details.
      *
-     * @param firstName the first name of the director
-     * @param lastName the last name of the director
+     * @param name the name of the director
      */
-    public Director(String firstName, String lastName, List<Movie> movies) {
-        this.firstName = firstName;
-        this.lastName = lastName;
+    public Director(String name, List<Movie> movies) {
+        this.name = name;
+        this.movies = movies;
+    }
+
+        /**
+     * Extended constructor with all actor details.
+     */
+    public Director(String name, Date birthDate, String birthPlace, 
+                String starSign, String height, String bio, 
+                String imageUrl, String imdbId, List<Movie> movies) {
+        this.name = name;
+        this.birthDate = birthDate;
+        this.birthPlace = birthPlace;
+        this.starSign = starSign;
+        this.height = height;
+        this.bio = bio;
+        this.imageUrl = imageUrl;
+        this.imdbId = imdbId;
         this.movies = movies;
     }
 
@@ -94,37 +109,19 @@ public class Director {
     /**
      * Gets the first name of the director.
      *
-     * @return the first name of the director
+     * @return the name of the director
      */
-    public String getFirstName() {
-        return firstName;
-    }
-
-    /**
-     * Sets the first name of the director.
-     *
-     * @param firstName the first name to set
-     */
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    /**
-     * Gets the last name of the director.
-     *
-     * @return the last name of the director
-     */
-    public String getLastName() {
-        return lastName;
+    public String getName() {
+        return name;
     }
 
     /**
      * Sets the last name of the director.
      *
-     * @param lastName the last name to set
+     * @param name the name to set
      */
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
+    public void setName(String name) {
+        this.name = name;
     }
     
     /**

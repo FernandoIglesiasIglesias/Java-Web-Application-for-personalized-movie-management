@@ -37,8 +37,7 @@ public class ActorServiceTest {
         
         // Creamos un actor de prueba
         testActor = new Actor();
-        testActor.setFirstName("Robert");
-        testActor.setLastName("Downey Jr.");
+        testActor.setName("Robert Downey Jr.");
         testActor.setImdbId("nm0000375");
         testActor.setBirthDate(new java.sql.Date(System.currentTimeMillis())); // Fecha actual como ejemplo
         testActor.setBirthPlace("New York City, New York, USA");
@@ -57,8 +56,7 @@ public class ActorServiceTest {
         
         assertNotNull(actor);
         assertEquals(testActor.getId(), actor.getId());
-        assertEquals("Robert", actor.getFirstName());
-        assertEquals("Downey Jr.", actor.getLastName());
+        assertEquals("Robert Downey Jr.", actor.getName());
         assertEquals("nm0000375", actor.getImdbId());
     }
     
@@ -70,8 +68,8 @@ public class ActorServiceTest {
     }
     
     @Test
-    public void testFindByFirstNameAndLastName() throws InstanceNotFoundException {
-        Actor actor = actorService.findByFirstNameAndLastName("Robert", "Downey Jr.");
+    public void testFindByName() throws InstanceNotFoundException {
+        Actor actor = actorService.findByName("Robert Downey Jr.");
         
         assertNotNull(actor);
         assertEquals(testActor.getId(), actor.getId());
@@ -79,9 +77,9 @@ public class ActorServiceTest {
     }
     
     @Test
-    public void testFindByFirstNameAndLastNameNotFound() {
+    public void testFindByNameNotFound() {
         assertThrows(InstanceNotFoundException.class, () -> {
-            actorService.findByFirstNameAndLastName("Non", "Existent");
+            actorService.findByName("Non Existent");
         });
     }
     
@@ -91,8 +89,7 @@ public class ActorServiceTest {
         
         assertNotNull(actor);
         assertEquals(testActor.getId(), actor.getId());
-        assertEquals("Robert", actor.getFirstName());
-        assertEquals("Downey Jr.", actor.getLastName());
+        assertEquals("Robert Downey Jr.", actor.getName());
     }
     
     @Test
@@ -106,8 +103,7 @@ public class ActorServiceTest {
     public void testGetAllActors() {
         // Agregar otro actor para la prueba
         Actor secondActor = new Actor();
-        secondActor.setFirstName("Chris");
-        secondActor.setLastName("Evans");
+        secondActor.setName("Chris Evans");
         secondActor.setImdbId("nm0262635");
         actorDao.save(secondActor);
         
@@ -122,8 +118,7 @@ public class ActorServiceTest {
     public void testUpdateActor() throws InstanceNotFoundException {
         // Crear una copia del actor con datos actualizados
         Actor updatedData = new Actor();
-        updatedData.setFirstName("Robert");  // Necesario para encontrar el actor
-        updatedData.setLastName("Downey Jr."); // Necesario para encontrar el actor
+        updatedData.setName("Robert Downey Jr.");  // Necesario para encontrar el actor
         updatedData.setImdbId("nm0000376"); // Actualizar el IMDB ID
         updatedData.setBio("New biography text"); // Actualizar la biografía
         updatedData.setHeight("1.75 m"); // Actualizar la altura
@@ -132,8 +127,7 @@ public class ActorServiceTest {
         
         assertNotNull(result);
         assertEquals(testActor.getId(), result.getId());
-        assertEquals("Robert", result.getFirstName());
-        assertEquals("Downey Jr.", result.getLastName());
+        assertEquals("Robert Downey Jr.", result.getName());
         assertEquals("nm0000376", result.getImdbId()); // Debe actualizarse
         assertEquals("1.75 m", result.getHeight()); // Debe actualizarse
         assertEquals("New biography text", result.getBio()); // Debe actualizarse
@@ -142,8 +136,7 @@ public class ActorServiceTest {
     @Test
     public void testUpdateActorNotFound() {
         Actor nonExistentActor = new Actor();
-        nonExistentActor.setFirstName("Non");
-        nonExistentActor.setLastName("Existent");
+        nonExistentActor.setName("Non Existent");
         
         assertThrows(InstanceNotFoundException.class, () -> {
             actorService.updateActor(nonExistentActor);
@@ -159,8 +152,7 @@ public class ActorServiceTest {
         
         // Crear un actor con datos a actualizar
         Actor updatedData = new Actor();
-        updatedData.setFirstName("Robert");  // Añadimos firstName para encontrar el actor
-        updatedData.setLastName("Downey Jr."); // Añadimos lastName para encontrar el actor
+        updatedData.setName("Robert Downey Jr.");  // Necesario para encontrar el actor
         updatedData.setHeight("1.75 m"); // Nuevo valor para campo vacío
         updatedData.setBio("New biography text"); // Nuevo valor para campo vacío
         
@@ -175,8 +167,7 @@ public class ActorServiceTest {
     public void testUpdateActorWithEmptyFields() throws InstanceNotFoundException {
         // Crear un actor con algunos campos vacíos
         Actor updatedData = new Actor();
-        updatedData.setFirstName("Robert");  // Añadimos firstName para encontrar el actor
-        updatedData.setLastName("Downey Jr."); // Añadimos lastName para encontrar el actor
+        updatedData.setName("Robert Downey Jr.");  // Necesario para encontrar el actor
         updatedData.setHeight(""); // Campo vacío
         updatedData.setBio(""); // Campo vacío
         
@@ -190,7 +181,7 @@ public class ActorServiceTest {
     @Test
     public void testUpdateActorWithNullName() {
         Actor actorWithNullName = new Actor();
-        // No establecemos firstName ni lastName
+        // No establecemos el nombre
         
         assertThrows(IllegalArgumentException.class, () -> {
             actorService.updateActor(actorWithNullName);

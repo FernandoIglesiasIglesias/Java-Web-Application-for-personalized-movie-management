@@ -32,12 +32,11 @@ public interface ActorService {
     /**
      * Finds an actor by first and last name.
      *
-     * @param firstName the first name of the actor
-     * @param lastName the last name of the actor
+     * @param name the name of the actor
      * @return the actor if found
      * @throws InstanceNotFoundException if the actor is not found
      */
-    public Actor findByFirstNameAndLastName(String firstName, String lastName) throws InstanceNotFoundException;
+    public Actor findByName(String name) throws InstanceNotFoundException;
     
     /**
      * Finds an actor by imdb ID.

@@ -25,14 +25,14 @@ public class MovieConversor {
         // Crear objetos DTO simplificados para actores
         List<ActorDto> actorDtos = movie.getActors() != null ? 
             movie.getActors().stream()
-                .map(actor -> new ActorDto(actor.getId(), actor.getFirstName(), actor.getLastName()))
+                .map(actor -> new ActorDto(actor.getId(), actor.getName()))
                 .toList() : 
             new ArrayList<>();
         
         // Crear objetos DTO simplificados para directores
         List<DirectorDto> directorDtos = movie.getDirectors() != null ? 
             movie.getDirectors().stream()
-                .map(director -> new DirectorDto(director.getId(), director.getFirstName(), director.getLastName()))
+                .map(director -> new DirectorDto(director.getId(), director.getName()))
                 .toList() : 
             new ArrayList<>();
         
@@ -83,8 +83,7 @@ public class MovieConversor {
                 .map(actorDto -> {
                     Actor actor = new Actor();
                     actor.setId(actorDto.getId());
-                    actor.setFirstName(actorDto.getFirstName());
-                    actor.setLastName(actorDto.getLastName());
+                    actor.setName(actorDto.getName());
                     // No establecemos la relación inversa aquí para evitar recursión
                     return actor;
                 })
@@ -96,8 +95,7 @@ public class MovieConversor {
                 .map(directorDto -> {
                     Director director = new Director();
                     director.setId(directorDto.getId());
-                    director.setFirstName(directorDto.getFirstName());
-                    director.setLastName(directorDto.getLastName());
+                    director.setName(directorDto.getName());
                     // No establecemos la relación inversa aquí para evitar recursión
                     return director;
                 })

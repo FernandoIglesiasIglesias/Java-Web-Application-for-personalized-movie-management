@@ -59,8 +59,7 @@ public class DirectorListServiceTest {
         
         // Create test director
         testDirector = new Director();
-        testDirector.setFirstName("Christopher");
-        testDirector.setLastName("Nolan");
+        testDirector.setName("Christopher Nolan");
         testDirector = directorDao.save(testDirector);
     }
     

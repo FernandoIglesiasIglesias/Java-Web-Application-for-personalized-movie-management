@@ -11,7 +11,7 @@ public class DirectorConversor {
     private DirectorConversor() {}
     
     public static DirectorDto toDirectorDto(Director director) {
-        return new DirectorDto(director.getId(), director.getFirstName(), director.getLastName());
+        return new DirectorDto(director.getId(), director.getName());
     }
     
     public static DirectorDto toDirectorDtoExpanded(Director director) {
@@ -19,8 +19,7 @@ public class DirectorConversor {
         
         DirectorDto directorDto = new DirectorDto();
         directorDto.setId(director.getId());
-        directorDto.setFirstName(director.getFirstName());
-        directorDto.setLastName(director.getLastName());
+        directorDto.setName(director.getName());
         directorDto.setBirthDate(director.getBirthDate());
         directorDto.setBirthPlace(director.getBirthPlace());
         directorDto.setStarSign(director.getStarSign());
@@ -42,8 +41,7 @@ public class DirectorConversor {
         
         Director director = new Director();
         director.setId(directorDto.getId());
-        director.setFirstName(directorDto.getFirstName());
-        director.setLastName(directorDto.getLastName());
+        director.setName(directorDto.getName());
         director.setBirthDate(directorDto.getBirthDate());
         director.setBirthPlace(directorDto.getBirthPlace());
         director.setStarSign(directorDto.getStarSign());
