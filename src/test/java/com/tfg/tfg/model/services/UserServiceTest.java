@@ -44,7 +44,7 @@ public class UserServiceTest {
 	}
 	
 	@Test
-	public void testSignUpDuplicatedUserName() throws DuplicateInstanceException, DuplicateListNameException {
+	public void testSignUpDuplicatedUserName() throws DuplicateInstanceException, DuplicateListNameException, InstanceNotFoundException {
 		
 		Users user = createUser("user");
 		
@@ -52,6 +52,18 @@ public class UserServiceTest {
 		assertThrows(DuplicateInstanceException.class, () -> userService.signUp(user));
 		
 	}
+
+	@Test
+    public void testSignUpDuplicatedEmail() throws DuplicateInstanceException, DuplicateListNameException, InstanceNotFoundException {
+        Users user = createUser("user1");
+        
+        userService.signUp(user);
+        
+        Users duplicatedUser = createUser("user2");
+        duplicatedUser.setEmail(user.getEmail());
+        
+        assertThrows(DuplicateInstanceException.class, () -> userService.signUp(duplicatedUser));
+    }
 	
 	@Test
 	public void testLoginFromNonExistentId() {
@@ -59,7 +71,7 @@ public class UserServiceTest {
 	}
 	
 	@Test
-	public void testLogin() throws DuplicateInstanceException, IncorrectLoginException, DuplicateListNameException {
+	public void testLogin() throws DuplicateInstanceException, IncorrectLoginException, DuplicateListNameException, InstanceNotFoundException {
 		
 		Users user = createUser("user");
 		String clearPassword = user.getPassword();
@@ -73,7 +85,7 @@ public class UserServiceTest {
 	}
 	
 	@Test
-	public void testLoginWithIncorrectPassword() throws DuplicateInstanceException, DuplicateListNameException {
+	public void testLoginWithIncorrectPassword() throws DuplicateInstanceException, DuplicateListNameException, InstanceNotFoundException {
 		
 		Users user = createUser("user");
 		String clearPassword = user.getPassword();
@@ -136,7 +148,7 @@ public class UserServiceTest {
 	}
 	
 	@Test
-	public void testChangePasswordWithIncorrectPassword() throws DuplicateInstanceException, DuplicateListNameException {
+	public void testChangePasswordWithIncorrectPassword() throws DuplicateInstanceException, DuplicateListNameException, InstanceNotFoundException {
 		
 		Users user = createUser("user");
 		String oldPassword = user.getPassword();

@@ -42,7 +42,7 @@ public class MovieServiceImpl implements MovieService {
 
     public Movie saveMovie(Movie movie) {
 
-        Optional<Movie> optionalMovie = movieDao.findByImbdId(movie.getImbdId());
+        Optional<Movie> optionalMovie = movieDao.findByImdbId(movie.getImdbId());
 
         if (optionalMovie.isPresent()) {
             return optionalMovie.get();

@@ -47,15 +47,15 @@ public class UserController {
 	private static final String INCORRECT_PASSWORD_EXCEPTION_CODE = "project.exceptions.IncorrectPasswordException";
 	private static final String DUPLICATE_INSTANCE_EXCEPTION_CODE = "project.exceptions.DuplicateInstanceException";
 
+	private final MessageSource messageSource;
+	private final JwtGenerator jwtGenerator;
+	private final UserService userService;
 	
-	@Autowired
-	private MessageSource messageSource;
-	
-	@Autowired
-	private JwtGenerator jwtGenerator;
-	
-	@Autowired
-	private UserService userService;
+	public UserController(MessageSource messageSource, JwtGenerator jwtGenerator, UserService userService) {
+		this.messageSource = messageSource;
+		this.jwtGenerator = jwtGenerator;
+		this.userService = userService;
+	}
 	
 	@ExceptionHandler(IncorrectLoginException.class)
 	@ResponseStatus(HttpStatus.NOT_FOUND)
@@ -103,7 +103,7 @@ public class UserController {
 
 	@PostMapping("/signUp")
 	public ResponseEntity<AuthenticatedUserDto> signUp(
-		@Validated({UserDto.AllValidations.class}) @RequestBody UserDto userDto) throws DuplicateInstanceException, DuplicateListNameException {
+		@Validated({UserDto.AllValidations.class}) @RequestBody UserDto userDto) throws DuplicateInstanceException, DuplicateListNameException, InstanceNotFoundException {
 		
 		Users user = toUser(userDto);
 		

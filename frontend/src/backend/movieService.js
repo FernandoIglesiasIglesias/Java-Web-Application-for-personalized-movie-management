@@ -10,7 +10,6 @@ export const getAllMovies = (onSuccess, onErrors) => {
 };
 
 export const saveMovie = (movie, onSuccess, onErrors) => {
-  console.log("Saving movie", movie);
   appFetch(
     "/movies/saveMovie",
     fetchConfig("POST", movie),
@@ -18,17 +17,6 @@ export const saveMovie = (movie, onSuccess, onErrors) => {
     onErrors
   );
 };
-
-/*
-export const getMovieDetails = (id, onSuccess, onErrors) => {
-  appFetch(
-    `/movies/${id}`,
-    fetchConfig("GET"),
-    onSuccess,
-    onErrors
-  );
-};
-*/
 
 export const getExternalMovies = (cursor, onSuccess, onErrors) => {
   const url = new URL('https://streaming-availability.p.rapidapi.com/shows/search/filters');

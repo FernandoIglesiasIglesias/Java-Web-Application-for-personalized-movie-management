@@ -576,6 +576,37 @@ body.dark .movie-button.primary:hover {
   background-color: var(--primary-hover-dark);
 }
 
+/* Estilo para elementos clicables */
+.clickable {
+  cursor: pointer;
+  transition: background-color var(--transition-duration);
+}
+
+.director-member.clickable {
+  cursor: pointer;
+  transition: background-color var(--transition-duration);
+}
+
+.director-member.clickable:hover {
+  background-color: var(--primary-color-light);
+  color: white;
+}
+
+body.dark .director-member.clickable:hover {
+  background-color: var(--primary-color-dark);
+  color: white;
+}
+
+.cast-member.clickable:hover {
+  background-color: var(--primary-color-light);
+  color: white;
+}
+
+body.dark .cast-member.clickable:hover {
+  background-color: var(--primary-color-dark);
+  color: white;
+}
+
 /* Badge de calidad */
 .quality-badge {
   position: absolute;

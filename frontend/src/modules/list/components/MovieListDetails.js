@@ -8,9 +8,9 @@ import {
 } from "../../../backend/listService";
 import { useTheme } from "../../../context/ThemeContext";
 import { Errors } from "../../common";
-import "./ListDetails.css";
+import "./MovieListDetails.css";
 
-const ListDetails = () => {
+const MovieListDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { theme } = useTheme();
@@ -23,18 +23,16 @@ const ListDetails = () => {
   const [isConfirmClearOpen, setIsConfirmClearOpen] = useState(false);
 
   // Función para cargar los detalles de la lista
-  const loadListDetails = useCallback(() => {
+  const loadMovieListDetails = useCallback(() => {
     setLoading(true);
     getListById(
       id,
       (fetchedList) => {
-        console.log("Detalles de lista cargados:", fetchedList);
         setList(fetchedList);
         setListName(fetchedList.name);
         setLoading(false);
       },
       (error) => {
-        console.error("Error al cargar detalles de lista:", error);
         setErrors(error);
         setLoading(false);
       }
@@ -44,9 +42,9 @@ const ListDetails = () => {
   // Cargar los detalles de la lista al montar el componente o cambiar el ID
   useEffect(() => {
     if (id) {
-      loadListDetails();
+      loadMovieListDetails();
     }
-  }, [id, loadListDetails]);
+  }, [id, loadMovieListDetails]);
 
   // Manejar actualización del nombre de la lista
   const handleUpdateList = () => {
@@ -144,7 +142,7 @@ const ListDetails = () => {
       
       Promise.all(removeMoviePromises)
         .then(() => {
-          loadListDetails();
+          loadMovieListDetails();
           setIsConfirmClearOpen(false);
         })
         .catch((error) => {
@@ -295,7 +293,7 @@ const ListDetails = () => {
                 <div 
                   key={movie.id} 
                   className={`movie-card ${theme}`} 
-                  onClick={() => handleMovieClick(movie.imbdId || movie.id)}
+                  onClick={() => handleMovieClick(movie.imdbId || movie.id)}
                 >
                   <div className="movie-poster-container">
                     <img
@@ -367,4 +365,4 @@ const ListDetails = () => {
   );
 };
 
-export default ListDetails;
+export default MovieListDetails;

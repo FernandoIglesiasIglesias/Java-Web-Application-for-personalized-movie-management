@@ -15,31 +15,55 @@ const ShowMovie = () => {
   const [showAddToListModal, setShowAddToListModal] = useState(false);
 
   const parseMovieJson = (json) => {
-    const parseName = (name) => {
-      // Manejar caso de nombre indefinido
-      if (!name) return { firstName: '', lastName: '' };
-      
-      const [firstName, ...lastNameParts] = name.split(" ");
-      return {
-        firstName,
-        lastName: lastNameParts.join(" ")
-      };
+    // Ensure strings are always properly set
+    const ensureString = (value) => {
+      if (value === null || value === undefined) return '';
+      return String(value);
     };
-  
+    
+    // Helper function to create a valid name from a string or object
+    const createValidName = (person) => {
+      // If person is null or undefined, return empty string
+      if (person === null || person === undefined) return '';
+      
+      // If person is a string, return it directly
+      if (typeof person === 'string') return ensureString(person);
+      
+      // If person is an object, check for name field first, then firstName/lastName
+      if (typeof person === 'object') {
+        // If name exists, return it
+        if (person.name) return ensureString(person.name);
+        
+        // Try to construct from firstName/lastName if they exist
+        if (person.firstName || person.lastName) {
+          return ensureString((person.firstName || '') + ' ' + (person.lastName || '')).trim();
+        }
+      }
+      
+      // Fallback to empty string if all else fails
+      return '';
+    };
+    
     return {
-      imbdId: json.imdbId,
-      title: json.title,
-      overview: json.overview,
-      releaseYear: json.releaseYear,
-      verticalPoster: json.imageSet?.verticalPoster?.w720,
-      runtime: json.runtime,
-      imdbRating: json.imdbRating,
-      genres: json.genres?.map(genre => ({
-        name: genre.name
-      })) || [],
-      cast: json.cast?.map(parseName) || [],
-      directors: json.directors?.map(parseName) || [],
-      streamingOptions: json.streamingInfo
+      imdbId: json.imdbId || '',
+      title: json.title || '',
+      overview: json.overview || '',
+      releaseYear: json.releaseYear || null,
+      verticalPoster: json.imageSet?.verticalPoster?.w720 || null,
+      runtime: json.runtime || null,
+      imdbRating: json.imdbRating || null,
+      genres: (json.genres || []).map(genre => ({
+        name: ensureString(genre.name)
+      })),
+      cast: (json.cast || []).map(actor => ({
+        name: createValidName(actor),
+        imdbId: typeof actor === 'object' ? (actor.imdbId || null) : null
+      })),
+      directors: (json.directors || []).map(director => ({
+        name: createValidName(director),
+        imdbId: typeof director === 'object' ? (director.imdbId || null) : null
+      })),
+      streamingOptions: json.streamingOptions || {}
     };
   };
 
@@ -72,8 +96,8 @@ const ShowMovie = () => {
         
         // Guardar película en base de datos local
         saveMovie(
-          parsedData, 
-          () => console.log("Película guardada correctamente en la base de datos"), 
+          parsedData,
+          (data) => console.log("Película guardada correctamente", data), 
           (error) => console.error("Error guardando película", error)
         );
       })
@@ -199,13 +223,17 @@ const ShowMovie = () => {
             <div className="movie-section">
               <h2>Detalles</h2>
               <div className="movie-details-grid">
-                {movie.directors && movie.directors.length > 0 && (
+              {movie.directors && movie.directors.length > 0 && (
                   <div className="detail-item">
                     <h3>Dirección</h3>
                     <p className="directors-list">
                       {movie.directors.map((director, index) => (
-                        <span key={index} className="director-member">
-                          {`${director.firstName} ${director.lastName}`.trim()}
+                        <span 
+                          key={index} 
+                          className="director-member clickable"
+                          onClick={() => navigate(`/directors/${encodeURIComponent(director.name)}`)}
+                        >
+                          {director.name}
                         </span>
                       ))}
                       {movie.directors.length > 6 && 
@@ -220,8 +248,12 @@ const ShowMovie = () => {
                     <h3>Reparto principal</h3>
                     <p className="cast-list">
                       {movie.cast.slice(0, 6).map((actor, index) => (
-                        <span key={index} className="cast-member">
-                          {`${actor.firstName} ${actor.lastName}`.trim()}
+                        <span 
+                          key={index} 
+                          className="cast-member clickable"
+                          onClick={() => navigate(`/actors/${encodeURIComponent(actor.name)}`)}
+                        >
+                          {actor.name}
                         </span>
                       ))}
                       {movie.cast.length > 6 && <span className="cast-more">+{movie.cast.length - 6} más</span>}

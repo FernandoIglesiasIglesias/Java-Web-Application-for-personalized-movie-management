@@ -24,7 +24,7 @@ const AddToListModal = ({ movie, onClose }) => {
         // Para cada lista, determinar si ya contiene la película
         const processedLists = fetchedLists.map(list => {
           const movieExists = list.movies?.some(
-            listMovie => listMovie.id === movie.id || listMovie.imbdId === movie.imbdId
+            listMovie => listMovie.id === movie.id || listMovie.imdbId === movie.imdbId
           );
           return {
             ...list,
@@ -55,7 +55,7 @@ const AddToListModal = ({ movie, onClose }) => {
 
   useEffect(() => {
     loadLists();
-  }, [movie.id, movie.imbdId]);
+  }, [movie.id, movie.imdbId]);
 
   // Manejar la adición de la película a la lista seleccionada
   const handleAddToList = (listId) => {
@@ -116,7 +116,7 @@ const handleRemoveFromList = (listId) => {
     // If we only have the IMDB ID, we need to find the movie in the list first
     const listWithMovie = lists.find(list => list.id === listId);
     const movieInList = listWithMovie?.movies?.find(
-      m => m.imbdId === movie.imbdId || m.id === movie.imbdId
+      m => m.imdbId === movie.imdbId || m.id === movie.imdbId
     );
     
     if (movieInList && movieInList.id) {

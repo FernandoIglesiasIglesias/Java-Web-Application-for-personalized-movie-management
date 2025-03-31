@@ -10,5 +10,5 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface MovieDao extends JpaRepository<Movie, Long> {
-    Optional<Movie> findByImbdId(String imbdId);
+    Optional<Movie> findByImdbId(String imdbId);
 }

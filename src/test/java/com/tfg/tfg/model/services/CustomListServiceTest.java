@@ -64,7 +64,7 @@ public class CustomListServiceTest {
     }
 
     @BeforeEach
-    public void setUp() throws DuplicateInstanceException, DuplicateListNameException {
+    public void setUp() throws DuplicateInstanceException, DuplicateListNameException, InstanceNotFoundException {
 
         testUser = new Users("testUser", "password", "test@example.com", "avatar.jpg");
         userService.signUp(testUser);

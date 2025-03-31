@@ -60,11 +60,11 @@ public class MovieServiceTest {
         Genre genre1 = new Genre("Action", List.of());
         Genre genre2 = new Genre("Adventure", List.of());
 
-        Actor actor1 = new Actor("Robert", "Downey Jr.", List.of());
-        Director director1 = new Director("Jon", "Favreau", List.of());
+        Actor actor1 = new Actor("Robert Downey Jr.", List.of());
+        Director director1 = new Director("Jon Favreau", List.of());
 
-        Actor actor2 = new Actor("Chris", "Evans", List.of());
-        Director director2 = new Director("Joss", "Whedon", List.of());
+        Actor actor2 = new Actor("Chris Evans", List.of());
+        Director director2 = new Director("Joss Whedon", List.of());
 
         // Guardar géneros, actores y directores antes de guardar la película
         genreDao.save(genre1);
@@ -92,8 +92,8 @@ public class MovieServiceTest {
     @Test
     public void testGetMovieById() {
         Genre genre = new Genre("Action", List.of());
-        Actor actor = new Actor("Robert", "Downey Jr.", List.of());
-        Director director = new Director("Jon", "Favreau", List.of());
+        Actor actor = new Actor("Robert Downey Jr.", List.of());
+        Director director = new Director("Jon Favreau", List.of());
 
         // Guardar géneros, actores y directores antes de guardar la película
         genreDao.save(genre);
@@ -126,8 +126,8 @@ public class MovieServiceTest {
     @Test
     public void testSaveMovie() {
         Genre genre = new Genre("Action", List.of());
-        Actor actor = new Actor("Robert", "Downey Jr.", List.of());
-        Director director = new Director("Jon", "Favreau", List.of());
+        Actor actor = new Actor("Robert Downey Jr.", List.of());
+        Director director = new Director("Jon Favreau", List.of());
 
         genreDao.save(genre);
         actorDao.save(actor);
@@ -146,8 +146,8 @@ public class MovieServiceTest {
     @Test
     public void testSaveExistingMovie() {
         Genre genre = new Genre("Action", List.of());
-        Actor actor = new Actor("Robert", "Downey Jr.", List.of());
-        Director director = new Director("Jon", "Favreau", List.of());
+        Actor actor = new Actor("Robert Downey Jr.", List.of());
+        Director director = new Director("Jon Favreau", List.of());
 
         genreDao.save(genre);
         actorDao.save(actor);

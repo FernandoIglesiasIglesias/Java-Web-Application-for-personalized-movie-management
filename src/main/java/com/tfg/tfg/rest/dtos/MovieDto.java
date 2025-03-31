@@ -4,7 +4,7 @@ import java.util.List;
 
 public class MovieDto {
     private Long id;
-    private String imbdId;
+    private String imdbId;
     private String title;
     private String overview;
     private int releaseYear;
@@ -18,11 +18,11 @@ public class MovieDto {
     public MovieDto() {
     }
     
-    public MovieDto(Long id, String imbdId, String title, String overview, int releaseYear, 
+    public MovieDto(Long id, String imdbId, String title, String overview, int releaseYear, 
                   String verticalPoster, int runtime, List<GenreDto> genres, 
                   List<ActorDto> cast, List<DirectorDto> directors) {
         this.id = id;
-        this.imbdId = imbdId;
+        this.imdbId = imdbId;
         this.title = title;
         this.overview = overview;
         this.releaseYear = releaseYear;
@@ -43,12 +43,12 @@ public class MovieDto {
         this.id = id;
     }
     
-    public String getImbdId() {
-        return imbdId;
+    public String getImdbId() {
+        return imdbId;
     }
     
-    public void setImbdId(String imbdId) {
-        this.imbdId = imbdId;
+    public void setImdbId(String imdbId) {
+        this.imdbId = imdbId;
     }
     
     public String getTitle() {

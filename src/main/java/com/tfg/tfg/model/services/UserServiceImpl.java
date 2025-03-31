@@ -21,12 +21,16 @@ public class UserServiceImpl implements UserService{
 	private final BCryptPasswordEncoder passwordEncoder;
 	private final UsersDao userDao;
 	private final CustomListService customListService;
+	private final ActorListService actorListService;
+	private final DirectorListService directorListService;
 
-	public UserServiceImpl(PermissionChecker permissionChecker, BCryptPasswordEncoder passwordEncoder, UsersDao userDao, CustomListService customListService) {
+	public UserServiceImpl(PermissionChecker permissionChecker, BCryptPasswordEncoder passwordEncoder, UsersDao userDao, CustomListService customListService, ActorListService actorListService, DirectorListService directorListService) {
 		this.permissionChecker = permissionChecker;
 		this.passwordEncoder = passwordEncoder;
 		this.userDao = userDao;
 		this.customListService = customListService;
+		this.actorListService = actorListService;
+		this.directorListService = directorListService;
 	}
 	
 	/**
@@ -35,9 +39,10 @@ public class UserServiceImpl implements UserService{
 	 * @param user the user to be registered
 	 * @throws DuplicateInstanceException if a user with the same username already exists
 	 * @throws DuplicateListNameException if a username or a email already exists
-	 */
+	 * @throws InstanceNotFoundException if a user is not found
+	*/
 	@Override
-	public void signUp(Users user) throws DuplicateInstanceException, DuplicateListNameException {
+	public void signUp(Users user) throws DuplicateInstanceException, DuplicateListNameException, InstanceNotFoundException {
 		
 		if (userDao.existsByUserName(user.getUserName())) {
 			throw new DuplicateInstanceException("project.entities.user", user.getUserName());
@@ -56,6 +61,10 @@ public class UserServiceImpl implements UserService{
 		customListService.createList("Pendientes por ver", user);
 		customListService.createList("Películas vistas", user);
 		customListService.createList("Películas con las que lloré", user);
+
+		actorListService.createActorList(user.getId(), "Actores favoritos");
+
+		directorListService.createDirectorList(user.getId(), "Directores favoritos");
 	}
 
     /**
