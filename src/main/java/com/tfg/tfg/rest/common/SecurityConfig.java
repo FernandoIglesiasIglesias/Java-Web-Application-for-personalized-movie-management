@@ -46,8 +46,8 @@ public class SecurityConfig {
                 .requestMatchers(antMatcher("/users/{id}/changePassword")).hasRole(USER)
                 .requestMatchers(antMatcher("/movies/allMovies")).hasAnyRole(USER, ADMIN)
                 .requestMatchers(antMatcher("/movies/{id}")).hasAnyRole(USER, ADMIN)
+                
                 // CustomList endpoints
-
                 .requestMatchers(antMatcher("/lists")).hasRole(USER)
                 .requestMatchers(antMatcher("/lists/{id}")).hasRole(USER)
                 .requestMatchers(antMatcher("/lists/{listId}/movies")).hasRole(USER)
@@ -78,6 +78,12 @@ public class SecurityConfig {
                 .requestMatchers(antMatcher("/director-lists/{listId}")).hasRole(USER)
                 .requestMatchers(antMatcher("/director-lists")).hasRole(USER)
                 .requestMatchers(antMatcher("/director-lists/{listId}/directors/{directorId}")).hasRole(USER)
+
+                // Rating endpoints
+                .requestMatchers(antMatcher("/ratings/{userId}/{movieId}")).hasRole(USER)
+                .requestMatchers(antMatcher("/ratings/movie/{movieId}/average")).permitAll()
+                .requestMatchers(antMatcher("/ratings/user/{userId}")).hasRole(USER)
+                .requestMatchers(antMatcher("/ratings/movie/{movieId}")).permitAll()
 
                 .anyRequest().authenticated()
             )
