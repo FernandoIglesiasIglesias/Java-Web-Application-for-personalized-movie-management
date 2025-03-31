@@ -290,7 +290,7 @@ const DirectorListDetails = () => {
                       {director.imageUrl ? (
                         <img
                           src={director.imageUrl}
-                          alt={`${director.firstName} ${director.lastName}`}
+                          alt={director.name}
                           className="director-image"
                           onError={(e) => {
                             e.target.onerror = null;
@@ -299,12 +299,12 @@ const DirectorListDetails = () => {
                         />
                       ) : (
                         <div className="director-placeholder">
-                          <span>{director.firstName.charAt(0)}{director.lastName.charAt(0)}</span>
+                          <span>{director.name.charAt(0)}</span>
                         </div>
                       )}
                     </div>
                     <div className="director-info">
-                      <h3>{`${director.firstName} ${director.lastName}`}</h3>
+                      <h3>{director.name}</h3>
                       <div className="director-meta">
                         {director.knownFor && (
                           <span className="director-known-for">{director.knownFor}</span>

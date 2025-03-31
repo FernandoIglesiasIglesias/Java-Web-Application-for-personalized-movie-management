@@ -290,14 +290,14 @@ const ActorListDetails = () => {
                 <div
                   key={actor.id}
                   className={`actor-card ${theme}`}
-                  onClick={() => handleActorClick(`${actor.firstName} ${actor.lastName}`)}
+                  onClick={() => handleActorClick(actor.name)}
                 >
                   <div className="actor-card-inner">
                     <div className="actor-image-container">
                       {actor.imageUrl ? (
                         <img
                           src={actor.imageUrl}
-                          alt={`${actor.firstName} ${actor.lastName}`}
+                          alt={actor.name}
                           className="actor-image"
                           onError={(e) => {
                             e.target.onerror = null;
@@ -306,12 +306,12 @@ const ActorListDetails = () => {
                         />
                       ) : (
                         <div className="actor-placeholder">
-                          <span>{actor.firstName.charAt(0)}{actor.lastName.charAt(0)}</span>
+                          <span>{actor.name.charAt(0)}</span>
                         </div>
                       )}
                     </div>
                     <div className="actor-info">
-                      <h3>{`${actor.firstName} ${actor.lastName}`}</h3>
+                      <h3>{actor.name}</h3>
                       <div className="actor-meta">
                         {actor.birthDate && (
                           <span className="actor-birth-date">

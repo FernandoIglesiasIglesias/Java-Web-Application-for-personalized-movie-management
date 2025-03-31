@@ -1,4 +1,4 @@
-import { config, appFetch } from './appFetch';
+import { fetchConfig, appFetch } from './appFetch';
 
 /**
  * Get all directors
@@ -6,7 +6,7 @@ import { config, appFetch } from './appFetch';
  * @param {function} onErrors - Callback for error response
  */
 export const getAllDirectors = (onSuccess, onErrors) => {
-    appFetch('/directors/all', config('GET'), onSuccess, onErrors);
+    appFetch('/directors/all', fetchConfig('GET'), onSuccess, onErrors);
 };
 
 /**
@@ -16,7 +16,7 @@ export const getAllDirectors = (onSuccess, onErrors) => {
  * @param {function} onErrors - Callback for error response
  */
 export const getDirectorById = (id, onSuccess, onErrors) => {
-    appFetch(`/directors/${id}`, config('GET'), onSuccess, onErrors);
+    appFetch(`/directors/${id}`, fetchConfig('GET'), onSuccess, onErrors);
 };
 
 /**
@@ -26,34 +26,23 @@ export const getDirectorById = (id, onSuccess, onErrors) => {
  * @param {function} onErrors - Callback for error response
  */
 export const getDirectorByImdbId = (imdbId, onSuccess, onErrors) => {
-    appFetch(`/directors/imdb/${imdbId}`, config('GET'), onSuccess, onErrors);
+    appFetch(`/directors/imdb/${imdbId}`, fetchConfig('GET'), onSuccess, onErrors);
 };
 
-/**
- * Get director by first name and last name
- * @param {string} firstName - Director's first name
- * @param {string} lastName - Director's last name
- * @param {function} onSuccess - Callback for successful response
- * @param {function} onErrors - Callback for error response
- */
-export const getDirectorByName = (firstName, lastName, onSuccess, onErrors) => {
-    const encodedFirstName = encodeURIComponent(firstName);
-    const encodedLastName = encodeURIComponent(lastName);
-    appFetch(`/directors/name?firstName=${encodedFirstName}&lastName=${encodedLastName}`, 
-        config('GET'), onSuccess, onErrors);
-};
-
-/**
- * Update a director by name
- * @param {string} firstName - Director's first name
- * @param {string} lastName - Director's last name
- * @param {object} directorData - Updated director data
- * @param {function} onSuccess - Callback for successful response
- * @param {function} onErrors - Callback for error response
- */
-export const updateDirectorByName = (firstName, lastName, directorData, onSuccess, onErrors) => {
-    const encodedFirstName = encodeURIComponent(firstName);
-    const encodedLastName = encodeURIComponent(lastName);
-    appFetch(`/directors/name/${encodedFirstName}/${encodedLastName}`, 
-        config('PUT', directorData), onSuccess, onErrors);
-};
+export const getDirectorByName = (name, onSuccess, onErrors) => {
+    appFetch(
+      `/directors/name?name=${encodeURIComponent(name)}`,
+      fetchConfig("GET"),
+      onSuccess,
+      onErrors
+    );
+  };
+  
+  export const updateDirectorByName = (name, directorData, onSuccess, onErrors) => {
+    appFetch(
+      `/directors/name/${encodeURIComponent(name)}`,
+      fetchConfig("PUT", directorData),
+      onSuccess,
+      onErrors
+    );
+  };
