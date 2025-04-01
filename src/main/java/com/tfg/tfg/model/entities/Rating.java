@@ -27,7 +27,7 @@ public class Rating {
     private Movie movie;
 
     @Column(name = "rating")
-    private int rating;
+    private float rating;
 
     public Rating() {}
 
@@ -47,11 +47,11 @@ public class Rating {
         this.movie = movie;
     }
 
-    public int getRating() {
+    public float getRating() {
         return rating;
     }
 
-    public void setRating(int rating) {
+    public void setRating(float rating) {
         this.rating = rating;
     }
 

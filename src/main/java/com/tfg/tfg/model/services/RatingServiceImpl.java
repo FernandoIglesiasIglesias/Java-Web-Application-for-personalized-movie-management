@@ -14,6 +14,7 @@ import com.tfg.tfg.model.entities.Users;
 import com.tfg.tfg.model.entities.UsersDao;
 import com.tfg.tfg.model.services.exceptions.InstanceNotFoundException;
 import com.tfg.tfg.model.services.exceptions.InvalidRatingException;
+import com.tfg.tfg.model.services.exceptions.NoRatingsException;
 
 /**
  * Implementation of the Rating Service interface.
@@ -46,11 +47,19 @@ public class RatingServiceImpl implements RatingService {
     }
 
     @Override
-    public Rating rateMovie(Long userId, Long movieId, int ratingValue) 
+    public Rating rateMovie(Long userId, Long movieId, Float ratingValue) 
             throws InstanceNotFoundException, InvalidRatingException {
 
         if (ratingValue < MIN_RATING || ratingValue > MAX_RATING) {
-            throw new InvalidRatingException("Rating value must be between " + MIN_RATING + " and " + MAX_RATING);
+            throw new InvalidRatingException("La valoración debe estar entre " + MIN_RATING + " y " + MAX_RATING);
+        }
+
+        String valueStr = String.valueOf(ratingValue);
+        int decimalPlaces = valueStr.contains(".") ? 
+                          valueStr.length() - valueStr.indexOf('.') - 1 : 0;
+                          
+        if (decimalPlaces > 1) {
+            throw new InvalidRatingException("La valoración solo puede tener un decimal");
         }
 
         Users user = usersDao.findById(userId)
@@ -89,9 +98,16 @@ public class RatingServiceImpl implements RatingService {
 
     @Override
     @Transactional(readOnly = true)
-    public Double getAverageRatingForMovie(Long movieId) throws InstanceNotFoundException {
-        if (!movieDao.existsById(movieId)) {
-            throw new InstanceNotFoundException(MOVIE_ENTITY, movieId);
+    public float getAverageRatingForMovie(Long movieId) throws InstanceNotFoundException, NoRatingsException {
+
+        Optional<Movie> movieOptional = movieDao.findById(movieId);
+
+        Movie movie = movieOptional.orElseThrow(() -> new InstanceNotFoundException(MOVIE_ENTITY, movieId));
+        
+        List<Rating> ratings = ratingDao.findByMovie(movie);
+
+        if (ratings.isEmpty()) {
+            throw new NoRatingsException("La película no tiene valoraciones");
         }
 
         return ratingDao.getAverageRatingByMovieId(movieId);

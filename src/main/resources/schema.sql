@@ -128,7 +128,7 @@ CREATE TABLE IF NOT EXISTS MovieDirectors (
 CREATE TABLE IF NOT EXISTS MovieRatings (
     userId BIGINT NOT NULL,
     movieId BIGINT NOT NULL,
-    rating INT NOT NULL,
+    rating DECIMAL(3,1) NOT NULL,
     CONSTRAINT RatingValueCheck CHECK (rating >= 0 AND rating <= 10),
     CONSTRAINT MovieRatingPK PRIMARY KEY (userId, movieId),
     CONSTRAINT FK_MovieRating_User FOREIGN KEY (userId) REFERENCES Users(id),

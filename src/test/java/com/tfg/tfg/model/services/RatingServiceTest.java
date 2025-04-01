@@ -20,13 +20,14 @@ import com.tfg.tfg.model.entities.Users;
 import com.tfg.tfg.model.entities.UsersDao;
 import com.tfg.tfg.model.services.exceptions.InstanceNotFoundException;
 import com.tfg.tfg.model.services.exceptions.InvalidRatingException;
+import com.tfg.tfg.model.services.exceptions.NoRatingsException;
 
 @SpringBootTest
 @Transactional
 @ActiveProfiles("test")
-public class RatingServiceTest {
+class RatingServiceTest {
 
-    private final Long NON_EXISTENT_ID = -1L;
+    private final Long nonExistentId = -1L;
     
     @Autowired
     private RatingService ratingService;
@@ -45,7 +46,7 @@ public class RatingServiceTest {
     private Movie testMovie2;
     
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         // Limpiar datos de pruebas anteriores
         ratingDao.deleteAll();
         movieDao.deleteAll();
@@ -82,13 +83,13 @@ public class RatingServiceTest {
     }
     
     @Test
-    public void testRateMovie() throws InstanceNotFoundException, InvalidRatingException {
+    void testRateMovie() throws InstanceNotFoundException, InvalidRatingException {
         // Crear una valoración
-        Rating rating = ratingService.rateMovie(testUser.getId(), testMovie.getId(), 8);
+        Rating rating = ratingService.rateMovie(testUser.getId(), testMovie.getId(), 8.0f);
         
         // Verificar que la valoración se creó correctamente
         assertNotNull(rating);
-        assertEquals(8, rating.getRating());
+        assertEquals(8.0f, rating.getRating());
         assertEquals(testUser.getId(), rating.getUser().getId());
         assertEquals(testMovie.getId(), rating.getMovie().getId());
         
@@ -99,13 +100,13 @@ public class RatingServiceTest {
     }
     
     @Test
-    public void testUpdateRating() throws InstanceNotFoundException, InvalidRatingException {
+    void testUpdateRating() throws InstanceNotFoundException, InvalidRatingException {
         // Crear una valoración inicial
-        Rating initialRating = ratingService.rateMovie(testUser.getId(), testMovie.getId(), 7);
+        Rating initialRating = ratingService.rateMovie(testUser.getId(), testMovie.getId(), 7.0f);
         assertEquals(7, initialRating.getRating());
         
         // Actualizar la valoración
-        Rating updatedRating = ratingService.rateMovie(testUser.getId(), testMovie.getId(), 9);
+        Rating updatedRating = ratingService.rateMovie(testUser.getId(), testMovie.getId(), 9.0f);
         
         // Verificar actualización
         assertEquals(9, updatedRating.getRating());
@@ -119,41 +120,41 @@ public class RatingServiceTest {
     }
     
     @Test
-    public void testRateMovieWithInvalidRatingTooLow() {
+    void testRateMovieWithInvalidRatingTooLow() {
         // Verificar que se lanza excepción con valor debajo del mínimo
         assertThrows(InvalidRatingException.class, () -> {
-            ratingService.rateMovie(testUser.getId(), testMovie.getId(), -1);
+            ratingService.rateMovie(testUser.getId(), testMovie.getId(), -1.0f);
         });
     }
     
     @Test
-    public void testRateMovieWithInvalidRatingTooHigh() {
+    void testRateMovieWithInvalidRatingTooHigh() {
         // Verificar que se lanza excepción con valor por encima del máximo
         assertThrows(InvalidRatingException.class, () -> {
-            ratingService.rateMovie(testUser.getId(), testMovie.getId(), 11);
+            ratingService.rateMovie(testUser.getId(), testMovie.getId(), 11.0f);
         });
     }
     
     @Test
-    public void testRateMovieWithNonExistingUser() {
+    void testRateMovieWithNonExistingUser() {
         // Verificar que se lanza excepción con un usuario que no existe
         assertThrows(InstanceNotFoundException.class, () -> {
-            ratingService.rateMovie(NON_EXISTENT_ID, testMovie.getId(), 8);
+            ratingService.rateMovie(nonExistentId, testMovie.getId(), 8.0f);
         });
     }
     
     @Test
-    public void testRateMovieWithNonExistingMovie() {
+    void testRateMovieWithNonExistingMovie() {
         // Verificar que se lanza excepción con una película que no existe
         assertThrows(InstanceNotFoundException.class, () -> {
-            ratingService.rateMovie(testUser.getId(), NON_EXISTENT_ID, 8);
+            ratingService.rateMovie(testUser.getId(), nonExistentId, 8.0f);
         });
     }
     
     @Test
-    public void testGetUserRatingForMovie() throws InstanceNotFoundException, InvalidRatingException {
+    void testGetUserRatingForMovie() throws InstanceNotFoundException, InvalidRatingException {
         // Crear una valoración
-        ratingService.rateMovie(testUser.getId(), testMovie.getId(), 6);
+        ratingService.rateMovie(testUser.getId(), testMovie.getId(), 6.0f);
         
         // Recuperar la valoración
         Rating rating = ratingService.getUserRatingForMovie(testUser.getId(), testMovie.getId());
@@ -166,30 +167,30 @@ public class RatingServiceTest {
     }
     
     @Test
-    public void testGetNonExistingUserRatingForMovie() throws InstanceNotFoundException {
+    void testGetNonExistingUserRatingForMovie() throws InstanceNotFoundException {
         // Verificar que se devuelve null para una valoración que no existe
         Rating rating = ratingService.getUserRatingForMovie(testUser.getId(), testMovie.getId());
         assertNull(rating);
     }
     
     @Test
-    public void testGetUserRatingWithNonExistingUser() {
+    void testGetUserRatingWithNonExistingUser() {
         // Verificar que se lanza excepción con un usuario que no existe
         assertThrows(InstanceNotFoundException.class, () -> {
-            ratingService.getUserRatingForMovie(NON_EXISTENT_ID, testMovie.getId());
+            ratingService.getUserRatingForMovie(nonExistentId, testMovie.getId());
         });
     }
     
     @Test
-    public void testGetUserRatingWithNonExistingMovie() {
+    void testGetUserRatingWithNonExistingMovie() {
         // Verificar que se lanza excepción con una película que no existe
         assertThrows(InstanceNotFoundException.class, () -> {
-            ratingService.getUserRatingForMovie(testUser.getId(), NON_EXISTENT_ID);
+            ratingService.getUserRatingForMovie(testUser.getId(), nonExistentId);
         });
     }
     
     @Test
-    public void testGetAverageRatingForMovie() throws InstanceNotFoundException, InvalidRatingException {
+    void testGetAverageRatingForMovie() throws InstanceNotFoundException, InvalidRatingException, NoRatingsException {
         // Crear usuarios adicionales para múltiples valoraciones
         Users user2 = new Users();
         user2.setUserName("testUser2");
@@ -208,36 +209,36 @@ public class RatingServiceTest {
         user3 = usersDao.save(user3);
         
         // Crear múltiples valoraciones para la misma película
-        ratingService.rateMovie(testUser.getId(), testMovie.getId(), 8);
-        ratingService.rateMovie(user2.getId(), testMovie.getId(), 6);
-        ratingService.rateMovie(user3.getId(), testMovie.getId(), 10);
+        ratingService.rateMovie(testUser.getId(), testMovie.getId(), 8.0f);
+        ratingService.rateMovie(user2.getId(), testMovie.getId(), 6.0f);
+        ratingService.rateMovie(user3.getId(), testMovie.getId(), 10.0f);
         
         // Verificar el promedio
-        Double average = ratingService.getAverageRatingForMovie(testMovie.getId());
+        Float average = ratingService.getAverageRatingForMovie(testMovie.getId());
         assertNotNull(average);
         assertEquals(8.0, average, 0.01); // 8 + 6 + 10 = 24, 24/3 = 8.0
     }
     
     @Test
-    public void testGetAverageRatingForMovieWithNoRatings() throws InstanceNotFoundException {
-        // Verificar que una película sin valoraciones devuelve null
-        Double average = ratingService.getAverageRatingForMovie(testMovie.getId());
-        assertNull(average);
-    }
-    
-    @Test
-    public void testGetAverageRatingForNonExistingMovie() {
-        // Verificar que se lanza excepción con una película que no existe
-        assertThrows(InstanceNotFoundException.class, () -> {
-            ratingService.getAverageRatingForMovie(NON_EXISTENT_ID);
+    void testGetAverageRatingForMovieWithNoRatings() {
+        assertThrows(NoRatingsException.class, () -> {
+            ratingService.getAverageRatingForMovie(testMovie.getId());
         });
     }
     
     @Test
-    public void testGetUserRatings() throws InstanceNotFoundException, InvalidRatingException {
+    void testGetAverageRatingForNonExistingMovie() {
+        // Verificar que se lanza excepción con una película que no existe
+        assertThrows(InstanceNotFoundException.class, () -> {
+            ratingService.getAverageRatingForMovie(nonExistentId);
+        });
+    }
+    
+    @Test
+    void testGetUserRatings() throws InstanceNotFoundException, InvalidRatingException {
         // Crear valoraciones para varias películas
-        ratingService.rateMovie(testUser.getId(), testMovie.getId(), 8);
-        ratingService.rateMovie(testUser.getId(), testMovie2.getId(), 7);
+        ratingService.rateMovie(testUser.getId(), testMovie.getId(), 8.0f);
+        ratingService.rateMovie(testUser.getId(), testMovie2.getId(), 7.0f);
         
         // Verificar que se obtienen todas las valoraciones del usuario
         List<Rating> ratings = ratingService.getUserRatings(testUser.getId());
@@ -264,22 +265,22 @@ public class RatingServiceTest {
     }
     
     @Test
-    public void testGetUserRatingsForUserWithNoRatings() throws InstanceNotFoundException {
+    void testGetUserRatingsForUserWithNoRatings() throws InstanceNotFoundException {
         // Verificar que un usuario sin valoraciones devuelve una lista vacía
         List<Rating> ratings = ratingService.getUserRatings(testUser.getId());
         assertTrue(ratings.isEmpty());
     }
     
     @Test
-    public void testGetUserRatingsForNonExistingUser() {
+    void testGetUserRatingsForNonExistingUser() {
         // Verificar que se lanza excepción con un usuario que no existe
         assertThrows(InstanceNotFoundException.class, () -> {
-            ratingService.getUserRatings(NON_EXISTENT_ID);
+            ratingService.getUserRatings(nonExistentId);
         });
     }
     
     @Test
-    public void testGetMovieRatings() throws InstanceNotFoundException, InvalidRatingException {
+    void testGetMovieRatings() throws InstanceNotFoundException, InvalidRatingException {
         // Crear usuarios adicionales para múltiples valoraciones
         Users user2 = new Users();
         user2.setUserName("testUser2");
@@ -298,9 +299,9 @@ public class RatingServiceTest {
         user3 = usersDao.save(user3);
         
         // Crear múltiples valoraciones para la misma película
-        ratingService.rateMovie(testUser.getId(), testMovie.getId(), 8);
-        ratingService.rateMovie(user2.getId(), testMovie.getId(), 6);
-        ratingService.rateMovie(user3.getId(), testMovie.getId(), 10);
+        ratingService.rateMovie(testUser.getId(), testMovie.getId(), 8.0f);
+        ratingService.rateMovie(user2.getId(), testMovie.getId(), 6.0f);
+        ratingService.rateMovie(user3.getId(), testMovie.getId(), 10.0f);
         
         // Verificar que se obtienen todas las valoraciones de la película
         List<Rating> ratings = ratingService.getMovieRatings(testMovie.getId());
@@ -332,24 +333,24 @@ public class RatingServiceTest {
     }
     
     @Test
-    public void testGetMovieRatingsForMovieWithNoRatings() throws InstanceNotFoundException {
+    void testGetMovieRatingsForMovieWithNoRatings() throws InstanceNotFoundException {
         // Verificar que una película sin valoraciones devuelve una lista vacía
         List<Rating> ratings = ratingService.getMovieRatings(testMovie.getId());
         assertTrue(ratings.isEmpty());
     }
     
     @Test
-    public void testGetMovieRatingsForNonExistingMovie() {
+    void testGetMovieRatingsForNonExistingMovie() {
         // Verificar que se lanza excepción con una película que no existe
         assertThrows(InstanceNotFoundException.class, () -> {
-            ratingService.getMovieRatings(NON_EXISTENT_ID);
+            ratingService.getMovieRatings(nonExistentId);
         });
     }
     
     @Test
-    public void testDeleteRating() throws InstanceNotFoundException, InvalidRatingException {
+    void testDeleteRating() throws InstanceNotFoundException, InvalidRatingException {
         // Crear una valoración
-        ratingService.rateMovie(testUser.getId(), testMovie.getId(), 8);
+        ratingService.rateMovie(testUser.getId(), testMovie.getId(), 8.0f);
         
         // Verificar que existe
         assertTrue(ratingDao.findByUserAndMovie(testUser, testMovie).isPresent());
@@ -362,7 +363,7 @@ public class RatingServiceTest {
     }
     
     @Test
-    public void testDeleteNonExistingRating() {
+    void testDeleteNonExistingRating() {
         // Verificar que se lanza excepción al eliminar una valoración que no existe
         assertThrows(InstanceNotFoundException.class, () -> {
             ratingService.deleteRating(testUser.getId(), testMovie.getId());
@@ -370,18 +371,99 @@ public class RatingServiceTest {
     }
     
     @Test
-    public void testDeleteRatingWithNonExistingUser() {
+    void testDeleteRatingWithNonExistingUser() {
         // Verificar que se lanza excepción con un usuario que no existe
         assertThrows(InstanceNotFoundException.class, () -> {
-            ratingService.deleteRating(NON_EXISTENT_ID, testMovie.getId());
+            ratingService.deleteRating(nonExistentId, testMovie.getId());
         });
     }
     
     @Test
-    public void testDeleteRatingWithNonExistingMovie() {
+    void testDeleteRatingWithNonExistingMovie() {
         // Verificar que se lanza excepción con una película que no existe
         assertThrows(InstanceNotFoundException.class, () -> {
-            ratingService.deleteRating(testUser.getId(), NON_EXISTENT_ID);
+            ratingService.deleteRating(testUser.getId(), nonExistentId);
+        });
+    }
+
+    @Test
+    void testRateMovieWithValidOneDecimalPlace() throws InstanceNotFoundException, InvalidRatingException {
+        // Verificar que se acepta un rating con un decimal
+        Rating rating = ratingService.rateMovie(testUser.getId(), testMovie.getId(), 7.5f);
+        
+        assertNotNull(rating);
+        assertEquals(7.5f, rating.getRating());
+        assertEquals(testUser.getId(), rating.getUser().getId());
+        assertEquals(testMovie.getId(), rating.getMovie().getId());
+        
+        // Verificar que está en la base de datos
+        Optional<Rating> savedRating = ratingDao.findByUserAndMovie(testUser, testMovie);
+        assertTrue(savedRating.isPresent());
+        assertEquals(7.5f, savedRating.get().getRating());
+    }
+
+    @Test
+    void testRateMovieWithTwoDecimalPlaces() {
+        // Verificar que se lanza excepción con dos decimales
+        assertThrows(InvalidRatingException.class, () -> {
+            ratingService.rateMovie(testUser.getId(), testMovie.getId(), 7.55f);
+        });
+    }
+
+    @Test
+    void testRateMovieWithZeroDecimalPlaces() throws InstanceNotFoundException, InvalidRatingException {
+        // Verificar que se acepta un rating sin decimales
+        Rating rating = ratingService.rateMovie(testUser.getId(), testMovie.getId(), 7.0f);
+        
+        assertNotNull(rating);
+        assertEquals(7.0f, rating.getRating());
+    }
+
+    @Test
+    void testRateMovieWithIntegerValue() throws InstanceNotFoundException, InvalidRatingException {
+        // Verificar que se acepta un rating entero
+        Rating rating = ratingService.rateMovie(testUser.getId(), testMovie.getId(), 7f);
+        
+        assertNotNull(rating);
+        assertEquals(7.0f, rating.getRating());
+    }
+
+    @Test
+    void testRateMovieWithExtremeValidValues() throws InstanceNotFoundException, InvalidRatingException {
+        // Verificar valores extremos válidos (0.0 y 10.0)
+        Rating ratingMin = ratingService.rateMovie(testUser.getId(), testMovie.getId(), 0.0f);
+        assertNotNull(ratingMin);
+        assertEquals(0.0f, ratingMin.getRating());
+        
+        Rating ratingMax = ratingService.rateMovie(testUser.getId(), testMovie.getId(), 10.0f);
+        assertNotNull(ratingMax);
+        assertEquals(10.0f, ratingMax.getRating());
+    }
+
+    @Test
+    void testRateMovieWithDecimalAndUpdate() throws InstanceNotFoundException, InvalidRatingException {
+        // Crear una valoración inicial con un decimal
+        Rating initialRating = ratingService.rateMovie(testUser.getId(), testMovie.getId(), 7.5f);
+        assertEquals(7.5f, initialRating.getRating());
+        
+        // Actualizar la valoración con otro valor decimal válido
+        Rating updatedRating = ratingService.rateMovie(testUser.getId(), testMovie.getId(), 8.5f);
+        
+        assertEquals(8.5f, updatedRating.getRating());
+        assertEquals(testUser.getId(), updatedRating.getUser().getId());
+        assertEquals(testMovie.getId(), updatedRating.getMovie().getId());
+        
+        // Verificar que se actualizó en la base de datos
+        Optional<Rating> savedRating = ratingDao.findByUserAndMovie(testUser, testMovie);
+        assertTrue(savedRating.isPresent());
+        assertEquals(8.5f, savedRating.get().getRating());
+    }
+
+    @Test
+    void testRateMovieWithMoreThanTwoDecimalPlaces() {
+        // Verificar que se lanza excepción con más de dos decimales
+        assertThrows(InvalidRatingException.class, () -> {
+            ratingService.rateMovie(testUser.getId(), testMovie.getId(), 7.123f);
         });
     }
 }

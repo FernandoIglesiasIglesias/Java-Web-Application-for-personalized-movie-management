@@ -1,27 +1,17 @@
 package com.tfg.tfg.rest.dtos;
 
-import com.tfg.tfg.model.entities.Rating;
-
 public class RatingDto {
 
     private Long userId;
     private Long movieId;
-    private int rating;
-    private String movieTitle;
+    private Float rating;
 
     public RatingDto() {}
 
-    public RatingDto(Long userId, Long movieId, int rating) {
+    public RatingDto(Long userId, Long movieId, Float rating) {
         this.userId = userId;
         this.movieId = movieId;
         this.rating = rating;
-    }
-
-    public RatingDto(Rating rating) {
-        this.userId = rating.getUser().getId();
-        this.movieId = rating.getMovie().getId();
-        this.rating = rating.getRating();
-        this.movieTitle = rating.getMovie().getTitle();
     }
 
     public Long getUserId() {
@@ -40,19 +30,12 @@ public class RatingDto {
         this.movieId = movieId;
     }
 
-    public int getRating() {
+    public Float getRating() {
         return rating;
     }
 
-    public void setRating(int rating) {
+    public void setRating(Float rating) {
         this.rating = rating;
     }
 
-    public String getMovieTitle() {
-        return movieTitle;
-    }
-
-    public void setMovieTitle(String movieTitle) {
-        this.movieTitle = movieTitle;
-    }
 }

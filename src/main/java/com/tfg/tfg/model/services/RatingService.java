@@ -3,10 +3,9 @@ package com.tfg.tfg.model.services;
 import java.util.List;
 
 import com.tfg.tfg.model.entities.Rating;
-import com.tfg.tfg.model.entities.Movie;
-import com.tfg.tfg.model.entities.Users;
 import com.tfg.tfg.model.services.exceptions.InstanceNotFoundException;
 import com.tfg.tfg.model.services.exceptions.InvalidRatingException;
+import com.tfg.tfg.model.services.exceptions.NoRatingsException;
 
 /**
  * Service for managing movie ratings.
@@ -23,7 +22,7 @@ public interface RatingService {
      * @throws InstanceNotFoundException if the user or movie doesn't exist
      * @throws InvalidRatingException if the rating is outside the allowed range (0-10)
      */
-    Rating rateMovie(Long userId, Long movieId, int ratingValue) 
+    Rating rateMovie(Long userId, Long movieId, Float ratingValue) 
             throws InstanceNotFoundException, InvalidRatingException;
     
     /**
@@ -43,8 +42,9 @@ public interface RatingService {
      * @param movieId ID of the movie
      * @return Average rating of the movie, or null if it has no ratings
      * @throws InstanceNotFoundException if the movie doesn't exist
+     * @throws NoRatingsException if the movie has no ratings
      */
-    Double getAverageRatingForMovie(Long movieId) throws InstanceNotFoundException;
+    float getAverageRatingForMovie(Long movieId) throws InstanceNotFoundException, NoRatingsException;
     
     /**
      * Gets all ratings made by a user.

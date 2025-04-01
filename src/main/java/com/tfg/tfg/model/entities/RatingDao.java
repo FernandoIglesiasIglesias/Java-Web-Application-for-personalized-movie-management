@@ -1,10 +1,5 @@
 package com.tfg.tfg.model.entities;
 
-import com.tfg.tfg.model.entities.Rating;
-import com.tfg.tfg.model.entities.RatingPK;
-import com.tfg.tfg.model.entities.Movie;
-import com.tfg.tfg.model.entities.Users;
-
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -15,7 +10,7 @@ import java.util.Optional;
 public interface RatingDao extends JpaRepository<Rating, RatingPK> {
     
     @Query("SELECT AVG(r.rating) FROM Rating r WHERE r.movie.id = :movieId")
-    Double getAverageRatingByMovieId(@Param("movieId") Long movieId);
+    Float getAverageRatingByMovieId(@Param("movieId") Long movieId);
     
     List<Rating> findByUser(Users user);
     
