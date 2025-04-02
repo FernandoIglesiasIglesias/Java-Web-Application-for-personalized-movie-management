@@ -2,7 +2,14 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useTheme } from "../../../context/ThemeContext";
 import { saveMovie } from "../../../backend/movieService";
+import { 
+  rateMovie, 
+  getUserRatingForMovie,
+  getAverageRatingForMovie,
+  deleteRating
+} from "../../../backend/rateService";
 import AddToListModal from "../../list/components/AddToListModal";
+import { Errors } from "../../common";
 import "./ShowMovie.css";
 
 const ShowMovie = () => {
@@ -13,6 +20,17 @@ const ShowMovie = () => {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showAddToListModal, setShowAddToListModal] = useState(false);
+  const [averageRating, setAverageRating] = useState(null);
+  const [loadingRating, setLoadingRating] = useState(false);
+  const [ratingValue, setRatingValue] = useState("");
+  const [userRating, setUserRating] = useState(null);
+  const [showRatingForm, setShowRatingForm] = useState(false);
+  const [ratingErrors, setRatingErrors] = useState(null);
+  const [ratingSuccess, setRatingSuccess] = useState(false);
+  const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
+
+  // Usuario simulado - normalmente vendría de un contexto de autenticación
+  const userId = 1; // Reemplazar con el ID de usuario real de tu sistema de autenticación
 
   const parseMovieJson = (json) => {
     // Ensure strings are always properly set
@@ -67,6 +85,41 @@ const ShowMovie = () => {
     };
   };
 
+  const loadUserRating = (movieImdbId) => {
+    getUserRatingForMovie(
+      userId,
+      movieImdbId,
+      (data) => {
+        if (data && data.rating !== undefined) {
+          // Guardar también el ID de la valoración para poder eliminarla
+          setUserRating({
+            rating: data.rating,
+            id: data.id
+          });
+          setRatingValue(data.rating.toString());
+        }
+      },
+      (error) => {
+        console.log("Usuario no ha valorado esta película");
+      }
+    );
+  };
+
+  const loadAverageRating = (movieImdbId) => {
+    setLoadingRating(true);
+    getAverageRatingForMovie(
+      movieImdbId,
+      (rating) => {
+        setAverageRating(rating);
+        setLoadingRating(false);
+      },
+      (error) => {
+        console.log("No hay valoraciones para esta película");
+        setLoadingRating(false);
+      }
+    );
+  };
+
   useEffect(() => {
     setLoading(true);
     fetch(
@@ -97,7 +150,14 @@ const ShowMovie = () => {
         // Guardar película en base de datos local
         saveMovie(
           parsedData,
-          (data) => console.log("Película guardada correctamente", data), 
+          (savedMovie) => {
+            console.log("Película guardada correctamente", savedMovie);
+            // Obtener la valoración media una vez que tengamos el imdbId
+            if (savedMovie && savedMovie.imdbId) {
+              loadAverageRating(savedMovie.imdbId);
+              loadUserRating(savedMovie.imdbId);
+            }
+          }, 
           (error) => console.error("Error guardando película", error)
         );
       })
@@ -110,6 +170,100 @@ const ShowMovie = () => {
 
   const handleBackClick = () => {
     navigate(-1);
+  };
+
+  const handleRatingInputChange = (e) => {
+    const value = e.target.value;
+    
+    // Permitir solo números y un punto decimal
+    if (value === "" || /^(\d+)?(\.\d{0,1})?$/.test(value)) {
+      setRatingValue(value);
+    }
+  };
+
+  const handleRatingSubmit = (e) => {
+    e.preventDefault();
+    setRatingErrors(null);
+    
+    let valueFloat = parseFloat(ratingValue);
+    
+    // Validaciones básicas
+    if (ratingValue === "" || isNaN(valueFloat)) {
+      setRatingErrors({ globalError: "Debes introducir un valor numérico." });
+      return;
+    }
+    
+    if (valueFloat < 0 || valueFloat > 10) {
+      setRatingErrors({ globalError: "La valoración debe estar entre 0 y 10." });
+      return;
+    }
+    
+    // Verificar que movie existe y tiene imdbId
+    if (!movie || !movie.imdbId) {
+      setRatingErrors({ globalError: "No se puede valorar la película. Información de película no disponible." });
+      return;
+    }
+    
+    // Enviar valoración usando el imdbId
+    rateMovie(
+      userId,
+      movie.imdbId,
+      valueFloat,
+      (data) => {
+        // Guardar la valoración y su ID
+        setUserRating({
+          rating: data.rating,
+          id: data.id
+        });
+        setRatingSuccess(true);
+        setTimeout(() => setRatingSuccess(false), 3000);
+        
+        // Actualizar la valoración media
+        loadAverageRating(movie.imdbId);
+        setShowRatingForm(false);
+      },
+      (errors) => {
+        setRatingErrors(errors);
+      }
+    );
+  };
+
+  // Modificar handleDeleteRating para usar nuestro diálogo personalizado
+  const handleDeleteRating = () => {
+    // Verificar que movie existe y tiene imdbId
+    if (!movie || !movie.imdbId) {
+      setRatingErrors({ globalError: "No se puede eliminar la valoración. Información de película no disponible." });
+      return;
+    }
+    
+    // Mostrar el diálogo de confirmación en lugar de window.confirm
+    setShowDeleteConfirmation(true);
+  };
+
+  // Función para confirmar la eliminación de la valoración
+  const confirmDeleteRating = () => {
+    deleteRating(
+      userId,
+      movie.imdbId,
+      () => {
+        setUserRating(null);
+        setRatingValue("");
+        setShowDeleteConfirmation(false);
+        
+        // Mostrar mensaje de éxito
+        setRatingSuccess(true);
+        setTimeout(() => {
+          setRatingSuccess(false);
+        }, 3000);
+        
+        // Actualizar la valoración media
+        loadAverageRating(movie.imdbId);
+      },
+      (errors) => {
+        setRatingErrors(errors);
+        setShowDeleteConfirmation(false);
+      }
+    );
   };
 
   // Renderizar estado de error
@@ -188,6 +342,41 @@ const ShowMovie = () => {
               <span className="button-icon">+</span>
               <span>Añadir a lista</span>
             </button>
+
+            {/* Sección de valoración del usuario */}
+            <div className="rating-user-section">
+              {userRating !== null ? (
+                <div className="user-has-rated">
+                  <p className="your-rating-label">Tu valoración:</p>
+                  <div className="your-rating-value">
+                    {typeof userRating === 'object' ? userRating.rating : userRating} 
+                    <span className="star">★</span>
+                  </div>
+                  <div className="rating-actions">
+                    <button 
+                      className={`rating-action-button ${theme}`} 
+                      onClick={() => setShowRatingForm(true)}
+                    >
+                      Editar
+                    </button>
+                    <button 
+                      className={`rating-action-button delete ${theme}`} 
+                      onClick={handleDeleteRating}
+                    >
+                      Eliminar
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <button
+                  className={`rate-movie-button ${theme}`}
+                  onClick={() => setShowRatingForm(true)}
+                >
+                  <span className="button-icon">★</span>
+                  <span>Valorar película</span>
+                </button>
+              )}
+            </div>
           </div>
           
           {/* Información principal */}
@@ -201,9 +390,32 @@ const ShowMovie = () => {
                 {movie.imdbRating && (
                   <span className="movie-rating">
                     <span className="star-icon">★</span> 
-                    {movie.imdbRating.toFixed(1)}
+                    <span className="rating-value">IMDB: {movie.imdbRating.toFixed(1)}</span>
                   </span>
                 )}
+                
+                {/* Bloque añadido: Valoraciones de usuarios */}
+                <div className="user-rating-container">
+                  {loadingRating ? (
+                    <div className="rating-loading">
+                      <div className="mini-spinner"></div>
+                    </div>
+                  ) : (
+                    <>
+                      {averageRating ? (
+                        <span className="movie-user-rating">
+                          <span className="user-star-icon">★</span> 
+                          <span className="user-rating-value">Usuarios: {averageRating.toFixed(1)}</span>
+                        </span>
+                      ) : (
+                        <span className="movie-no-rating">
+                          <span className="no-rating-icon">☆</span>
+                          <span className="no-rating-text">Sin valoraciones</span>
+                        </span>
+                      )}
+                    </>
+                  )}
+                </div>
               </div>
               
               {movie.genres && movie.genres.length > 0 && (
@@ -302,6 +514,112 @@ const ShowMovie = () => {
           movie={movie}
           onClose={() => setShowAddToListModal(false)}
         />
+      )}
+      
+      {/* Formulario para valorar película */}
+      {showRatingForm && (
+        <div className="modal-overlay">
+          <div className={`rating-modal ${theme}`}>
+            <div className="rating-modal-header">
+              <h3>{userRating ? 'Editar valoración' : 'Valorar película'}</h3>
+              <button 
+                className="close-modal-button" 
+                onClick={() => setShowRatingForm(false)}
+                aria-label="Cerrar"
+              >
+                ×
+              </button>
+            </div>
+            
+            {ratingErrors && <Errors errors={ratingErrors} onClose={() => setRatingErrors(null)} />}
+            
+            {ratingSuccess && (
+              <div className="rating-success-message">
+                {userRating ? '¡Valoración actualizada con éxito!' : '¡Valoración guardada con éxito!'}
+              </div>
+            )}
+            
+            <form onSubmit={handleRatingSubmit} className="rating-form">
+              <div className="rating-stars-container">
+                {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(star => (
+                  <span 
+                    key={star} 
+                    className={`rating-star ${parseFloat(ratingValue) >= star ? 'active' : ''}`}
+                    onClick={() => setRatingValue(star.toString())}
+                  >
+                    ★
+                  </span>
+                ))}
+              </div>
+              
+              <div className="rating-input-container">
+                <div className="rating-input-group">
+                  <input
+                    type="text"
+                    value={ratingValue}
+                    onChange={handleRatingInputChange}
+                    className={`rating-input ${theme}`}
+                    placeholder="0-10"
+                    maxLength="4"
+                    autoFocus
+                  />
+                  <span className="rating-range">/ 10</span>
+                </div>
+                <p className="rating-help-text">
+                  Introduce un valor entre 0 y 10 (se permite un decimal)
+                </p>
+              </div>
+              
+              <div className="rating-modal-actions">
+                <button 
+                  type="submit" 
+                  className={`modal-button primary ${theme}`}
+                  disabled={ratingValue === ""}
+                >
+                  {userRating ? 'Actualizar valoración' : 'Guardar valoración'}
+                </button>
+                <button 
+                  type="button" 
+                  className={`modal-button secondary ${theme}`}
+                  onClick={() => setShowRatingForm(false)}
+                >
+                  Cancelar
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+      
+      {/* Diálogo de confirmación para eliminar valoración */}
+      {showDeleteConfirmation && (
+        <div className="modal-overlay">
+          <div className={`confirmation-modal ${theme}`}>
+            <div className="confirmation-modal-header">
+              <h3>¿Eliminar valoración?</h3>
+            </div>
+            <div className="confirmation-modal-content">
+              <p>
+                ¿Estás seguro de que quieres eliminar tu valoración para "{movie.title}"? 
+                <br />Esta acción no se puede deshacer.
+              </p>
+            </div>
+            <div className="confirmation-modal-actions">
+              <button
+                className={`modal-button danger ${theme}`}
+                onClick={confirmDeleteRating}
+              >
+                Eliminar
+              </button>
+              <button
+                className={`modal-button secondary ${theme}`}
+                onClick={() => setShowDeleteConfirmation(false)}
+              >
+                Cancelar
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
