@@ -84,6 +84,13 @@ public class SecurityConfig {
                 .requestMatchers(antMatcher("/ratings/movie/{imdbId}/average")).permitAll()
                 .requestMatchers(antMatcher("/ratings/user/{userId}")).hasRole(USER)
                 .requestMatchers(antMatcher("/ratings/movie/{imdbId}")).permitAll()
+                
+                // Review endpoints
+                .requestMatchers(antMatcher("/reviews")).hasRole(USER)
+                .requestMatchers(antMatcher("/reviews/{id}")).hasRole(USER)
+                .requestMatchers(antMatcher("/reviews/movie/{imdbId}")).permitAll()
+                .requestMatchers(antMatcher("/reviews/user/{userId}")).hasRole(USER)
+                .requestMatchers(antMatcher("/reviews/{id}/vote")).hasRole(USER)
 
                 .anyRequest().authenticated()
             )
