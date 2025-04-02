@@ -4,7 +4,7 @@ import { useTheme } from "../../../context/ThemeContext";
 import { Errors } from "../../common";
 import "./AddToListModal.css"; // Reutilizamos los estilos existentes
 
-const AddActorToListModal = ({ actor, onClose }) => {
+const AddActorToListModal = ({ actor, onClose, authenticatedUser }) => {
   const { theme } = useTheme();
   const [lists, setLists] = useState([]);
   const [selectedList, setSelectedList] = useState("");
@@ -15,7 +15,8 @@ const AddActorToListModal = ({ actor, onClose }) => {
   const [loading, setLoading] = useState(true);
   const [animateSuccess, setAnimateSuccess] = useState(false);
   const [successType, setSuccessType] = useState("add"); // add o remove
-  const [userId, setUserId] = useState(1); // ID de usuario por defecto, modificar según necesidades
+
+  const userId = authenticatedUser ? authenticatedUser.user.id : null;
 
 // Función mejorada para cargar listas y detectar correctamente si un actor ya está en ellas
 const loadLists = async () => {

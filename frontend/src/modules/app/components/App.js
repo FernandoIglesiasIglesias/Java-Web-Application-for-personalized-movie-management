@@ -67,16 +67,16 @@ const App = () => {
             
             {/* Rutas protegidas - requieren autenticación */}
             <Route path="/home" element={authenticatedUser ? <Home user={authenticatedUser.user} /> : <Navigate to="/login" />} />
-            <Route path="/settings" element={authenticatedUser ? <Settings user={authenticatedUser.user} setAuthenticatedUser={setAuthenticatedUser}/> : <Navigate to="/login" />} />
-            <Route path="/user/lists" element={authenticatedUser ? <UserLists /> : <Navigate to="/login" />} />
-            <Route path="/lists/:id" element={authenticatedUser ? <MovieListDetails /> : <Navigate to="/login" />} />
-            <Route path="/actor-lists/:id" element={authenticatedUser ? <ActorListDetails /> : <Navigate to="/login" />} />
-            <Route path="/director-lists/:id" element={authenticatedUser ? <DirectorListDetails /> : <Navigate to="/login" />} />
+            <Route path="/settings" element={authenticatedUser ? <Settings user={authenticatedUser.user} setAuthenticatedUser={setAuthenticatedUser} /> : <Navigate to="/login" />} />
+            <Route path="/user/lists" element={authenticatedUser ? <UserLists authenticatedUser={authenticatedUser} /> : <Navigate to="/login" />} />
+            <Route path="/lists/:id" element={authenticatedUser ? <MovieListDetails authenticatedUser={authenticatedUser} /> : <Navigate to="/login" />} />
+            <Route path="/actor-lists/:id" element={authenticatedUser ? <ActorListDetails authenticatedUser={authenticatedUser} /> : <Navigate to="/login" />} />
+            <Route path="/director-lists/:id" element={authenticatedUser ? <DirectorListDetails authenticatedUser={authenticatedUser} /> : <Navigate to="/login" />} />
             
             {/* Rutas semi-protegidas - muestran contenido pero con funcionalidad limitada para usuarios no autenticados */}
-            <Route path="/movies/:id" element={<ShowMovie />} />
-            <Route path="/actors/:actorName" element={<ShowActor />} />
-            <Route path="/directors/:directorName" element={<ShowDirector />} />
+            <Route path="/movies/:id" element={<ShowMovie authenticatedUser={authenticatedUser} />} />
+            <Route path="/actors/:actorName" element={<ShowActor authenticatedUser={authenticatedUser} />} />
+            <Route path="/directors/:directorName" element={<ShowDirector authenticatedUser={authenticatedUser} />} />
             {/* Ruta de fallback */}
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>
