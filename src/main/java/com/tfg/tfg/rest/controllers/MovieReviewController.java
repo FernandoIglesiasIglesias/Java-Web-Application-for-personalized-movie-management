@@ -5,7 +5,6 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,6 +16,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.tfg.tfg.model.entities.MovieReview;
+import com.tfg.tfg.model.entities.ReviewVoteDao;
 import com.tfg.tfg.model.services.MovieReviewService;
 import com.tfg.tfg.model.services.exceptions.InstanceNotFoundException;
 import com.tfg.tfg.model.services.exceptions.PermissionException;
@@ -29,9 +29,11 @@ import com.tfg.tfg.rest.dtos.ReviewVoteDto;
 public class MovieReviewController {
 
     private final MovieReviewService movieReviewService;
+    private final ReviewVoteDao reviewVoteDao;
         
-    public MovieReviewController(MovieReviewService movieReviewService) {
+    public MovieReviewController(MovieReviewService movieReviewService, ReviewVoteDao reviewVoteDao) {
         this.movieReviewService = movieReviewService;
+        this.reviewVoteDao = reviewVoteDao;
     }
     
     @PostMapping
@@ -47,7 +49,7 @@ public class MovieReviewController {
             reviewDto.getContent()
         );
         
-        return MovieReviewConversor.toMovieReviewDto(review);
+        return MovieReviewConversor.toMovieReviewDtoWithVotes(review, userId, movieReviewService, reviewVoteDao);
     }
     
     @PutMapping("/{id}")
@@ -63,7 +65,7 @@ public class MovieReviewController {
             reviewDto.getContent()
         );
         
-        return MovieReviewConversor.toMovieReviewDto(review);
+        return MovieReviewConversor.toMovieReviewDtoWithVotes(review, userId, movieReviewService, reviewVoteDao);
     }
     
     @DeleteMapping("/{id}")
@@ -76,11 +78,15 @@ public class MovieReviewController {
     }
     
     @GetMapping("/movie/{imdbId}")
-    public List<MovieReviewDto> getMovieReviews(@PathVariable String imdbId) 
+    public List<MovieReviewDto> getMovieReviews(@RequestAttribute(required = false) Long userId, 
+                                               @PathVariable String imdbId) 
             throws InstanceNotFoundException {
         
-        return MovieReviewConversor.toMovieReviewDtos(
-            movieReviewService.getMovieReviews(imdbId)
+        return MovieReviewConversor.toMovieReviewDtosWithVotes(
+            movieReviewService.getMovieReviews(imdbId),
+            userId,
+            movieReviewService,
+            reviewVoteDao
         );
     }
     
@@ -88,8 +94,11 @@ public class MovieReviewController {
     public List<MovieReviewDto> getUserReviews(@PathVariable Long userId) 
             throws InstanceNotFoundException {
         
-        return MovieReviewConversor.toMovieReviewDtos(
-            movieReviewService.getUserReviews(userId)
+        return MovieReviewConversor.toMovieReviewDtosWithVotes(
+            movieReviewService.getUserReviews(userId),
+            userId,
+            movieReviewService,
+            reviewVoteDao
         );
     }
     
@@ -101,7 +110,7 @@ public class MovieReviewController {
         
         MovieReview review = movieReviewService.voteReview(userId, id, voteDto.isHelpful());
         
-        return MovieReviewConversor.toMovieReviewDto(review);
+        return MovieReviewConversor.toMovieReviewDtoWithVotes(review, userId, movieReviewService, reviewVoteDao);
     }
     
     @DeleteMapping("/{id}/vote")
