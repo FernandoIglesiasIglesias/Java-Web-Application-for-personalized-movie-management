@@ -47,26 +47,13 @@ public class RatingServiceImpl implements RatingService {
     }
 
     @Override
-    public Rating rateMovie(Long userId, Long movieId, Float ratingValue) 
+    public Rating rateMovie(Long userId, String imdbId, Float ratingValue) 
             throws InstanceNotFoundException, InvalidRatingException {
 
-        if (ratingValue < MIN_RATING || ratingValue > MAX_RATING) {
-            throw new InvalidRatingException("La valoración debe estar entre " + MIN_RATING + " y " + MAX_RATING);
-        }
+        validateRatingValue(ratingValue);
 
-        String valueStr = String.valueOf(ratingValue);
-        int decimalPlaces = valueStr.contains(".") ? 
-                          valueStr.length() - valueStr.indexOf('.') - 1 : 0;
-                          
-        if (decimalPlaces > 1) {
-            throw new InvalidRatingException("La valoración solo puede tener un decimal");
-        }
-
-        Users user = usersDao.findById(userId)
-            .orElseThrow(() -> new InstanceNotFoundException(USER_ENTITY, userId));
-
-        Movie movie = movieDao.findById(movieId)
-            .orElseThrow(() -> new InstanceNotFoundException(MOVIE_ENTITY, movieId));
+        Users user = findUserById(userId);
+        Movie movie = findMovieByImdbId(imdbId);
 
         Optional<Rating> existingRating = ratingDao.findByUserAndMovie(user, movie);
         Rating rating;
@@ -86,66 +73,85 @@ public class RatingServiceImpl implements RatingService {
 
     @Override
     @Transactional(readOnly = true)
-    public Rating getUserRatingForMovie(Long userId, Long movieId) throws InstanceNotFoundException {
-        Users user = usersDao.findById(userId)
-            .orElseThrow(() -> new InstanceNotFoundException(USER_ENTITY, userId));
+    public Rating getUserRatingForMovie(String imdbId, Long userId) throws InstanceNotFoundException {
 
-        Movie movie = movieDao.findById(movieId)
-            .orElseThrow(() -> new InstanceNotFoundException(MOVIE_ENTITY, movieId));
-
+        Users user = findUserById(userId);
+        Movie movie = findMovieByImdbId(imdbId);
         return ratingDao.findByUserAndMovie(user, movie).orElse(null);
+
     }
 
     @Override
     @Transactional(readOnly = true)
-    public float getAverageRatingForMovie(Long movieId) throws InstanceNotFoundException, NoRatingsException {
+    public float getAverageRatingForMovie(String imdbId) throws InstanceNotFoundException, NoRatingsException {
 
-        Optional<Movie> movieOptional = movieDao.findById(movieId);
-
-        Movie movie = movieOptional.orElseThrow(() -> new InstanceNotFoundException(MOVIE_ENTITY, movieId));
+        Movie movie = findMovieByImdbId(imdbId);
         
         List<Rating> ratings = ratingDao.findByMovie(movie);
-
         if (ratings.isEmpty()) {
             throw new NoRatingsException("La película no tiene valoraciones");
         }
 
-        return ratingDao.getAverageRatingByMovieId(movieId);
+        return ratingDao.getAverageRatingByMovieId(movie.getId());
+
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<Rating> getUserRatings(Long userId) throws InstanceNotFoundException {
-        Users user = usersDao.findById(userId)
-            .orElseThrow(() -> new InstanceNotFoundException(USER_ENTITY, userId));
 
+        Users user = findUserById(userId);
         return ratingDao.findByUser(user);
+
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<Rating> getMovieRatings(Long movieId) throws InstanceNotFoundException {
-        Movie movie = movieDao.findById(movieId)
-            .orElseThrow(() -> new InstanceNotFoundException(MOVIE_ENTITY, movieId));
+    public List<Rating> getMovieRatings(String imdbId) throws InstanceNotFoundException {
 
+        Movie movie = findMovieByImdbId(imdbId);
         return ratingDao.findByMovie(movie);
+
     }
 
     @Override
-    public void deleteRating(Long userId, Long movieId) throws InstanceNotFoundException {
-        Users user = usersDao.findById(userId)
-            .orElseThrow(() -> new InstanceNotFoundException(USER_ENTITY, userId));
+    public void deleteRating(Long userId, String imdbId) throws InstanceNotFoundException {
 
-        Movie movie = movieDao.findById(movieId)
-            .orElseThrow(() -> new InstanceNotFoundException(MOVIE_ENTITY, movieId));
+        Users user = findUserById(userId);
+        Movie movie = findMovieByImdbId(imdbId);
 
         Optional<Rating> rating = ratingDao.findByUserAndMovie(user, movie);
-
         if (!rating.isPresent()) {
             throw new InstanceNotFoundException(RATING_ENTITY, 
-                "userId=" + userId + ", movieId=" + movieId);
+                "userId=" + userId + ", imdbId=" + imdbId);
         }
 
         ratingDao.delete(rating.get());
+
+    }
+
+    private void validateRatingValue(Float ratingValue) throws InvalidRatingException {
+
+        if (ratingValue < MIN_RATING || ratingValue > MAX_RATING) {
+            throw new InvalidRatingException("La valoración debe estar entre " + MIN_RATING + " y " + MAX_RATING);
+        }
+
+        String valueStr = String.valueOf(ratingValue);
+        int decimalPlaces = valueStr.contains(".") ? 
+                            valueStr.length() - valueStr.indexOf('.') - 1 : 0;
+                            
+        if (decimalPlaces > 1) {
+            throw new InvalidRatingException("La valoración solo puede tener un decimal");
+        }
+    }
+
+    private Users findUserById(Long userId) throws InstanceNotFoundException {
+        return usersDao.findById(userId)
+            .orElseThrow(() -> new InstanceNotFoundException(USER_ENTITY, userId));
+    }
+
+    private Movie findMovieByImdbId(String imdbId) throws InstanceNotFoundException {
+        return movieDao.findByImdbId(imdbId)
+            .orElseThrow(() -> new InstanceNotFoundException(MOVIE_ENTITY, imdbId));
     }
 }

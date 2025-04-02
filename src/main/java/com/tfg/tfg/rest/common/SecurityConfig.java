@@ -80,10 +80,10 @@ public class SecurityConfig {
                 .requestMatchers(antMatcher("/director-lists/{listId}/directors/{directorId}")).hasRole(USER)
 
                 // Rating endpoints
-                .requestMatchers(antMatcher("/ratings/{userId}/{movieId}")).hasRole(USER)
-                .requestMatchers(antMatcher("/ratings/movie/{movieId}/average")).permitAll()
+                .requestMatchers(antMatcher("/ratings/{userId}/{imdbId}")).hasRole(USER)
+                .requestMatchers(antMatcher("/ratings/movie/{imdbId}/average")).permitAll()
                 .requestMatchers(antMatcher("/ratings/user/{userId}")).hasRole(USER)
-                .requestMatchers(antMatcher("/ratings/movie/{movieId}")).permitAll()
+                .requestMatchers(antMatcher("/ratings/movie/{imdbId}")).permitAll()
 
                 .anyRequest().authenticated()
             )

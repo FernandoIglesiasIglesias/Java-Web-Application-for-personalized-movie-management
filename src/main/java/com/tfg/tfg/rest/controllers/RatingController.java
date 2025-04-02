@@ -1,5 +1,7 @@
 package com.tfg.tfg.rest.controllers;
 
+import com.tfg.tfg.model.entities.Movie;
+import com.tfg.tfg.model.entities.MovieDao;
 import com.tfg.tfg.model.entities.Rating;
 import com.tfg.tfg.model.services.RatingService;
 import com.tfg.tfg.model.services.exceptions.InstanceNotFoundException;
@@ -11,17 +13,18 @@ import com.tfg.tfg.rest.dtos.RatingDto;
 
 import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/ratings")
 public class RatingController {
 
     private final RatingService ratingService;
-
     private final MessageSource messageSource;
     
     public RatingController(RatingService ratingService, MessageSource messageSource) {
@@ -53,30 +56,29 @@ public class RatingController {
         return new ErrorsDto(errorMessage);
     }
 
-    @PostMapping("/{userId}/{movieId}")
+    @PostMapping("/{userId}/{imdbId}")
     @ResponseStatus(HttpStatus.CREATED)
     public RatingDto rateMovie(
             @PathVariable Long userId,
-            @PathVariable Long movieId,
+            @PathVariable String imdbId,
             @RequestParam Float value) throws InstanceNotFoundException, InvalidRatingException {
         
-        return RatingConversor.toRatingDto(ratingService.rateMovie(userId, movieId, value));
+        return RatingConversor.toRatingDto(ratingService.rateMovie(userId, imdbId, value));
     }
 
-    @GetMapping("/{userId}/{movieId}")
+    @GetMapping("/{userId}/{imdbId}")
     public RatingDto getUserRatingForMovie(
             @PathVariable Long userId, 
-            @PathVariable Long movieId) throws InstanceNotFoundException {
+            @PathVariable String imdbId) throws InstanceNotFoundException {
         
-        return RatingConversor.toRatingDto(ratingService.getUserRatingForMovie(userId, movieId));
+        return RatingConversor.toRatingDto(ratingService.getUserRatingForMovie(imdbId, userId));
     }
 
-    @GetMapping("/movie/{movieId}/average")
+    @GetMapping("/movie/{imdbId}/average")
     public Float getAverageRatingForMovie(
-            @PathVariable Long movieId) throws InstanceNotFoundException, NoRatingsException {
+            @PathVariable String imdbId) throws InstanceNotFoundException, NoRatingsException {
         
-        return ratingService.getAverageRatingForMovie(movieId);
-
+        return ratingService.getAverageRatingForMovie(imdbId);
     }
 
     @GetMapping("/user/{userId}")
@@ -86,19 +88,20 @@ public class RatingController {
         return RatingConversor.toRatingDtos(ratingService.getUserRatings(userId));
     }
 
-    @GetMapping("/movie/{movieId}")
+    @GetMapping("/movie/{imdbId}")
     public List<RatingDto> getMovieRatings(
-            @PathVariable Long movieId) throws InstanceNotFoundException {
+            @PathVariable String imdbId) throws InstanceNotFoundException {
         
-        return RatingConversor.toRatingDtos(ratingService.getMovieRatings(movieId));
+        return RatingConversor.toRatingDtos(ratingService.getMovieRatings(imdbId));
     }
 
-    @DeleteMapping("/{userId}/{movieId}")
+    @DeleteMapping("/{userId}/{imdbId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteRating(
             @PathVariable Long userId, 
-            @PathVariable Long movieId) throws InstanceNotFoundException {
+            @PathVariable String imdbId) throws InstanceNotFoundException {
         
-        ratingService.deleteRating(userId, movieId);
+        ratingService.deleteRating(userId, imdbId);
     }
+
 }
