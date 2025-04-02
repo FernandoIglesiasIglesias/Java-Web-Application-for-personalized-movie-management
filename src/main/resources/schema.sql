@@ -124,3 +124,13 @@ CREATE TABLE IF NOT EXISTS MovieDirectors (
     CONSTRAINT FK_MovieDirector_Movie FOREIGN KEY (movieId) REFERENCES Movies(id),
     CONSTRAINT FK_MovieDirector_Director FOREIGN KEY (directorId) REFERENCES Directors(id)
 );
+
+CREATE TABLE IF NOT EXISTS MovieRatings (
+    userId BIGINT NOT NULL,
+    movieId BIGINT NOT NULL,
+    rating DECIMAL(3,1) NOT NULL,
+    CONSTRAINT RatingValueCheck CHECK (rating >= 0 AND rating <= 10),
+    CONSTRAINT MovieRatingPK PRIMARY KEY (userId, movieId),
+    CONSTRAINT FK_MovieRating_User FOREIGN KEY (userId) REFERENCES Users(id),
+    CONSTRAINT FK_MovieRating_Movie FOREIGN KEY (movieId) REFERENCES Movies(id)
+);
