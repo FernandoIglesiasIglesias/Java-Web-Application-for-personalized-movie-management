@@ -12,7 +12,7 @@ import AddToListModal from "../../list/components/AddToListModal";
 import { Errors } from "../../common";
 import "./ShowMovie.css";
 
-const ShowMovie = () => {
+const ShowMovie = ({ authenticatedUser }) => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { theme } = useTheme();
@@ -29,8 +29,8 @@ const ShowMovie = () => {
   const [ratingSuccess, setRatingSuccess] = useState(false);
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
 
-  // Usuario simulado - normalmente vendría de un contexto de autenticación
-  const userId = 1; // Reemplazar con el ID de usuario real de tu sistema de autenticación
+  // Obtener el ID de usuario de forma segura desde las props
+  const userId = authenticatedUser ? authenticatedUser.user.id : null;
 
   const parseMovieJson = (json) => {
     // Ensure strings are always properly set
@@ -86,6 +86,9 @@ const ShowMovie = () => {
   };
 
   const loadUserRating = (movieImdbId) => {
+    // Solo cargar valoración si hay un usuario autenticado
+    if (!userId) return;
+    
     getUserRatingForMovie(
       userId,
       movieImdbId,
@@ -155,7 +158,10 @@ const ShowMovie = () => {
             // Obtener la valoración media una vez que tengamos el imdbId
             if (savedMovie && savedMovie.imdbId) {
               loadAverageRating(savedMovie.imdbId);
-              loadUserRating(savedMovie.imdbId);
+              // Solo cargar la valoración del usuario si hay un usuario autenticado
+              if (userId) {
+                loadUserRating(savedMovie.imdbId);
+              }
             }
           }, 
           (error) => console.error("Error guardando película", error)
@@ -166,7 +172,7 @@ const ShowMovie = () => {
         setError(error);
         setLoading(false);
       });
-  }, [id]);
+  }, [id, userId]); // Incluir userId en las dependencias
 
   const handleBackClick = () => {
     navigate(-1);
@@ -181,9 +187,41 @@ const ShowMovie = () => {
     }
   };
 
+  // Función para manejar el clic en "Añadir a lista"
+  const handleAddToListClick = () => {
+    // Verificar si el usuario está autenticado
+    if (!authenticatedUser) {
+      // Redirigir a la página de login
+      navigate("/login", { state: { from: `/movies/${id}` } });
+      return;
+    }
+    
+    // Si está autenticado, mostrar el modal
+    setShowAddToListModal(true);
+  };
+
+  // Función para manejar el clic en "Valorar película"
+  const handleRateClick = () => {
+    // Verificar si el usuario está autenticado
+    if (!authenticatedUser) {
+      // Redirigir a la página de login
+      navigate("/login", { state: { from: `/movies/${id}` } });
+      return;
+    }
+    
+    // Si está autenticado, mostrar el formulario de valoración
+    setShowRatingForm(true);
+  };
+
   const handleRatingSubmit = (e) => {
     e.preventDefault();
     setRatingErrors(null);
+    
+    // Verificar que el usuario está autenticado
+    if (!userId) {
+      navigate("/login", { state: { from: `/movies/${id}` } });
+      return;
+    }
     
     let valueFloat = parseFloat(ratingValue);
     
@@ -228,8 +266,14 @@ const ShowMovie = () => {
     );
   };
 
-  // Modificar handleDeleteRating para usar nuestro diálogo personalizado
+  // Modificar handleDeleteRating para verificar autenticación
   const handleDeleteRating = () => {
+    // Verificar que el usuario está autenticado
+    if (!userId) {
+      navigate("/login", { state: { from: `/movies/${id}` } });
+      return;
+    }
+    
     // Verificar que movie existe y tiene imdbId
     if (!movie || !movie.imdbId) {
       setRatingErrors({ globalError: "No se puede eliminar la valoración. Información de película no disponible." });
@@ -242,6 +286,12 @@ const ShowMovie = () => {
 
   // Función para confirmar la eliminación de la valoración
   const confirmDeleteRating = () => {
+    // Verificar nuevamente que el usuario está autenticado
+    if (!userId) {
+      navigate("/login", { state: { from: `/movies/${id}` } });
+      return;
+    }
+    
     deleteRating(
       userId,
       movie.imdbId,
@@ -337,7 +387,7 @@ const ShowMovie = () => {
             {/* Botón para añadir a lista */}
             <button
               className={`add-to-list-button ${theme}`}
-              onClick={() => setShowAddToListModal(true)}
+              onClick={handleAddToListClick}
             >
               <span className="button-icon">+</span>
               <span>Añadir a lista</span>
@@ -345,7 +395,7 @@ const ShowMovie = () => {
 
             {/* Sección de valoración del usuario */}
             <div className="rating-user-section">
-              {userRating !== null ? (
+              {userId && userRating !== null ? (
                 <div className="user-has-rated">
                   <p className="your-rating-label">Tu valoración:</p>
                   <div className="your-rating-value">
@@ -355,7 +405,7 @@ const ShowMovie = () => {
                   <div className="rating-actions">
                     <button 
                       className={`rating-action-button ${theme}`} 
-                      onClick={() => setShowRatingForm(true)}
+                      onClick={handleRateClick}
                     >
                       Editar
                     </button>
@@ -370,7 +420,7 @@ const ShowMovie = () => {
               ) : (
                 <button
                   className={`rate-movie-button ${theme}`}
-                  onClick={() => setShowRatingForm(true)}
+                  onClick={handleRateClick}
                 >
                   <span className="button-icon">★</span>
                   <span>Valorar película</span>
@@ -508,11 +558,12 @@ const ShowMovie = () => {
         </div>
       </div>
       
-      {/* Modal para añadir a lista */}
+      {/* Modal para añadir a lista - Pasa el authenticatedUser */}
       {showAddToListModal && (
         <AddToListModal
           movie={movie}
           onClose={() => setShowAddToListModal(false)}
+          authenticatedUser={authenticatedUser}
         />
       )}
       

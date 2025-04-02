@@ -7,7 +7,7 @@ import { useTheme } from "../../../context/ThemeContext";
 import { Errors } from "../../common";
 import "./UserLists.css";
 
-const UserLists = () => {
+const UserLists = ({ authenticatedUser }) => {
   const navigate = useNavigate();
   const { theme } = useTheme();
   
@@ -25,8 +25,7 @@ const UserLists = () => {
   const [isSelectOpen, setIsSelectOpen] = useState(false);
   const selectRef = useRef(null);
 
-  // Get current user ID from session/auth context
-  const userId = 1; // Replace with actual user ID from your auth system
+  const userId = authenticatedUser ? authenticatedUser.user.id : null;
 
   // Function to load movie lists
   const loadMovieLists = useCallback(() => {
