@@ -10,6 +10,7 @@ import {
 } from "../../../backend/rateService";
 import AddToListModal from "../../list/components/AddToListModal";
 import { Errors } from "../../common";
+import MovieReviews from './MovieReviews';
 import "./ShowMovie.css";
 
 const ShowMovie = ({ authenticatedUser }) => {
@@ -555,6 +556,9 @@ const ShowMovie = ({ authenticatedUser }) => {
               )}
             </div>
           </div>
+        </div>
+        <div className="movie-section reviews-section">
+          <MovieReviews movieId={movie.imdbId} authenticatedUser={authenticatedUser} />
         </div>
       </div>
       

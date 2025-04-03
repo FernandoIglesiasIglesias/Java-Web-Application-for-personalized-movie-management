@@ -83,7 +83,6 @@ body.dark .back-button:hover {
 }
 
 .movie-details-poster-container {
-  position: sticky;
   top: calc(var(--header-height, 60px) + 0.25rem);
   display: flex;
   flex-direction: column;
