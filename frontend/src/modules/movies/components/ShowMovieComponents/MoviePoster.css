@@ -1,0 +1,248 @@
+.movie-details-poster-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 250px;
+}
+
+.movie-poster-image {
+  width: 100%;
+  height: auto;
+  max-width: 250px;
+  border-radius: 8px;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+  transition: transform var(--transition-duration);
+}
+
+.movie-poster-placeholder {
+  width: 100%;
+  max-width: 250px;
+  aspect-ratio: 2/3;
+  background-color: var(--card-background-light);
+  border-radius: 8px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: var(--text-secondary-light);
+  font-style: italic;
+}
+
+.movie-details-poster-container.dark .movie-poster-placeholder {
+  background-color: var(--card-background-dark);
+  color: var(--text-secondary-dark);
+}
+
+/* Botón de añadir a lista */
+.add-to-list-button {
+  width: 100%;
+  max-width: 250px;
+  margin-top: 1rem;
+  padding: 0.7rem 0;
+  border: none;
+  border-radius: 6px;
+  background-color: var(--primary-color-light);
+  color: white;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  transition: background-color var(--transition-duration);
+}
+
+.add-to-list-button:hover {
+  background-color: var(--primary-hover-light);
+}
+
+.add-to-list-button.dark {
+  background-color: var(--primary-color-dark);
+}
+
+.add-to-list-button.dark:hover {
+  background-color: var(--primary-hover-dark);
+}
+
+.button-icon {
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+/* Sección de valoración del usuario */
+.rating-user-section {
+  margin-top: 1rem;
+  width: 100%;
+  max-width: 250px;
+}
+
+/* Estilos cuando el usuario ya ha valorado */
+.user-has-rated {
+  width: 100%;
+  background-color: var(--card-background-light);
+  border-radius: 8px;
+  padding: 16px;
+  text-align: center;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
+}
+
+.user-has-rated.dark {
+  background-color: var(--card-background-dark);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.25);
+}
+
+.your-rating-label {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--text-secondary-light);
+  font-weight: 500;
+}
+
+.your-rating-label.dark {
+  color: var(--text-secondary-dark);
+}
+
+.your-rating-value {
+  font-size: 2.2rem;
+  font-weight: 700;
+  margin: 8px 0;
+  color: var(--text-color-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.your-rating-value.dark {
+  color: var(--text-color-dark);
+}
+
+.your-rating-value .star {
+  color: #ffc107;
+  margin-left: 5px;
+}
+
+.rating-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 12px;
+  width: 100%;
+}
+
+.rating-action-button {
+  flex: 1;
+  padding: 8px 0;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.rating-action-button.light {
+  background-color: #e9ecef;
+  color: var(--text-color-light);
+}
+
+.rating-action-button.dark {
+  background-color: #333;
+  color: var(--text-color-dark);
+}
+
+.rating-action-button.light:hover {
+  background-color: #dee2e6;
+}
+
+.rating-action-button.dark:hover {
+  background-color: #444;
+}
+
+.rating-action-button.delete.light {
+  background-color: #ffebee;
+  color: #d32f2f;
+}
+
+.rating-action-button.delete.dark {
+  background-color: rgba(211, 47, 47, 0.2);
+  color: #ef5350;
+}
+
+.rating-action-button.delete.light:hover {
+  background-color: #ffcdd2;
+}
+
+.rating-action-button.delete.dark:hover {
+  background-color: rgba(211, 47, 47, 0.3);
+}
+
+.rate-movie-button {
+  width: 100%;
+  padding: 12px 0;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: background-color var(--transition-duration);
+}
+
+.rate-movie-button.light {
+  background-color: var(--primary-color-light);
+  color: white;
+}
+
+.rate-movie-button.dark {
+  background-color: var(--primary-color-dark);
+  color: white;
+}
+
+.rate-movie-button.light:hover {
+  background-color: var(--primary-hover-light);
+}
+
+.rate-movie-button.dark:hover {
+  background-color: var(--primary-hover-dark);
+}
+
+.rate-movie-button .button-icon {
+  color: #ffd700;
+}
+
+@media (max-width: 768px) {
+  .movie-details-poster-container {
+    width: 100%;
+    align-items: center;
+    margin-bottom: 1.5rem;
+  }
+
+  .movie-poster-image {
+    max-width: 200px;
+  }
+
+  .add-to-list-button,
+  .rate-movie-button,
+  .rating-user-section {
+    max-width: 200px;
+  }
+}
+
+@media (max-width: 576px) {
+  .movie-poster-image {
+    max-width: 180px;
+  }
+  
+  .add-to-list-button, 
+  .rate-movie-button,
+  .rating-user-section {
+    max-width: 180px;
+  }
+  
+  .rating-actions {
+    flex-direction: column;
+    gap: 8px;
+  }
+}

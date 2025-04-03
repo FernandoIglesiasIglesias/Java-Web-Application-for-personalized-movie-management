@@ -9,8 +9,14 @@ import {
   deleteRating
 } from "../../../backend/rateService";
 import AddToListModal from "../../list/components/AddToListModal";
-import { Errors } from "../../common";
-import MovieReviews from './MovieReviews';
+import MovieReviews from './ShowMovieComponents/MovieReviews';
+import MovieHeader from "./ShowMovieComponents/MovieHeader";
+import MoviePoster from "./ShowMovieComponents/MoviePoster";
+import MovieInfo from "./ShowMovieComponents/MovieInfo";
+import MovieRatingModal from "./ShowMovieComponents/MovieRatingModal";
+import ConfirmationModal from "./ShowMovieComponents/ConfirmationModal";
+import LoadingState from "./ShowMovieComponents/LoadingState";
+import ErrorState from "./ShowMovieComponents/ErrorState";
 import "./ShowMovie.css";
 
 const ShowMovie = ({ authenticatedUser }) => {
@@ -319,31 +325,12 @@ const ShowMovie = ({ authenticatedUser }) => {
 
   // Renderizar estado de error
   if (error) {
-    return (
-      <div className={`movie-error-container ${theme}`}>
-        <div className="movie-error-content">
-          <div className="movie-error-icon">❌</div>
-          <h2>Ha ocurrido un error</h2>
-          <p>{error.message || "No se pudo cargar la información de la película"}</p>
-          <button 
-            className={`movie-button primary ${theme}`}
-            onClick={handleBackClick}
-          >
-            Volver
-          </button>
-        </div>
-      </div>
-    );
+    return <ErrorState error={error} theme={theme} onBackClick={handleBackClick} />;
   }
 
   // Renderizar estado de carga
   if (loading) {
-    return (
-      <div className={`movie-loading-container ${theme}`}>
-        <div className="loading-spinner movie-spinner"></div>
-        <p className="loading-text">Cargando detalles de la película...</p>
-      </div>
-    );
+    return <LoadingState theme={theme} />;
   }
 
   return (
@@ -360,209 +347,37 @@ const ShowMovie = ({ authenticatedUser }) => {
       
       <div className={`movie-detail-container ${theme}`}>
         {/* Cabecera con botón para volver atrás */}
-        <div className="movie-detail-nav">
-          <button 
-            className={`back-button ${theme}`}
-            onClick={handleBackClick}
-            aria-label="Volver atrás"
-          >
-            ← Volver
-          </button>
-        </div>
+        <MovieHeader theme={theme} onBackClick={handleBackClick} />
         
         <div className="movie-detail-content">
-          {/* Póster de la película */}
-          <div className="movie-details-poster-container">
-            {movie.verticalPoster ? (
-              <img
-                src={movie.verticalPoster}
-                alt={movie.title || "Póster de la película"}
-                className="movie-poster-image"
-              />
-            ) : (
-              <div className="movie-poster-placeholder">
-                <span>No disponible</span>
-              </div>
-            )}
-            
-            {/* Botón para añadir a lista */}
-            <button
-              className={`add-to-list-button ${theme}`}
-              onClick={handleAddToListClick}
-            >
-              <span className="button-icon">+</span>
-              <span>Añadir a lista</span>
-            </button>
-
-            {/* Sección de valoración del usuario */}
-            <div className="rating-user-section">
-              {userId && userRating !== null ? (
-                <div className="user-has-rated">
-                  <p className="your-rating-label">Tu valoración:</p>
-                  <div className="your-rating-value">
-                    {typeof userRating === 'object' ? userRating.rating : userRating} 
-                    <span className="star">★</span>
-                  </div>
-                  <div className="rating-actions">
-                    <button 
-                      className={`rating-action-button ${theme}`} 
-                      onClick={handleRateClick}
-                    >
-                      Editar
-                    </button>
-                    <button 
-                      className={`rating-action-button delete ${theme}`} 
-                      onClick={handleDeleteRating}
-                    >
-                      Eliminar
-                    </button>
-                  </div>
-                </div>
-              ) : (
-                <button
-                  className={`rate-movie-button ${theme}`}
-                  onClick={handleRateClick}
-                >
-                  <span className="button-icon">★</span>
-                  <span>Valorar película</span>
-                </button>
-              )}
-            </div>
-          </div>
+          {/* Póster y botones de acción */}
+          <MoviePoster 
+            movie={movie}
+            theme={theme}
+            userRating={userRating}
+            userId={userId}
+            onAddToListClick={handleAddToListClick}
+            onRateClick={handleRateClick}
+            onEditRatingClick={handleRateClick}
+            onDeleteRatingClick={handleDeleteRating}
+          />
           
           {/* Información principal */}
-          <div className="movie-info-container">
-            <div className="movie-header-info">
-              <h1 className="movie-title">{movie.title || "Título no disponible"}</h1>
-              
-              <div className="movie-meta">
-                {movie.releaseYear && <span className="movie-year">{movie.releaseYear}</span>}
-                {movie.runtime && <span className="movie-runtime">{movie.runtime} min</span>}
-                {movie.imdbRating && (
-                  <span className="movie-rating">
-                    <span className="star-icon">★</span> 
-                    <span className="rating-value">IMDB: {movie.imdbRating.toFixed(1)}</span>
-                  </span>
-                )}
-                
-                {/* Bloque añadido: Valoraciones de usuarios */}
-                <div className="user-rating-container">
-                  {loadingRating ? (
-                    <div className="rating-loading">
-                      <div className="mini-spinner"></div>
-                    </div>
-                  ) : (
-                    <>
-                      {averageRating ? (
-                        <span className="movie-user-rating">
-                          <span className="user-star-icon">★</span> 
-                          <span className="user-rating-value">Usuarios: {averageRating.toFixed(1)}</span>
-                        </span>
-                      ) : (
-                        <span className="movie-no-rating">
-                          <span className="no-rating-icon">☆</span>
-                          <span className="no-rating-text">Sin valoraciones</span>
-                        </span>
-                      )}
-                    </>
-                  )}
-                </div>
-              </div>
-              
-              {movie.genres && movie.genres.length > 0 && (
-                <div className="movie-genres">
-                  {movie.genres.map((genre, index) => (
-                    <span key={index} className="genre-tag">{genre.name}</span>
-                  ))}
-                </div>
-              )}
-            </div>
-            
-            <div className="movie-section">
-              <h2>Sinopsis</h2>
-              <p className="movie-overview">{movie.overview || "No hay sinopsis disponible para esta película."}</p>
-            </div>
-            
-            <div className="movie-section">
-              <h2>Detalles</h2>
-              <div className="movie-details-grid">
-              {movie.directors && movie.directors.length > 0 && (
-                  <div className="detail-item">
-                    <h3>Dirección</h3>
-                    <p className="directors-list">
-                      {movie.directors.map((director, index) => (
-                        <span 
-                          key={index} 
-                          className="director-member clickable"
-                          onClick={() => navigate(`/directors/${encodeURIComponent(director.name)}`)}
-                        >
-                          {director.name}
-                        </span>
-                      ))}
-                      {movie.directors.length > 6 && 
-                        <span className="director-more">+{movie.directors.length - 6} más</span>
-                      }
-                    </p>
-                  </div>
-                )}
-                
-                {movie.cast && movie.cast.length > 0 && (
-                  <div className="detail-item">
-                    <h3>Reparto principal</h3>
-                    <p className="cast-list">
-                      {movie.cast.slice(0, 6).map((actor, index) => (
-                        <span 
-                          key={index} 
-                          className="cast-member clickable"
-                          onClick={() => navigate(`/actors/${encodeURIComponent(actor.name)}`)}
-                        >
-                          {actor.name}
-                        </span>
-                      ))}
-                      {movie.cast.length > 6 && <span className="cast-more">+{movie.cast.length - 6} más</span>}
-                    </p>
-                  </div>
-                )}
-              </div>
-            </div>
-            
-            {/* Opciones de streaming */}
-            <div className="movie-section streaming-section">
-              <h2>Dónde ver</h2>
-              {movie.streamingOptions?.es && movie.streamingOptions.es.length > 0 ? (
-                <div className="streaming-platforms">
-                  {movie.streamingOptions.es.map((option) => (
-                    <a
-                      key={option.service.id}
-                      href={option.link}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className={`platform-item ${theme}`}
-                      title={`Ver en ${option.service.name}`}
-                    >
-                      <img
-                        src={theme === 'dark' && option.service.imageSet?.darkThemeImage 
-                          ? option.service.imageSet.darkThemeImage 
-                          : option.service.imageSet?.lightThemeImage}
-                        alt={option.service.name}
-                        className="platform-logo"
-                      />
-                      <span className="platform-name">{option.service.name}</span>
-                    </a>
-                  ))}
-                </div>
-              ) : (
-                <p className="no-streaming">No disponible actualmente en plataformas de streaming.</p>
-              )}
-            </div>
-          </div>
+          <MovieInfo 
+            movie={movie}
+            theme={theme}
+            averageRating={averageRating}
+            loadingRating={loadingRating}
+            navigate={navigate}
+          />
         </div>
+        
         <div className="movie-section reviews-section">
           <MovieReviews movieId={movie.imdbId} authenticatedUser={authenticatedUser} />
         </div>
       </div>
       
-      {/* Modal para añadir a lista - Pasa el authenticatedUser */}
+      {/* Modal para añadir a lista */}
       {showAddToListModal && (
         <AddToListModal
           movie={movie}
@@ -571,110 +386,33 @@ const ShowMovie = ({ authenticatedUser }) => {
         />
       )}
       
-      {/* Formulario para valorar película */}
+      {/* Modal para valorar película */}
       {showRatingForm && (
-        <div className="modal-overlay">
-          <div className={`rating-modal ${theme}`}>
-            <div className="rating-modal-header">
-              <h3>{userRating ? 'Editar valoración' : 'Valorar película'}</h3>
-              <button 
-                className="close-modal-button" 
-                onClick={() => setShowRatingForm(false)}
-                aria-label="Cerrar"
-              >
-                ×
-              </button>
-            </div>
-            
-            {ratingErrors && <Errors errors={ratingErrors} onClose={() => setRatingErrors(null)} />}
-            
-            {ratingSuccess && (
-              <div className="rating-success-message">
-                {userRating ? '¡Valoración actualizada con éxito!' : '¡Valoración guardada con éxito!'}
-              </div>
-            )}
-            
-            <form onSubmit={handleRatingSubmit} className="rating-form">
-              <div className="rating-stars-container">
-                {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(star => (
-                  <span 
-                    key={star} 
-                    className={`rating-star ${parseFloat(ratingValue) >= star ? 'active' : ''}`}
-                    onClick={() => setRatingValue(star.toString())}
-                  >
-                    ★
-                  </span>
-                ))}
-              </div>
-              
-              <div className="rating-input-container">
-                <div className="rating-input-group">
-                  <input
-                    type="text"
-                    value={ratingValue}
-                    onChange={handleRatingInputChange}
-                    className={`rating-input ${theme}`}
-                    placeholder="0-10"
-                    maxLength="4"
-                    autoFocus
-                  />
-                  <span className="rating-range">/ 10</span>
-                </div>
-                <p className="rating-help-text">
-                  Introduce un valor entre 0 y 10 (se permite un decimal)
-                </p>
-              </div>
-              
-              <div className="rating-modal-actions">
-                <button 
-                  type="submit" 
-                  className={`modal-button primary ${theme}`}
-                  disabled={ratingValue === ""}
-                >
-                  {userRating ? 'Actualizar valoración' : 'Guardar valoración'}
-                </button>
-                <button 
-                  type="button" 
-                  className={`modal-button secondary ${theme}`}
-                  onClick={() => setShowRatingForm(false)}
-                >
-                  Cancelar
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
+        <MovieRatingModal
+          theme={theme}
+          userRating={userRating}
+          ratingValue={ratingValue}
+          ratingErrors={ratingErrors}
+          ratingSuccess={ratingSuccess}
+          onClose={() => setShowRatingForm(false)}
+          onSubmit={handleRatingSubmit}
+          onChange={handleRatingInputChange}
+          onErrorClose={() => setRatingErrors(null)}
+        />
       )}
       
-      {/* Diálogo de confirmación para eliminar valoración */}
+      {/* Modal de confirmación para eliminar valoración */}
       {showDeleteConfirmation && (
-        <div className="modal-overlay">
-          <div className={`confirmation-modal ${theme}`}>
-            <div className="confirmation-modal-header">
-              <h3>¿Eliminar valoración?</h3>
-            </div>
-            <div className="confirmation-modal-content">
-              <p>
-                ¿Estás seguro de que quieres eliminar tu valoración para "{movie.title}"? 
-                <br />Esta acción no se puede deshacer.
-              </p>
-            </div>
-            <div className="confirmation-modal-actions">
-              <button
-                className={`modal-button danger ${theme}`}
-                onClick={confirmDeleteRating}
-              >
-                Eliminar
-              </button>
-              <button
-                className={`modal-button secondary ${theme}`}
-                onClick={() => setShowDeleteConfirmation(false)}
-              >
-                Cancelar
-              </button>
-            </div>
-          </div>
-        </div>
+        <ConfirmationModal
+          theme={theme}
+          title="¿Eliminar valoración?"
+          message={`¿Estás seguro de que quieres eliminar tu valoración para "${movie.title}"? Esta acción no se puede deshacer.`}
+          confirmText="Eliminar"
+          cancelText="Cancelar" 
+          onConfirm={confirmDeleteRating}
+          onCancel={() => setShowDeleteConfirmation(false)}
+          isDanger={true}
+        />
       )}
     </div>
   );

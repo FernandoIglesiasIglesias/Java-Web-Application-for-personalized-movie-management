@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { getMovieReviews, createReview, voteReview, removeVote } from '../../../backend/reviewService';
-import { useTheme } from '../../../context/ThemeContext';
-import { Errors } from '../../common';
+import { getMovieReviews, createReview, voteReview, removeVote } from '../../../../backend/reviewService';
+import { useTheme } from '../../../../context/ThemeContext';
+import { Errors } from '../../../common';
 import './MovieReviews.css';
 
 // En lugar de importar el contexto de autenticación, vamos a recibir el usuario como prop

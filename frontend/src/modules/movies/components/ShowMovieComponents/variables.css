@@ -1,0 +1,27 @@
+:root {
+    /* Colores claros */
+    --primary-color-light: #0d6efd;
+    --primary-hover-light: #0a58ca;
+    --text-color-light: #212529;
+    --text-secondary-light: #6c757d;
+    --border-color-light: #dee2e6;
+    --card-background-light: #f8f9fa;
+    --background-color-light: #ffffff;
+    --input-background-light: #ffffff;
+    
+    /* Colores oscuros */
+    --primary-color-dark: #7952b3;
+    --primary-hover-dark: #614092;
+    --text-color-dark: #e9ecef;
+    --text-secondary-dark: #adb5bd;
+    --border-color-dark: #343a40;
+    --card-background-dark: #212529;
+    --background-color-dark: #121212;
+    --input-background-dark: #2b3035;
+    
+    /* Transiciones */
+    --transition-duration: 0.3s;
+    
+    /* Espaciados y tamaños */
+    --header-height: 60px;
+  }
