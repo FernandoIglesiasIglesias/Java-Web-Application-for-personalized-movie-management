@@ -1,0 +1,339 @@
+.person-details {
+  background-color: var(--card-background-light);
+  border-radius: 12px;
+  padding: 24px;
+  width: 100%;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  margin-top: 24px;
+}
+
+.theme-dark .person-details {
+  background-color: var(--card-background-dark);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Grid de detalles principales */
+.details-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 24px;
+  margin-bottom: 32px;
+}
+
+.details-column {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 16px;
+}
+
+.details-item {
+  padding: 16px;
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  transition: transform 0.2s ease;
+}
+
+.details-item:hover {
+  transform: translateY(-2px);
+}
+
+.details-item h3 {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-secondary-light);
+  margin: 0 0 8px 0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.theme-dark .details-item h3 {
+  color: var(--text-secondary-dark);
+}
+
+.details-item p {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--text-color-light);
+}
+
+.theme-dark .details-item p {
+  color: var(--text-color-dark);
+}
+
+.details-item-full {
+  grid-column: 1 / -1;
+}
+
+/* Alias y nombres alternativos */
+.alias-names {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.alias-tag {
+  background-color: rgba(25, 118, 210, 0.1);
+  color: var(--primary-color-light);
+  padding: 4px 12px;
+  border-radius: 16px;
+  font-size: 0.85rem;
+  display: inline-block;
+}
+
+.theme-dark .alias-tag {
+  background-color: rgba(66, 165, 245, 0.1);
+  color: var(--primary-color-dark);
+}
+
+/* Sección de redes sociales */
+.social-section {
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.theme-dark .social-section {
+  border-top-color: rgba(255, 255, 255, 0.08);
+}
+
+.subsection-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 0 0 16px 0;
+  color: var(--text-color-light);
+}
+
+.theme-dark .subsection-title {
+  color: var(--text-color-dark);
+}
+
+.social-links-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.social-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-radius: 8px;
+  text-decoration: none;
+  color: var(--text-color-light);
+  background-color: rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+  font-size: 0.9rem;
+}
+
+.theme-dark .social-link {
+  background-color: rgba(255, 255, 255, 0.05);
+  color: var(--text-color-dark);
+}
+
+.social-link:hover {
+  transform: translateY(-2px);
+  background-color: rgba(0, 0, 0, 0.08);
+}
+
+.theme-dark .social-link:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+}
+
+.social-icon {
+  font-size: 1.2rem;
+}
+
+.social-icon.facebook { color: #1877f2; }
+.social-icon.instagram { color: #e4405f; }
+.social-icon.twitter { color: #1da1f2; }
+.social-icon.youtube { color: #ff0000; }
+.social-icon.tiktok { color: #000000; }
+.social-icon.snapchat { color: #fffc00; }
+.social-icon.myspace { color: #003399; }
+.social-icon.linkedin { color: #0077b5; }
+.social-icon.website { color: #2196f3; }
+
+/* Sección de parejas */
+.spouses-section {
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.theme-dark .spouses-section {
+  border-top-color: rgba(255, 255, 255, 0.08);
+}
+
+.spouses-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.spouse-card {
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  padding: 16px;
+  transition: all 0.3s ease;
+}
+
+.spouse-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
+}
+
+.spouse-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.spouse-name {
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.spouse-status {
+  font-size: 0.8rem;
+  padding: 3px 10px;
+  border-radius: 12px;
+}
+
+.spouse-status.current {
+  background-color: rgba(46, 125, 50, 0.1);
+  color: #2e7d32;
+}
+
+.spouse-status.past {
+  background-color: rgba(211, 47, 47, 0.1);
+  color: #d32f2f;
+}
+
+.spouse-timerange {
+  font-size: 0.9rem;
+  color: var(--text-secondary-light);
+  margin-bottom: 8px;
+}
+
+.theme-dark .spouse-timerange {
+  color: var(--text-secondary-dark);
+}
+
+.spouse-attributes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.spouse-attribute {
+  font-size: 0.8rem;
+  background-color: rgba(0, 0, 0, 0.05);
+  padding: 4px 10px;
+  border-radius: 12px;
+  color: var(--text-secondary-light);
+}
+
+.theme-dark .spouse-attribute {
+  background-color: rgba(255, 255, 255, 0.05);
+  color: var(--text-secondary-dark);
+}
+
+/* Sección de premios */
+.awards-section {
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.theme-dark .awards-section {
+  border-top-color: rgba(255, 255, 255, 0.08);
+}
+
+.awards-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.award-item {
+  background-color: rgba(255, 255, 255, 0.05);
+  padding: 16px;
+  border-radius: 8px;
+  transition: transform 0.2s ease;
+}
+
+.award-item:hover {
+  transform: translateY(-2px);
+}
+
+.award-title {
+  font-weight: 600;
+  font-size: 1rem;
+  margin-bottom: 8px;
+  color: var(--text-color-light);
+}
+
+.theme-dark .award-title {
+  color: var(--text-color-dark);
+}
+
+.award-desc {
+  font-size: 0.9rem;
+  color: var(--text-secondary-light);
+}
+
+.theme-dark .award-desc {
+  color: var(--text-secondary-dark);
+}
+
+.more-awards {
+  text-align: center;
+  margin-top: 12px;
+  font-size: 0.9rem;
+  color: var(--primary-color-light);
+  font-weight: 500;
+}
+
+.theme-dark .more-awards {
+  color: var(--primary-color-dark);
+}
+
+.no-data {
+  font-style: italic;
+  color: var(--text-secondary-light);
+  font-size: 0.9rem;
+}
+
+.theme-dark .no-data {
+  color: var(--text-secondary-dark);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .person-details {
+    padding: 16px;
+  }
+  
+  .details-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .details-column {
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  }
+}
+
+@media (max-width: 576px) {
+  .details-column {
+    grid-template-columns: 1fr 1fr;
+  }
+  
+  .social-links-grid, .spouses-grid {
+    grid-template-columns: 1fr;
+  }
+}

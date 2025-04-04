@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useTheme } from "../../../context/ThemeContext";
-import { saveMovie } from "../../../backend/movieService";
+import { saveMovie, getMovieCast } from "../../../backend/movieService";
 import { 
   rateMovie, 
   getUserRatingForMovie,
@@ -20,52 +20,52 @@ import ErrorState from "./ShowMovieComponents/ErrorState";
 import "./ShowMovie.css";
 
 const ShowMovie = ({ authenticatedUser }) => {
+  // Hooks y estado
   const { id } = useParams();
   const navigate = useNavigate();
   const { theme } = useTheme();
+  const userId = authenticatedUser ? authenticatedUser.user.id : null;
+  
+  // Estados principales
   const [movie, setMovie] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [showAddToListModal, setShowAddToListModal] = useState(false);
+  const [loadingCast, setLoadingCast] = useState(false);
+  const [castDetails, setCastDetails] = useState(null);
+  
+  // Estados relacionados con valoraciones
   const [averageRating, setAverageRating] = useState(null);
   const [loadingRating, setLoadingRating] = useState(false);
   const [ratingValue, setRatingValue] = useState("");
   const [userRating, setUserRating] = useState(null);
-  const [showRatingForm, setShowRatingForm] = useState(false);
   const [ratingErrors, setRatingErrors] = useState(null);
   const [ratingSuccess, setRatingSuccess] = useState(false);
+  
+  // Estados para los modales
+  const [showAddToListModal, setShowAddToListModal] = useState(false);
+  const [showRatingForm, setShowRatingForm] = useState(false);
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
 
-  // Obtener el ID de usuario de forma segura desde las props
-  const userId = authenticatedUser ? authenticatedUser.user.id : null;
-
+  // Funciones de utilidad
   const parseMovieJson = (json) => {
-    // Ensure strings are always properly set
     const ensureString = (value) => {
       if (value === null || value === undefined) return '';
       return String(value);
     };
     
-    // Helper function to create a valid name from a string or object
     const createValidName = (person) => {
-      // If person is null or undefined, return empty string
       if (person === null || person === undefined) return '';
       
-      // If person is a string, return it directly
       if (typeof person === 'string') return ensureString(person);
       
-      // If person is an object, check for name field first, then firstName/lastName
       if (typeof person === 'object') {
-        // If name exists, return it
         if (person.name) return ensureString(person.name);
         
-        // Try to construct from firstName/lastName if they exist
         if (person.firstName || person.lastName) {
           return ensureString((person.firstName || '') + ' ' + (person.lastName || '')).trim();
         }
       }
       
-      // Fallback to empty string if all else fails
       return '';
     };
     
@@ -92,8 +92,198 @@ const ShowMovie = ({ authenticatedUser }) => {
     };
   };
 
+  // Funciones de carga de datos
+  const loadCastDetails = (imdbId) => {
+    setLoadingCast(true);
+    getMovieCast(
+      imdbId,
+      (data) => {
+        const processedCast = {
+          actors: [],
+          directors: []
+        };
+        
+        if (Array.isArray(data)) {
+          data.forEach(person => {
+            if (person.job === "actor" || person.job === "actress") {
+              processedCast.actors.push({
+                imdbId: person.id,
+                name: person.fullName,
+                character: person.characters && person.characters.length > 0 ? person.characters[0] : null
+              });
+            } else if (person.job === "director") {
+              processedCast.directors.push({
+                imdbId: person.id,
+                name: person.fullName
+              });
+            }
+          });
+        }
+        
+        setCastDetails(processedCast);
+        updateMovieWithCast(processedCast);
+        setLoadingCast(false);
+      },
+      (error) => {
+        setLoadingCast(false);
+      }
+    );
+  };
+
+  const updateMovieWithCast = (processedCast) => {
+    setMovie(prevMovie => {
+      if (!prevMovie) return null;
+      
+      // Actualizar actores
+      let updatedCast = getUpdatedCast(prevMovie.cast, processedCast.actors);
+      // Actualizar directores
+      let updatedDirectors = getUpdatedDirectors(prevMovie.directors, processedCast.directors);
+      
+      // Actualizar actores y directores en la base de datos
+      updateActorsInDatabase(updatedCast);
+      updateDirectorsInDatabase(updatedDirectors);
+      
+      // Crear objeto de película actualizada
+      const updatedMovie = {
+        ...prevMovie,
+        cast: updatedCast.map(actor => ({
+          name: actor.name,
+          imdbId: actor.imdbId || null,
+          character: actor.character || null
+        })),
+        directors: updatedDirectors.map(director => ({
+          name: director.name,
+          imdbId: director.imdbId || null
+        }))
+      };
+      
+      // Guardar la película actualizada
+      saveMovie(updatedMovie, () => {}, () => {});
+      
+      return updatedMovie;
+    });
+  };
+
+  const getUpdatedCast = (existingCast, apiActors) => {
+    if (!existingCast || existingCast.length === 0) {
+      return apiActors.map(actor => ({
+        name: actor.name,
+        imdbId: actor.imdbId,
+        character: actor.character
+      }));
+    }
+    
+    let updatedCast = existingCast.map(actor => {
+      const detailedActor = apiActors.find(
+        a => a.name.toLowerCase() === actor.name.toLowerCase()
+      );
+      
+      if (detailedActor) {
+        return {
+          ...actor,
+          imdbId: detailedActor.imdbId,
+          character: detailedActor.character
+        };
+      }
+      return actor;
+    });
+    
+    apiActors.forEach(apiActor => {
+      const exists = updatedCast.some(
+        actor => actor.name.toLowerCase() === apiActor.name.toLowerCase()
+      );
+      if (!exists) {
+        updatedCast.push({
+          name: apiActor.name,
+          imdbId: apiActor.imdbId,
+          character: apiActor.character
+        });
+      }
+    });
+    
+    return updatedCast;
+  };
+
+  const getUpdatedDirectors = (existingDirectors, apiDirectors) => {
+    if (!existingDirectors || existingDirectors.length === 0) {
+      return apiDirectors.map(director => ({
+        name: director.name,
+        imdbId: director.imdbId
+      }));
+    }
+    
+    let updatedDirectors = existingDirectors.map(director => {
+      const detailedDirector = apiDirectors.find(
+        d => d.name.toLowerCase() === director.name.toLowerCase()
+      );
+      
+      if (detailedDirector) {
+        return {
+          ...director,
+          imdbId: detailedDirector.imdbId
+        };
+      }
+      return director;
+    });
+    
+    apiDirectors.forEach(apiDirector => {
+      const exists = updatedDirectors.some(
+        director => director.name.toLowerCase() === apiDirector.name.toLowerCase()
+      );
+      if (!exists) {
+        updatedDirectors.push({
+          name: apiDirector.name,
+          imdbId: apiDirector.imdbId
+        });
+      }
+    });
+    
+    return updatedDirectors;
+  };
+
+  const updateActorsInDatabase = (actors) => {
+    actors.forEach(actor => {
+      if (actor.imdbId) {
+        const actorToUpdate = {
+          name: actor.name,
+          imdbId: actor.imdbId,
+          firstName: actor.name.split(' ')[0] || actor.name
+        };
+        
+        import('../../../backend/actorService').then(actorService => {
+          actorService.updateActorByName(
+            actor.name,
+            actorToUpdate,
+            () => {},
+            () => {}
+          );
+        });
+      }
+    });
+  };
+
+  const updateDirectorsInDatabase = (directors) => {
+    directors.forEach(director => {
+      if (director.imdbId) {
+        const directorToUpdate = {
+          name: director.name,
+          imdbId: director.imdbId,
+          firstName: director.name.split(' ')[0] || director.name
+        };
+        
+        import('../../../backend/directorService').then(directorService => {
+          directorService.updateDirectorByName(
+            director.name,
+            directorToUpdate,
+            () => {},
+            () => {}
+          );
+        });
+      }
+    });
+  };
+
   const loadUserRating = (movieImdbId) => {
-    // Solo cargar valoración si hay un usuario autenticado
     if (!userId) return;
     
     getUserRatingForMovie(
@@ -101,7 +291,6 @@ const ShowMovie = ({ authenticatedUser }) => {
       movieImdbId,
       (data) => {
         if (data && data.rating !== undefined) {
-          // Guardar también el ID de la valoración para poder eliminarla
           setUserRating({
             rating: data.rating,
             id: data.id
@@ -109,9 +298,7 @@ const ShowMovie = ({ authenticatedUser }) => {
           setRatingValue(data.rating.toString());
         }
       },
-      (error) => {
-        console.log("Usuario no ha valorado esta película");
-      }
+      () => {}
     );
   };
 
@@ -123,13 +310,13 @@ const ShowMovie = ({ authenticatedUser }) => {
         setAverageRating(rating);
         setLoadingRating(false);
       },
-      (error) => {
-        console.log("No hay valoraciones para esta película");
+      () => {
         setLoadingRating(false);
       }
     );
   };
 
+  // Cargar datos iniciales
   useEffect(() => {
     setLoading(true);
     fetch(
@@ -157,30 +344,27 @@ const ShowMovie = ({ authenticatedUser }) => {
         setMovie(parsedData);
         setLoading(false);
         
-        // Guardar película en base de datos local
         saveMovie(
           parsedData,
           (savedMovie) => {
-            console.log("Película guardada correctamente", savedMovie);
-            // Obtener la valoración media una vez que tengamos el imdbId
             if (savedMovie && savedMovie.imdbId) {
               loadAverageRating(savedMovie.imdbId);
-              // Solo cargar la valoración del usuario si hay un usuario autenticado
               if (userId) {
                 loadUserRating(savedMovie.imdbId);
               }
+              loadCastDetails(savedMovie.imdbId);
             }
           }, 
-          (error) => console.error("Error guardando película", error)
+          () => {}
         );
       })
       .catch((error) => {
-        console.error("Error al cargar detalles de la película:", error);
         setError(error);
         setLoading(false);
       });
-  }, [id, userId]); // Incluir userId en las dependencias
+  }, [id, userId]);
 
+  // Manejadores de eventos
   const handleBackClick = () => {
     navigate(-1);
   };
@@ -194,29 +378,21 @@ const ShowMovie = ({ authenticatedUser }) => {
     }
   };
 
-  // Función para manejar el clic en "Añadir a lista"
   const handleAddToListClick = () => {
-    // Verificar si el usuario está autenticado
     if (!authenticatedUser) {
-      // Redirigir a la página de login
       navigate("/login", { state: { from: `/movies/${id}` } });
       return;
     }
     
-    // Si está autenticado, mostrar el modal
     setShowAddToListModal(true);
   };
 
-  // Función para manejar el clic en "Valorar película"
   const handleRateClick = () => {
-    // Verificar si el usuario está autenticado
     if (!authenticatedUser) {
-      // Redirigir a la página de login
       navigate("/login", { state: { from: `/movies/${id}` } });
       return;
     }
     
-    // Si está autenticado, mostrar el formulario de valoración
     setShowRatingForm(true);
   };
 
@@ -224,7 +400,6 @@ const ShowMovie = ({ authenticatedUser }) => {
     e.preventDefault();
     setRatingErrors(null);
     
-    // Verificar que el usuario está autenticado
     if (!userId) {
       navigate("/login", { state: { from: `/movies/${id}` } });
       return;
@@ -232,7 +407,7 @@ const ShowMovie = ({ authenticatedUser }) => {
     
     let valueFloat = parseFloat(ratingValue);
     
-    // Validaciones básicas
+    // Validaciones
     if (ratingValue === "" || isNaN(valueFloat)) {
       setRatingErrors({ globalError: "Debes introducir un valor numérico." });
       return;
@@ -243,19 +418,16 @@ const ShowMovie = ({ authenticatedUser }) => {
       return;
     }
     
-    // Verificar que movie existe y tiene imdbId
     if (!movie || !movie.imdbId) {
       setRatingErrors({ globalError: "No se puede valorar la película. Información de película no disponible." });
       return;
     }
     
-    // Enviar valoración usando el imdbId
     rateMovie(
       userId,
       movie.imdbId,
       valueFloat,
       (data) => {
-        // Guardar la valoración y su ID
         setUserRating({
           rating: data.rating,
           id: data.id
@@ -263,7 +435,6 @@ const ShowMovie = ({ authenticatedUser }) => {
         setRatingSuccess(true);
         setTimeout(() => setRatingSuccess(false), 3000);
         
-        // Actualizar la valoración media
         loadAverageRating(movie.imdbId);
         setShowRatingForm(false);
       },
@@ -273,27 +444,21 @@ const ShowMovie = ({ authenticatedUser }) => {
     );
   };
 
-  // Modificar handleDeleteRating para verificar autenticación
   const handleDeleteRating = () => {
-    // Verificar que el usuario está autenticado
     if (!userId) {
       navigate("/login", { state: { from: `/movies/${id}` } });
       return;
     }
     
-    // Verificar que movie existe y tiene imdbId
     if (!movie || !movie.imdbId) {
       setRatingErrors({ globalError: "No se puede eliminar la valoración. Información de película no disponible." });
       return;
     }
     
-    // Mostrar el diálogo de confirmación en lugar de window.confirm
     setShowDeleteConfirmation(true);
   };
 
-  // Función para confirmar la eliminación de la valoración
   const confirmDeleteRating = () => {
-    // Verificar nuevamente que el usuario está autenticado
     if (!userId) {
       navigate("/login", { state: { from: `/movies/${id}` } });
       return;
@@ -307,13 +472,11 @@ const ShowMovie = ({ authenticatedUser }) => {
         setRatingValue("");
         setShowDeleteConfirmation(false);
         
-        // Mostrar mensaje de éxito
         setRatingSuccess(true);
         setTimeout(() => {
           setRatingSuccess(false);
         }, 3000);
         
-        // Actualizar la valoración media
         loadAverageRating(movie.imdbId);
       },
       (errors) => {
@@ -323,19 +486,19 @@ const ShowMovie = ({ authenticatedUser }) => {
     );
   };
 
-  // Renderizar estado de error
+  // Renderizado condicional
   if (error) {
     return <ErrorState error={error} theme={theme} onBackClick={handleBackClick} />;
   }
 
-  // Renderizar estado de carga
   if (loading) {
     return <LoadingState theme={theme} />;
   }
 
+  // Renderizado principal
   return (
     <div className="movie-detail-page">
-      {/* Fondo con imagen de poster desenfocada para dar profundidad */}
+      {/* Fondo con imagen de poster */}
       {movie.verticalPoster && (
         <div 
           className="movie-backdrop" 
@@ -346,7 +509,7 @@ const ShowMovie = ({ authenticatedUser }) => {
       )}
       
       <div className={`movie-detail-container ${theme}`}>
-        {/* Cabecera con botón para volver atrás */}
+        {/* Cabecera */}
         <MovieHeader theme={theme} onBackClick={handleBackClick} />
         
         <div className="movie-detail-content">
@@ -369,15 +532,17 @@ const ShowMovie = ({ authenticatedUser }) => {
             averageRating={averageRating}
             loadingRating={loadingRating}
             navigate={navigate}
+            loadingCast={loadingCast}
           />
         </div>
         
+        {/* Sección de reseñas */}
         <div className="movie-section reviews-section">
           <MovieReviews movieId={movie.imdbId} authenticatedUser={authenticatedUser} />
         </div>
       </div>
       
-      {/* Modal para añadir a lista */}
+      {/* Modales */}
       {showAddToListModal && (
         <AddToListModal
           movie={movie}
@@ -386,7 +551,6 @@ const ShowMovie = ({ authenticatedUser }) => {
         />
       )}
       
-      {/* Modal para valorar película */}
       {showRatingForm && (
         <MovieRatingModal
           theme={theme}
@@ -401,7 +565,6 @@ const ShowMovie = ({ authenticatedUser }) => {
         />
       )}
       
-      {/* Modal de confirmación para eliminar valoración */}
       {showDeleteConfirmation && (
         <ConfirmationModal
           theme={theme}

@@ -123,16 +123,44 @@
   list-style: none;
   display: flex;
   flex-wrap: wrap;
-  gap: 0.4rem;
+  gap: 0.5rem;
+  justify-content: flex-start;
+}
+
+.character-name {
+  font-style: italic;
+  font-weight: normal;
+  font-size: 0.85em;
+  opacity: 0.9;
+  width: 100%;
+  white-space: normal;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  color: var(--text-secondary-light);
+  transition: color 0.2s;
+}
+
+.character-name.dark {
+  color: var(--text-secondary-dark);
 }
 
 .cast-member, .director-member {
   background-color: rgba(13, 110, 253, 0.08);
   color: var(--primary-color-light);
-  padding: 0.25rem 0.5rem;
-  border-radius: 4px;
+  padding: 0.4rem 0.75rem;
+  border-radius: 6px;
   font-size: 0.85rem;
   cursor: pointer;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-height: 1.8rem;
+  height: auto;
+  min-width: 140px;
+  width: calc(33% - 0.5rem);
+  margin-bottom: 0.25rem;
+  transition: background-color 0.2s, color 0.2s;
+  overflow: hidden;
 }
 
 .cast-member.dark, .director-member.dark {
@@ -150,11 +178,27 @@
   color: white;
 }
 
+.cast-member:hover .character-name,
+.cast-member.dark:hover .character-name {
+  color: rgba(255, 255, 255, 0.9);
+}
+
 .cast-more, .director-more {
   color: var(--text-secondary-light);
   font-size: 0.85rem;
   font-style: italic;
-  padding-left: 0.35rem;
+  padding: 0.4rem 0.75rem;
+  align-self: center;
+}
+
+.actor-name {
+  font-weight: 500;
+  width: 100%;
+  white-space: normal;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  line-height: 1.2;
+  margin-bottom: 0.2rem;
 }
 
 .cast-more.dark, .director-more.dark {
@@ -296,6 +340,11 @@
   .movie-section {
     padding: 1rem;
   }
+
+  .cast-member, .director-member {
+    width: calc(50% - 0.5rem);
+    min-width: 120px;
+  }
 }
 
 @media (max-width: 576px) {
@@ -317,5 +366,18 @@
   
   .streaming-platforms {
     justify-content: center;
+  }
+
+  .cast-member, .director-member {
+    width: 100%;
+    min-width: 100%;
+    flex-basis: 100%;
+    text-align: center;
+    padding: 0.6rem 0.75rem;
+  }
+
+  .actor-name, .character-name {
+    text-align: center;
+    width: 100%;
   }
 }

@@ -1,4 +1,5 @@
 import React from "react";
+import AddToListButton from "../../../common/components/AddToListButton";
 import "./MoviePoster.css";
 
 const MoviePoster = ({ 
@@ -26,13 +27,10 @@ const MoviePoster = ({
       )}
       
       {/* Botón para añadir a lista */}
-      <button
-        className={`add-to-list-button ${theme}`}
+      <AddToListButton
+        theme={theme}
         onClick={onAddToListClick}
-      >
-        <span className="button-icon">+</span>
-        <span>Añadir a lista</span>
-      </button>
+      />
 
       {/* Sección de valoración del usuario */}
       <div className="rating-user-section">

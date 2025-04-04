@@ -1,0 +1,48 @@
+.add-to-list-button {
+    width: 100%;
+    max-width: 250px;
+    margin-top: 1rem;
+    padding: 0.7rem 0;
+    border: none;
+    border-radius: 6px;
+    background-color: var(--primary-color-light);
+    color: white;
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    transition: background-color var(--transition-duration);
+  }
+  
+  .add-to-list-button:hover {
+    background-color: var(--primary-hover-light);
+  }
+  
+  .add-to-list-button.dark {
+    background-color: var(--primary-color-dark);
+  }
+  
+  .add-to-list-button.dark:hover {
+    background-color: var(--primary-hover-dark);
+  }
+  
+  .button-icon {
+    font-size: 1.1rem;
+    font-weight: 600;
+  }
+  
+  /* Estilos responsivos para el botón */
+  @media (max-width: 768px) {
+    .add-to-list-button {
+      max-width: 200px;
+    }
+  }
+  
+  @media (max-width: 576px) {
+    .add-to-list-button {
+      max-width: 180px;
+    }
+  }

@@ -82,17 +82,18 @@ const MovieInfo = ({ movie, theme, averageRating, loadingRating, navigate }) => 
             <div className={`detail-item ${theme}`}>
               <h3>Reparto principal</h3>
               <div className="cast-list">
-                {movie.cast.slice(0, 6).map((actor, index) => (
+                {movie.cast.slice(0, 8).map((actor, index) => (
                   <span 
                     key={index} 
                     className={`cast-member ${theme}`}
-                    onClick={() => navigate(`/actors/${encodeURIComponent(actor.name)}`)}
+                    onClick={() => navigate(`/actors/${actor.imdbId || encodeURIComponent(actor.name)}`)}
                   >
-                    {actor.name}
+                    <span className="actor-name">{actor.name}</span>
+                    {actor.character && <span className={`character-name ${theme}`}>{actor.character}</span>}
                   </span>
                 ))}
-                {movie.cast.length > 6 && 
-                  <span className={`cast-more ${theme}`}>+{movie.cast.length - 6} más</span>
+                {movie.cast.length > 8 && 
+                  <span className={`cast-more ${theme}`}>+{movie.cast.length - 8} más</span>
                 }
               </div>
             </div>
