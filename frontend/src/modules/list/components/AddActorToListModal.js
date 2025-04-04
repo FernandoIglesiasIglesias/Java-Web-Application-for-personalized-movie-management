@@ -182,12 +182,11 @@ const AddActorToListModal = ({ actor, onClose, authenticatedUser }) => {
     return name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
   };
 
-  // Renderizar la vista previa del actor
   const renderActorPreview = (actor, theme) => (
     <div className="movie-preview">
-      {actor.image_url ? (
+      {actor.imageUrl ? (
         <img 
-          src={actor.image_url}
+          src={actor.imageUrl}
           alt={actor.name || 'Actor'} 
           className="movie-thumbnail"
           onError={(e) => {
@@ -204,7 +203,7 @@ const AddActorToListModal = ({ actor, onClose, authenticatedUser }) => {
       )}
       <div className="movie-preview-info">
         <h3>{actor.name || 'Actor desconocido'}</h3>
-        {actor.birth_date && <p>{actor.birth_date}</p>}
+        {actor.birthDate && <p>{new Date(actor.birthDate).getFullYear()}</p>}
       </div>
     </div>
   );

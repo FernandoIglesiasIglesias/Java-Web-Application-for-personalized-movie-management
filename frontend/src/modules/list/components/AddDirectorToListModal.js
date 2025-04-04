@@ -182,12 +182,11 @@ const AddDirectorToListModal = ({ director, onClose, authenticatedUser }) => {
     return name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
   };
 
-  // Renderizar la vista previa del director
   const renderDirectorPreview = (director, theme) => (
     <div className="movie-preview">
-      {director.image_url ? (
+      {director.imageUrl ? (
         <img 
-          src={director.image_url}
+          src={director.imageUrl}
           alt={director.name || 'Director'} 
           className="movie-thumbnail"
           onError={(e) => {
@@ -204,7 +203,7 @@ const AddDirectorToListModal = ({ director, onClose, authenticatedUser }) => {
       )}
       <div className="movie-preview-info">
         <h3>{director.name || 'Director desconocido'}</h3>
-        {director.birth_date && <p>{director.birth_date}</p>}
+        {director.birthDate && <p>{new Date(director.birthDate).getFullYear()}</p>}
       </div>
     </div>
   );
