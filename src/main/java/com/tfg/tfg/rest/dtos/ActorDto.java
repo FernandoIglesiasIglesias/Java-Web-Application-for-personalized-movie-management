@@ -9,7 +9,6 @@ public class ActorDto {
 
     private Date birthDate;
     private String birthPlace;
-    private String starSign;
     private String height;
     private String bio;
     private String imageUrl;
@@ -24,16 +23,20 @@ public class ActorDto {
         this.name = name;
     }
 
+    public ActorDto(Long id, String name, String imdbId) {
+        this.id = id;
+        this.name = name;
+        this.imdbId = imdbId;
+    }
+
     public ActorDto(Long id, String name, String imdbId, 
                    Date birthDate, String birthPlace, 
-                   String starSign, String height, 
-                   String bio, String imageUrl) {
+                   String height, String bio, String imageUrl) {
         this.id = id;
         this.name = name;
         this.imdbId = imdbId;
         this.birthDate = birthDate;
         this.birthPlace = birthPlace;
-        this.starSign = starSign;
         this.height = height;
         this.bio = bio;
         this.imageUrl = imageUrl;
@@ -69,14 +72,6 @@ public class ActorDto {
     
     public void setBirthPlace(String birthPlace) {
         this.birthPlace = birthPlace;
-    }
-    
-    public String getStarSign() {
-        return starSign;
-    }
-    
-    public void setStarSign(String starSign) {
-        this.starSign = starSign;
     }
     
     public String getHeight() {

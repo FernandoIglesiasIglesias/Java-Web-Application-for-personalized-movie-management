@@ -11,7 +11,10 @@ public class ActorConversor {
     private ActorConversor() {}
 
     public static ActorDto toActorDto(Actor actor) {
-        return new ActorDto(actor.getId(), actor.getName());
+        if (actor == null) return null;
+        ActorDto dto = new ActorDto(actor.getId(), actor.getName());
+        dto.setImdbId(actor.getImdbId());
+        return dto;
     }
 
     public static ActorDto toActorDtoExpanded(Actor actor) {
@@ -22,7 +25,6 @@ public class ActorConversor {
         actorDto.setName(actor.getName());
         actorDto.setBirthDate(actor.getBirthDate());
         actorDto.setBirthPlace(actor.getBirthPlace());
-        actorDto.setStarSign(actor.getStarSign());
         actorDto.setHeight(actor.getHeight());
         actorDto.setBio(actor.getBio());
         actorDto.setImageUrl(actor.getImageUrl());
@@ -44,7 +46,6 @@ public class ActorConversor {
         actor.setName(actorDto.getName());
         actor.setBirthDate(actorDto.getBirthDate());
         actor.setBirthPlace(actorDto.getBirthPlace());
-        actor.setStarSign(actorDto.getStarSign());
         actor.setHeight(actorDto.getHeight());
         actor.setBio(actorDto.getBio());
         actor.setImageUrl(actorDto.getImageUrl());

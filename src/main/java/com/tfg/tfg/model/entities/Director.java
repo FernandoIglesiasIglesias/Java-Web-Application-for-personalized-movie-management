@@ -20,13 +20,11 @@ public class Director {
 
     private String imdbId;
     private String name;
-    private String lastName;
     
     @Temporal(TemporalType.DATE)
     private Date birthDate;
     
     private String birthPlace;
-    private String starSign;
     private String height;
     
     @Lob
@@ -57,12 +55,11 @@ public class Director {
      * Extended constructor with all actor details.
      */
     public Director(String name, Date birthDate, String birthPlace, 
-                String starSign, String height, String bio, 
-                String imageUrl, String imdbId, List<Movie> movies) {
+                String height, String bio, String imageUrl, 
+                String imdbId, List<Movie> movies) {
         this.name = name;
         this.birthDate = birthDate;
         this.birthPlace = birthPlace;
-        this.starSign = starSign;
         this.height = height;
         this.bio = bio;
         this.imageUrl = imageUrl;
@@ -158,24 +155,6 @@ public class Director {
      */
     public void setBirthPlace(String birthPlace) {
         this.birthPlace = birthPlace;
-    }
-
-    /**
-     * Gets the star sign of the director.
-     *
-     * @return the star sign of the director
-     */
-    public String getStarSign() {
-        return starSign;
-    }
-
-    /**
-     * Sets the star sign of the director.
-     *
-     * @param starSign the star sign to set
-     */
-    public void setStarSign(String starSign) {
-        this.starSign = starSign;
     }
 
     /**

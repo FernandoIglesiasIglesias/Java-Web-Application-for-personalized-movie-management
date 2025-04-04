@@ -54,10 +54,6 @@ public class DirectorServiceImpl implements DirectorService {
             existing.setBirthPlace(newData.getBirthPlace());
         }
         
-        if (newData.getStarSign() != null && !newData.getStarSign().isEmpty()) {
-            existing.setStarSign(newData.getStarSign());
-        }
-        
         if (newData.getHeight() != null && !newData.getHeight().isEmpty()) {
             existing.setHeight(newData.getHeight());
         }

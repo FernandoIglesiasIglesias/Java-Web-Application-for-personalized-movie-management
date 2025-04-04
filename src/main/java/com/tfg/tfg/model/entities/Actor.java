@@ -25,7 +25,6 @@ public class Actor {
     private Date birthDate;
     
     private String birthPlace;
-    private String starSign;
     private String height;
     
     @Column(columnDefinition = "TEXT")
@@ -57,12 +56,11 @@ public class Actor {
      * Extended constructor with all actor details.
      */
     public Actor(String name, Date birthDate, String birthPlace, 
-                String starSign, String height, String bio, 
-                String imageUrl, String imdbId, List<Movie> movies) {
+                String height, String bio, String imageUrl, 
+                String imdbId, List<Movie> movies) {
         this.name = name;
         this.birthDate = birthDate;
         this.birthPlace = birthPlace;
-        this.starSign = starSign;
         this.height = height;
         this.bio = bio;
         this.imageUrl = imageUrl;
@@ -149,14 +147,6 @@ public class Actor {
     
     public void setBirthPlace(String birthPlace) {
         this.birthPlace = birthPlace;
-    }
-    
-    public String getStarSign() {
-        return starSign;
-    }
-    
-    public void setStarSign(String starSign) {
-        this.starSign = starSign;
     }
     
     public String getHeight() {

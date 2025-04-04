@@ -39,7 +39,6 @@ public class DirectorServiceTest {
         testDirector.setImdbId("nm0000229");
         testDirector.setBirthDate(new java.sql.Date(System.currentTimeMillis())); // Fecha actual como ejemplo
         testDirector.setBirthPlace("Cincinnati, Ohio, USA");
-        testDirector.setStarSign("Sagittarius");
         testDirector.setHeight("1.70 m");
         testDirector.setBio("Steven Allan Spielberg (born December 18, 1946) is an American director, producer, and screenwriter.");
         testDirector.setImageUrl("https://example.com/steven_spielberg.jpg");
