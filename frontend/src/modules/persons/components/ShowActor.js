@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import ShowPerson from './ShowPerson';
 import { updateActorByName, getActorByImdbId, getActorByName } from '../../../backend/actorService';
-import AddActorToListModal from '../../list/components/AddActorToListModal';
+import AddActorToListModal from '../../list/components/modals/AddActorToListModal';
 
 const ShowActor = ({ authenticatedUser }) => {
   const { actorName } = useParams(); 

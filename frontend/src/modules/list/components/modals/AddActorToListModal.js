@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { getUserActorLists, addActorToList, createActorList, removeActorFromList, getActorListById } from "../../../backend/actorListService";
-import GenericAddToListModal from "./common/GenericAddToListModal";
+import { getUserActorLists, addActorToList, createActorList, removeActorFromList, getActorListById } from "../../../../backend/actorListService";
+import GenericAddToListModal from "./GenericAddToListModal";
 import "./AddToListModal.css";
 
 const AddActorToListModal = ({ actor, onClose, authenticatedUser }) => {

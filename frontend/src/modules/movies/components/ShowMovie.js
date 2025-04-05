@@ -8,7 +8,7 @@ import {
   getAverageRatingForMovie,
   deleteRating
 } from "../../../backend/rateService";
-import AddToListModal from "../../list/components/AddToListModal";
+import AddToListModal from "../../list/components/modals/AddMovieToListModal";
 import MovieReviews from './ShowMovieComponents/MovieReviews';
 import MovieHeader from "./ShowMovieComponents/MovieHeader";
 import MoviePoster from "./ShowMovieComponents/MoviePoster";

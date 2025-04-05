@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { getUserLists, addMovieToList, createList, removeMovieFromList } from "../../../backend/listService";
-import GenericAddToListModal from "./common/GenericAddToListModal";
+import { getUserLists, addMovieToList, createList, removeMovieFromList } from "../../../../backend/listService";
+import GenericAddToListModal from "./GenericAddToListModal";
 import "./AddToListModal.css";
 
-const AddToListModal = ({ movie, onClose, authenticatedUser }) => {
+const AddMovieToListModal = ({ movie, onClose, authenticatedUser }) => {
   const [lists, setLists] = useState([]);
   const [showCreateList, setShowCreateList] = useState(false);
   const [errors, setErrors] = useState(null);
@@ -193,4 +193,4 @@ const AddToListModal = ({ movie, onClose, authenticatedUser }) => {
   );
 };
 
-export default AddToListModal;
+export default AddMovieToListModal;

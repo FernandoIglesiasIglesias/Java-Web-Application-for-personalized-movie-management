@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { getUserDirectorLists, addDirectorToList, createDirectorList, removeDirectorFromList, getDirectorListById } from "../../../backend/directorListService";
-import GenericAddToListModal from "./common/GenericAddToListModal";
+import { getUserDirectorLists, addDirectorToList, createDirectorList, removeDirectorFromList, getDirectorListById } from "../../../../backend/directorListService";
+import GenericAddToListModal from "./GenericAddToListModal";
 import "./AddToListModal.css";
 
 const AddDirectorToListModal = ({ director, onClose, authenticatedUser }) => {

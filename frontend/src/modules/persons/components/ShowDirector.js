@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import ShowPerson from './ShowPerson';
 import { updateDirectorByName, getDirectorByImdbId, getDirectorByName } from '../../../backend/directorService';
-import AddDirectorToListModal from '../../list/components/AddDirectorToListModal';
+import AddDirectorToListModal from '../../list/components/modals/AddDirectorToListModal';
 
 const ShowDirector = ({ authenticatedUser }) => {
   const { directorName } = useParams(); 

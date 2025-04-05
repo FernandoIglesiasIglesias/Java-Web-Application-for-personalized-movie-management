@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useTheme } from "../../../../context/ThemeContext";
 import { Errors } from "../../../common";
-import "../AddToListModal.css";
+import "./AddToListModal.css";
 
 const GenericAddToListModal = ({
   item,
