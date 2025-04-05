@@ -1,8 +1,5 @@
 package com.tfg.tfg.rest.controllers;
 
-import com.tfg.tfg.model.entities.Movie;
-import com.tfg.tfg.model.entities.MovieDao;
-import com.tfg.tfg.model.entities.Rating;
 import com.tfg.tfg.model.services.RatingService;
 import com.tfg.tfg.model.services.exceptions.InstanceNotFoundException;
 import com.tfg.tfg.model.services.exceptions.InvalidRatingException;
@@ -13,12 +10,10 @@ import com.tfg.tfg.rest.dtos.RatingDto;
 
 import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Locale;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/ratings")

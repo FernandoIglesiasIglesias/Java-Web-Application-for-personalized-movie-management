@@ -5,7 +5,6 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
-import com.tfg.tfg.model.entities.Actor;
 import com.tfg.tfg.model.entities.Director;
 import com.tfg.tfg.model.entities.DirectorDao;
 import com.tfg.tfg.model.services.exceptions.InstanceNotFoundException;
