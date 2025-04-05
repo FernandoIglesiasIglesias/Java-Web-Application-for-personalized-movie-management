@@ -5,7 +5,6 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
-import com.tfg.tfg.model.entities.Actor;
 import com.tfg.tfg.model.entities.Director;
 import com.tfg.tfg.model.entities.DirectorDao;
 import com.tfg.tfg.model.services.exceptions.InstanceNotFoundException;
@@ -52,10 +51,6 @@ public class DirectorServiceImpl implements DirectorService {
         
         if (newData.getBirthPlace() != null && !newData.getBirthPlace().isEmpty()) {
             existing.setBirthPlace(newData.getBirthPlace());
-        }
-        
-        if (newData.getStarSign() != null && !newData.getStarSign().isEmpty()) {
-            existing.setStarSign(newData.getStarSign());
         }
         
         if (newData.getHeight() != null && !newData.getHeight().isEmpty()) {

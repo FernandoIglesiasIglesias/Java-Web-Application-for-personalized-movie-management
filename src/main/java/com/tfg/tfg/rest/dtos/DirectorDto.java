@@ -10,7 +10,6 @@ public class DirectorDto {
     private String name;
     private Date birthDate;    
     private String birthPlace;
-    private String starSign;
     private String height;
     private String bio;
     private String imageUrl;
@@ -22,16 +21,21 @@ public class DirectorDto {
         this.id = id;
         this.name = name;
     }
+
+    public DirectorDto(Long id, String name, String imdbId) {
+        this.id = id;
+        this.name = name;
+        this.imdbId = imdbId;
+    }
     
     public DirectorDto(Long id, String imdbId, String name, Date birthDate, 
-                      String birthPlace, String starSign, String height, String bio, String imageUrl, 
+                      String birthPlace, String height, String bio, String imageUrl, 
                       List<MovieDto> movies) {
         this.id = id;
         this.imdbId = imdbId;
         this.name = name;
         this.birthDate = birthDate;
         this.birthPlace = birthPlace;
-        this.starSign = starSign;
         this.height = height;
         this.bio = bio;
         this.imageUrl = imageUrl;
@@ -76,14 +80,6 @@ public class DirectorDto {
     
     public void setBirthPlace(String birthPlace) {
         this.birthPlace = birthPlace;
-    }
-    
-    public String getStarSign() {
-        return starSign;
-    }
-    
-    public void setStarSign(String starSign) {
-        this.starSign = starSign;
     }
     
     public String getHeight() {

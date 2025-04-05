@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { getMovieReviews, createReview, voteReview, removeVote } from '../../../backend/reviewService';
-import { useTheme } from '../../../context/ThemeContext';
-import { Errors } from '../../common';
+import { getMovieReviews, createReview, voteReview, removeVote } from '../../../../backend/reviewService';
+import { useTheme } from '../../../../context/ThemeContext';
+import { Errors } from '../../../common';
 import './MovieReviews.css';
 
 // En lugar de importar el contexto de autenticación, vamos a recibir el usuario como prop
@@ -23,7 +23,6 @@ const MovieReviews = ({ movieId, authenticatedUser }) => {
   // Definimos la ruta al avatar por defecto en lugar de importarlo
   const defaultAvatarPath = '/images/default-avatar.webp';
 
-  // Cargar reseñas de la película
   const loadReviews = () => {
     setLoading(true);
     getMovieReviews(
@@ -38,15 +37,30 @@ const MovieReviews = ({ movieId, authenticatedUser }) => {
         setLoading(false);
       },
       (error) => {
-        setErrors(error);
-        setLoading(false);
+        // Si el error es 403 o 404, simplemente mostrar una lista vacía de reseñas
+        // en lugar de mostrar un error
+        if (error && (error.status === 403 || error.status === 404)) {
+          console.log("No hay reseñas para esta película o no se puede acceder a ellas");
+          setReviews([]);
+          setLoading(false);
+        } else {
+          console.error("Error al cargar reseñas:", error);
+          setErrors(error);
+          setLoading(false);
+        }
       }
     );
   };
 
   useEffect(() => {
-    loadReviews();
+    if (movieId) {
+      loadReviews();
+    } else {
+      setLoading(false);
+      setReviews([]);
+    }
   }, [movieId, userId]);
+
 
   // Manejar la creación de una reseña
   const handleSubmitReview = (e) => {

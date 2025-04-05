@@ -84,7 +84,7 @@ public class MovieConversor {
                     Actor actor = new Actor();
                     actor.setId(actorDto.getId());
                     actor.setName(actorDto.getName());
-                    // No establecemos la relación inversa aquí para evitar recursión
+                    actor.setImdbId(actorDto.getImdbId()); 
                     return actor;
                 })
                 .toList();
@@ -96,7 +96,7 @@ public class MovieConversor {
                     Director director = new Director();
                     director.setId(directorDto.getId());
                     director.setName(directorDto.getName());
-                    // No establecemos la relación inversa aquí para evitar recursión
+                    director.setImdbId(directorDto.getImdbId());
                     return director;
                 })
                 .toList();

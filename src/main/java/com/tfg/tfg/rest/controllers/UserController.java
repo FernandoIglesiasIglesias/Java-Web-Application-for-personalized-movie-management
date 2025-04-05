@@ -6,7 +6,6 @@ import java.util.Locale;
 import static com.tfg.tfg.rest.dtos.UserConversor.toUser;
 import static com.tfg.tfg.rest.dtos.UserConversor.toUserDto;
 import static com.tfg.tfg.rest.dtos.UserConversor.toAuthenticatedUserDto;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

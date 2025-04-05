@@ -11,8 +11,10 @@ public class DirectorConversor {
     private DirectorConversor() {}
     
     public static DirectorDto toDirectorDto(Director director) {
-        return new DirectorDto(director.getId(), director.getName());
-    }
+        if (director == null) return null;
+        DirectorDto dto = new DirectorDto(director.getId(), director.getName());
+        dto.setImdbId(director.getImdbId());
+        return dto;    }
     
     public static DirectorDto toDirectorDtoExpanded(Director director) {
         if (director == null) return null;
@@ -22,7 +24,6 @@ public class DirectorConversor {
         directorDto.setName(director.getName());
         directorDto.setBirthDate(director.getBirthDate());
         directorDto.setBirthPlace(director.getBirthPlace());
-        directorDto.setStarSign(director.getStarSign());
         directorDto.setHeight(director.getHeight());
         directorDto.setBio(director.getBio());
         directorDto.setImageUrl(director.getImageUrl());
@@ -44,7 +45,6 @@ public class DirectorConversor {
         director.setName(directorDto.getName());
         director.setBirthDate(directorDto.getBirthDate());
         director.setBirthPlace(directorDto.getBirthPlace());
-        director.setStarSign(directorDto.getStarSign());
         director.setHeight(directorDto.getHeight());
         director.setBio(directorDto.getBio());
         director.setImageUrl(directorDto.getImageUrl());

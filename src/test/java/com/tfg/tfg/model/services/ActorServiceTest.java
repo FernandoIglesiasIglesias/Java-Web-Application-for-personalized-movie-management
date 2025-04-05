@@ -41,7 +41,6 @@ public class ActorServiceTest {
         testActor.setImdbId("nm0000375");
         testActor.setBirthDate(new java.sql.Date(System.currentTimeMillis())); // Fecha actual como ejemplo
         testActor.setBirthPlace("New York City, New York, USA");
-        testActor.setStarSign("Aries");
         testActor.setHeight("1.74 m");
         testActor.setBio("Robert John Downey Jr. (born April 4, 1965) is an American actor and producer.");
         testActor.setImageUrl("https://example.com/robert_downey_jr.jpg");
