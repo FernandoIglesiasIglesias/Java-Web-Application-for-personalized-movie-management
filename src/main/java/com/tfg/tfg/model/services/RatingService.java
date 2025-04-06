@@ -2,6 +2,7 @@ package com.tfg.tfg.model.services;
 
 import java.util.List;
 
+import com.tfg.tfg.model.entities.Movie;
 import com.tfg.tfg.model.entities.Rating;
 import com.tfg.tfg.model.services.exceptions.InstanceNotFoundException;
 import com.tfg.tfg.model.services.exceptions.InvalidRatingException;
@@ -72,4 +73,15 @@ public interface RatingService {
      * @throws InstanceNotFoundException if the user, movie, or rating doesn't exist
      */
     void deleteRating(Long userId, String imdbId) throws InstanceNotFoundException;
+
+    /**
+     * Gets top rated movies with optional filtering.
+     *
+     * @param genre Optional genre to filter by
+     * @param year Optional year to filter by
+     * @param pageSize Number of results to return
+     * @param page Page number
+     * @return List of movies sorted by average rating
+     */
+    List<Movie> getTopRatedMovies(String genre, Integer year, int pageSize, int page);
 }

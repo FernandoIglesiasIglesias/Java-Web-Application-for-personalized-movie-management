@@ -1,10 +1,13 @@
 package com.tfg.tfg.rest.controllers;
 
+import com.tfg.tfg.model.entities.Movie;
 import com.tfg.tfg.model.services.RatingService;
 import com.tfg.tfg.model.services.exceptions.InstanceNotFoundException;
 import com.tfg.tfg.model.services.exceptions.InvalidRatingException;
 import com.tfg.tfg.model.services.exceptions.NoRatingsException;
 import com.tfg.tfg.rest.common.ErrorsDto;
+import com.tfg.tfg.rest.dtos.MovieConversor;
+import com.tfg.tfg.rest.dtos.MovieDto;
 import com.tfg.tfg.rest.dtos.RatingConversor;
 import com.tfg.tfg.rest.dtos.RatingDto;
 
@@ -99,4 +102,14 @@ public class RatingController {
         ratingService.deleteRating(userId, imdbId);
     }
 
+    @GetMapping("/topRated")
+    public List<MovieDto> getTopRatedMovies(
+            @RequestParam(required = false) String genre,
+            @RequestParam(required = false) Integer year,
+            @RequestParam(defaultValue = "10") int pageSize,
+            @RequestParam(defaultValue = "0") int page) {
+        
+        List<Movie> movies = ratingService.getTopRatedMovies(genre, year, pageSize, page);
+        return MovieConversor.toMovieDtos(movies);
+    }
 }

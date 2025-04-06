@@ -3,6 +3,8 @@ package com.tfg.tfg.model.services;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -153,5 +155,24 @@ public class RatingServiceImpl implements RatingService {
     private Movie findMovieByImdbId(String imdbId) throws InstanceNotFoundException {
         return movieDao.findByImdbId(imdbId)
             .orElseThrow(() -> new InstanceNotFoundException(MOVIE_ENTITY, imdbId));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Movie> getTopRatedMovies(String genre, Integer year, int pageSize, int page) {
+        Pageable pageable = PageRequest.of(page, pageSize);
+        List<Movie> movies;
+        
+        if (genre != null && year != null) {
+            movies = ratingDao.findTopRatedMoviesByGenreAndYear(genre, year, pageable);
+        } else if (genre != null) {
+            movies = ratingDao.findTopRatedMoviesByGenre(genre, pageable);
+        } else if (year != null) {
+            movies = ratingDao.findTopRatedMoviesByYear(year, pageable);
+        } else {
+            movies = ratingDao.findTopRatedMovies(pageable);
+        }
+        
+        return movies;
     }
 }

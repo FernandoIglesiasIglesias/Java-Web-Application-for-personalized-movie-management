@@ -84,6 +84,7 @@ public class SecurityConfig {
                 .requestMatchers(antMatcher("/ratings/movie/{imdbId}/average")).permitAll()
                 .requestMatchers(antMatcher("/ratings/user/{userId}")).hasRole(USER)
                 .requestMatchers(antMatcher("/ratings/movie/{imdbId}")).permitAll()
+                .requestMatchers(antMatcher("/ratings/topRated")).permitAll() 
                 
                 // Review endpoints
                 .requestMatchers(antMatcher("/reviews")).hasRole(USER)
