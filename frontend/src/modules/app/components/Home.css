@@ -1,53 +1,6 @@
 :root {
-  --background-color-light: #f9f9f9;
-  --text-color-light: #333;
-  --text-secondary-light: #666;
-  --button-background-light: #007bff;
-  --button-text-light: #fff;
-  --button-hover-background-light: #0056b3;
-  --card-background-light: #ffffff;
-  --card-background-light-rgb: 255, 255, 255;
-  --primary-color-light: #007bff;
-  --primary-hover-light: #0056b3;
-  --danger-color-light: #dc3545;
-
-  --background-color-dark: #1e1e1e;
-  --text-color-dark: #f9f9f9;
-  --text-secondary-dark: #b0b0b0;
-  --button-background-dark: #bb86fc;
-  --button-text-dark: #1e1e1e;
-  --button-hover-background-dark: #3700b3;
-  --card-background-dark: #2d2d2d;
-  --card-background-dark-rgb: 45, 45, 45;
-  --primary-color-dark: #bb86fc;
-  --primary-hover-dark: #7e57c2;
-  --danger-color-dark: #ef5350;
-
-  --transition-duration: 0.3s;
   --header-height: 60px;
-}
-
-body {
-  margin: 0;
-  padding: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  overflow-x: hidden;
-}
-
-body.light {
-  background-color: var(--background-color-light);
-  color: var(--text-color-light);
-  transition: background-color var(--transition-duration), color var(--transition-duration);
-}
-
-body.dark {
-  background-color: var(--background-color-dark);
-  color: var(--text-color-dark);
-  transition: background-color var(--transition-duration), color var(--transition-duration);
+  --transition-duration: 0.3s;
 }
 
 /* Estructura principal de Home */
@@ -58,6 +11,16 @@ body.dark {
   width: 100%;
 }
 
+.home-container.light {
+  background-color: #f5f7fa;
+  color: #333;
+}
+
+.home-container.dark {
+  background-color: #1a1a1a;
+  color: #eee;
+}
+
 .home-content {
   flex: 1;
   width: 100%;
@@ -66,10 +29,7 @@ body.dark {
 }
 
 /* Transiciones suaves para cambios de tema */
-.home-content.light {
-  transition: background-color var(--transition-duration), color var(--transition-duration);
-}
-
+.home-content.light,
 .home-content.dark {
   transition: background-color var(--transition-duration), color var(--transition-duration);
 }
@@ -87,24 +47,8 @@ body.dark {
   border-width: 0;
 }
 
-/* Estilos para pantallas pequeñas */
-@media (max-width: 768px) {
-  .home-content {
-    padding-top: calc(var(--header-height) - 10px);
-  }
-}
-
-/* Mejoras específicas para Home con el contenedor de GetMovies */
-.home-container .movies-page {
-  padding-top: 0; /* Eliminar padding duplicado */
-}
-
-.home-container .movies-container {
-  padding-top: 1rem; /* Reducir espacio superior */
-}
-
 /* Mejora en la presentación inicial de la página */
-.home-container .movies-header {
+.home-container .movie-header {
   opacity: 0;
   animation: fadeIn 0.6s ease-out forwards;
 }
@@ -114,13 +58,43 @@ body.dark {
   animation: fadeIn 0.6s ease-out 0.2s forwards;
 }
 
+/* Animaciones más suaves y naturales */
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
+  from { opacity: 0; transform: translateY(15px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* Mejoras de rendimiento */
+/* Mejoras de rendimiento y optimización visual */
 .home-container * {
   backface-visibility: hidden;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Estilos para pantallas pequeñas */
+@media (max-width: 768px) {
+  .home-content {
+    padding-top: calc(var(--header-height) - 10px);
+  }
+}
+
+/* Mejoras específicas para Home con el contenedor de MovieExplorer */
+.home-container .movie-explorer {
+  padding-top: 0;
+}
+
+.home-container .explorer-container {
+  padding-top: 1rem;
+}
+
+/* Mejoras de accesibilidad de enfoque */
+.home-container a:focus,
+.home-container button:focus {
+  outline: 2px solid var(--primary-color-light);
+  outline-offset: 2px;
+}
+
+.home-container.dark a:focus,
+.home-container.dark button:focus {
+  outline-color: var(--primary-color-dark);
 }

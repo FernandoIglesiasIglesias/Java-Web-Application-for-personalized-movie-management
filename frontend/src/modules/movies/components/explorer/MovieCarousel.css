@@ -1,0 +1,187 @@
+.movies-carousel-container {
+  position: relative;
+  margin: 0 -1rem;
+  animation: fadeIn 0.5s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.movies-list-container {
+  overflow-x: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #cacaca #f0f0f0;
+  scroll-behavior: smooth;
+  padding: 1rem;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-x;
+}
+
+.movies-list-container::-webkit-scrollbar {
+  height: 8px;
+}
+
+.movies-list-container::-webkit-scrollbar-track {
+  background: #f0f0f0;
+  border-radius: 4px;
+}
+
+.movies-list-container::-webkit-scrollbar-thumb {
+  background: #cacaca;
+  border-radius: 4px;
+}
+
+.movies-list-container::-webkit-scrollbar-thumb:hover {
+  background: #aaaaaa;
+}
+
+.movie-explorer.dark .movies-list-container {
+  scrollbar-color: #666 #333;
+}
+
+.movie-explorer.dark .movies-list-container::-webkit-scrollbar-track {
+  background: #333;
+}
+
+.movie-explorer.dark .movies-list-container::-webkit-scrollbar-thumb {
+  background: #666;
+}
+
+.movie-explorer.dark .movies-list-container::-webkit-scrollbar-thumb:hover {
+  background: #888;
+}
+
+.movies-list {
+  display: flex;
+  gap: 1.5rem;
+  padding: 0.5rem 0.25rem;
+}
+
+.carousel-button {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  width: 45px;
+  height: 45px;
+  border: none;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.9);
+  color: #333;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.25s var(--cubic-bounce);
+}
+
+.carousel-button:hover {
+  background-color: rgba(255, 255, 255, 1);
+  transform: translateY(-50%) scale(1.1);
+  box-shadow: 0 5px 12px rgba(0, 0, 0, 0.25);
+}
+
+.carousel-button.left {
+  left: 0.5rem;
+}
+
+.carousel-button.right {
+  right: 0.5rem;
+}
+
+.carousel-button.dark {
+  background-color: rgba(50, 50, 50, 0.9);
+  color: #ddd;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
+}
+
+.carousel-button.dark:hover {
+  background-color: rgba(70, 70, 70, 1);
+  box-shadow: 0 5px 12px rgba(0, 0, 0, 0.4);
+}
+
+.carousel-button .arrow {
+  font-size: 1.2rem;
+  transition: transform 0.2s;
+}
+
+.carousel-button:hover .arrow {
+  transform: scale(1.2);
+}
+
+.carousel-button.dark .arrow {
+  color: #eee;
+}
+
+/* Mejora de accesibilidad para navegación con teclado */
+.carousel-button:focus {
+  outline: 2px solid var(--primary-color-light);
+  outline-offset: 2px;
+}
+
+.carousel-button.dark:focus {
+  outline-color: var(--primary-color-dark);
+}
+
+/* Mejora para soporte touch */
+@media (hover: none) {
+  .carousel-button {
+    opacity: 0.9;
+  }
+}
+
+@media (max-width: 992px) {
+  .carousel-button {
+    width: 40px;
+    height: 40px;
+  }
+}
+
+@media (max-width: 768px) {
+  .movies-list-container {
+    padding: 0.75rem;
+  }
+  
+  .carousel-button {
+    width: 35px;
+    height: 35px;
+  }
+  
+  .carousel-button .arrow {
+    font-size: 1rem;
+  }
+  
+  .movies-list {
+    gap: 1.2rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .movies-list-container {
+    padding: 0.5rem;
+  }
+  
+  .carousel-button {
+    width: 32px;
+    height: 32px;
+  }
+  
+  .carousel-button .arrow {
+    font-size: 0.9rem;
+  }
+  
+  .carousel-button.left {
+    left: 0.25rem;
+  }
+  
+  .carousel-button.right {
+    right: 0.25rem;
+  }
+  
+  .movies-list {
+    gap: 0.8rem;
+  }
+}

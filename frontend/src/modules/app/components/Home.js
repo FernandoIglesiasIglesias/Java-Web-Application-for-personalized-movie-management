@@ -1,6 +1,6 @@
 import React from "react";
 import { useTheme } from "../../../context/ThemeContext";
-import GetMovies from "../../movies/components/GetMovies";
+import MovieExplorer from "../../movies/components/MovieExplorer";
 import './Home.css';
 
 const Home = ({ user }) => {
@@ -8,9 +8,8 @@ const Home = ({ user }) => {
 
   return (
     <div className={`home-container ${theme}`}>
-      {/* Eliminar la referencia al Header aquí */}
       <div className={`home-content ${theme}`}>
-        <GetMovies />
+        <MovieExplorer user={user} />
       </div>
     </div>
   );

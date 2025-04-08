@@ -1,0 +1,92 @@
+.movies-grid-container {
+  margin-top: 1.5rem;
+  animation: fadeIn 0.5s ease-out;
+  padding: 0.5rem 0;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.movies-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 1.75rem;
+}
+
+/* Animación de aparición escalonada para las tarjetas */
+.movies-grid .movie-card {
+  opacity: 0;
+  animation: fadeInUp 0.5s ease-out forwards;
+}
+
+@keyframes fadeInUp {
+  from { 
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to { 
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Aplicar retraso escalonado a las tarjetas */
+.movies-grid .movie-card:nth-child(1) { animation-delay: 0.05s; }
+.movies-grid .movie-card:nth-child(2) { animation-delay: 0.1s; }
+.movies-grid .movie-card:nth-child(3) { animation-delay: 0.15s; }
+.movies-grid .movie-card:nth-child(4) { animation-delay: 0.2s; }
+.movies-grid .movie-card:nth-child(5) { animation-delay: 0.25s; }
+.movies-grid .movie-card:nth-child(6) { animation-delay: 0.3s; }
+.movies-grid .movie-card:nth-child(7) { animation-delay: 0.35s; }
+.movies-grid .movie-card:nth-child(8) { animation-delay: 0.4s; }
+/* Los elementos restantes aparecen con el mismo retraso */
+.movies-grid .movie-card:nth-child(n+9) { animation-delay: 0.45s; }
+
+/* Media queries para diseño responsive */
+@media (min-width: 480px) {
+  .movies-grid {
+    grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+    gap: 1.5rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .movies-grid {
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 1.75rem;
+  }
+}
+
+@media (min-width: 992px) {
+  .movies-grid {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 2rem;
+  }
+}
+
+@media (min-width: 1200px) {
+  .movies-grid {
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 2.25rem;
+  }
+}
+
+/* Ajustes para pantallas muy pequeñas */
+@media (max-width: 380px) {
+  .movies-grid {
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 1rem;
+  }
+}
+
+/* Mejora de accesibilidad para navegación con teclado */
+.movies-grid .movie-card:focus-visible {
+  outline: 3px solid var(--primary-color-light);
+  outline-offset: 3px;
+}
+
+.movies-grid .movie-card.dark:focus-visible {
+  outline-color: var(--primary-color-dark);
+}

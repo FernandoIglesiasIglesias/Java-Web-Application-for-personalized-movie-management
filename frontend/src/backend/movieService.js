@@ -40,7 +40,7 @@ export const getExternalMovies = (cursor, filters, onSuccess, onErrors) => {
   const url = new URL('https://streaming-availability.p.rapidapi.com/shows/search/filters');
   
   // Parámetro obligatorio: país (utilizamos España)
-  url.searchParams.append('country', 'es');
+  url.searchParams.append('country', 'us');
   
   // Paginación con cursor
   if (cursor) {
