@@ -3,7 +3,8 @@ import { useTheme } from "../../../context/ThemeContext";
 import MovieHeader from "./explorer/MovieHeader";
 import MovieFilters from "./explorer/MovieFilters";
 import MovieResults from "./explorer/MovieResults";
-import { getExternalMovies } from "../../../backend/movieService";
+import SearchBar from "./explorer/SearchBar";
+import { getExternalMovies, searchMoviesByTitle } from "../../../backend/movieService";
 import { getTopRatedMovies } from "../../../backend/rateService";
 import "./MovieExplorer.css";
 
@@ -13,7 +14,11 @@ const MovieExplorer = ({ user }) => {
   const [showFilters, setShowFilters] = useState(false);
   
   // Movie source state
-  const [movieSource, setMovieSource] = useState("external"); // "external" or "topRated"
+  const [movieSource, setMovieSource] = useState("external"); // "external", "topRated", "search"
+  
+  // Search state
+  const [searchTitle, setSearchTitle] = useState("");
+  const [isSearching, setIsSearching] = useState(false);
   
   // External API movies state
   const [externalMovies, setExternalMovies] = useState([]);
@@ -73,6 +78,47 @@ const MovieExplorer = ({ user }) => {
     );
   };
 
+  // Búsqueda de películas por título - modificada para recibir el título como parámetro
+  const handleSearchMovies = (title) => {
+    if (!title || !title.trim()) {
+      setErrors("Por favor, introduce un título para buscar");
+      return;
+    }
+    
+    setSearchTitle(title);
+    setIsSearching(true);
+    setLoadingExternal(true);
+    setExternalMovies([]);
+    setCursor(null);
+    setHasMore(false);
+    
+    searchMoviesByTitle(
+      title,
+      (data) => {
+        if (data?.shows && data.shows.length > 0) {
+          setExternalMovies(data.shows);
+          setErrors(null);
+        } else {
+          setExternalMovies([]);
+          setErrors(`No se encontraron películas con el título "${title}"`);
+        }
+        setLoadingExternal(false);
+      },
+      (error) => {
+        setErrors(`Error al buscar películas: ${error.message}`);
+        setLoadingExternal(false);
+      }
+    );
+  };
+
+  // Limpiar búsqueda
+  const clearSearch = () => {
+    setSearchTitle("");
+    setIsSearching(false);
+    setExternalMovies([]);
+    fetchExternalMovies(null, filters);
+  };
+
   const fetchTopRatedMovies = () => {
     setLoadingTopRated(true);
     
@@ -129,7 +175,7 @@ const MovieExplorer = ({ user }) => {
   
   // Effect to fetch movies based on selected source
   useEffect(() => {
-    if (movieSource === 'external') {
+    if (movieSource === 'external' && !isSearching) {
       fetchExternalMovies(null, filters);
     } else if (movieSource === 'topRated') {
       fetchTopRatedMovies();
@@ -147,6 +193,12 @@ const MovieExplorer = ({ user }) => {
   const handleFilterSubmit = (newFilters) => {
     setFilters(newFilters);
     
+    // Si estamos en modo búsqueda, volver al modo normal
+    if (isSearching) {
+      setIsSearching(false);
+      setSearchTitle("");
+    }
+    
     if (movieSource === 'external') {
       setCursor(null);
       setExternalMovies([]);
@@ -160,13 +212,19 @@ const MovieExplorer = ({ user }) => {
 
   // Handle loading more movies
   const handleLoadMore = () => {
-    if (hasMore && cursor && !loadingMoreExternal) {
+    if (hasMore && cursor && !loadingMoreExternal && !isSearching) {
       fetchExternalMovies(cursor, filters);
     }
   };
 
   // Toggle movie source
   const handleSourceChange = (source) => {
+    // Si estamos en modo búsqueda, limpiamos la búsqueda
+    if (isSearching) {
+      setIsSearching(false);
+      setSearchTitle("");
+    }
+    
     setMovieSource(source);
   };
 
@@ -213,22 +271,57 @@ const MovieExplorer = ({ user }) => {
   ];
 
   // Filter external movies that have posters
-  const filteredExternalMovies = externalMovies.filter(movie => 
-    movie.imageSet?.verticalPoster?.w240
-  );
+  const filteredExternalMovies = externalMovies.filter(movie => {
+    // Si tiene imageSet con verticalPoster, es válido
+    if (movie.imageSet?.verticalPoster?.w240) {
+      return true;
+    }
+    
+    // Si tiene posterURLs de la API de búsqueda por título
+    if (movie.posterURLs && (movie.posterURLs.w342 || movie.posterURLs.w500 || movie.posterURLs.original)) {
+      return true;
+    }
+    
+    // Si tiene la verticalPoster directamente en el objeto
+    if (movie.verticalPoster) {
+      return true;
+    }
+    
+    // Si tiene posterUrl (del backend)
+    if (movie.posterUrl) {
+      return true;
+    }
+    
+    // Si tiene una imagen básica
+    if (movie.imageUrl) {
+      return true;
+    }
+    
+    return false;
+  });
 
   return (
     <div className={`movie-explorer ${theme}`}>
       <div className="explorer-container">
+        {/* Componente de búsqueda reemplazado por el nuevo SearchBar */}
+        <SearchBar
+          initialValue={searchTitle}
+          onSearch={handleSearchMovies}
+          onClear={clearSearch}
+          isSearching={isSearching}
+          theme={theme}
+        />
+        
         <MovieHeader 
           showFilters={showFilters}
           setShowFilters={setShowFilters}
           movieSource={movieSource}
           onSourceChange={handleSourceChange}
           theme={theme}
+          isSearching={isSearching}
         />
         
-        {showFilters && (
+        {showFilters && !isSearching && (
           <MovieFilters
             filters={filters}
             availableGenres={availableGenres}
@@ -248,17 +341,18 @@ const MovieExplorer = ({ user }) => {
         )}
 
         <MovieResults 
-          movieSource={movieSource}
+          movieSource={isSearching ? "search" : movieSource}
           externalMovies={filteredExternalMovies}
           topRatedMovies={topRatedMovies}
           filters={filters}
           loadingExternal={loadingExternal}
           loadingMoreExternal={loadingMoreExternal}
           loadingTopRated={loadingTopRated}
-          hasMore={hasMore}
+          hasMore={hasMore && !isSearching}
           onLoadMore={handleLoadMore}
-          onRetry={() => movieSource === 'external' ? fetchExternalMovies(null, filters) : fetchTopRatedMovies()}
+          onRetry={() => isSearching ? handleSearchMovies(searchTitle) : movieSource === 'external' ? fetchExternalMovies(null, filters) : fetchTopRatedMovies()}
           theme={theme}
+          searchTitle={isSearching ? searchTitle : ""}
         />
       </div>
     </div>

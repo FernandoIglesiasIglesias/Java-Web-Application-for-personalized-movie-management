@@ -216,3 +216,178 @@ export const getMovieCast = (imdbId, onSuccess, onErrors) => {
   .then(onSuccess)
   .catch(onErrors);
 };
+
+export const searchMoviesByTitle = (title, onSuccess, onErrors) => {
+  if (!title || title.trim() === '') {
+    onErrors(new Error('El título de búsqueda no puede estar vacío'));
+    return;
+  }
+
+  // Normalizar el título: quitar acentos, pasar a minúsculas
+  const normalizedTitle = title.trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  
+  const url = new URL('https://streaming-availability.p.rapidapi.com/shows/search/title');
+  
+  // Parámetros obligatorios
+  url.searchParams.append('country', 'us');
+  url.searchParams.append('title', normalizedTitle);
+  
+  // Parámetros opcionales pero con valores específicos
+  url.searchParams.append('show_type', 'movie');  // Solo películas
+  url.searchParams.append('output_language', 'es');  // Resultados en español
+  url.searchParams.append('series_granularity', 'show');  // No incluir detalles de temporadas/episodios
+
+  console.log("URL de búsqueda por título:", url.toString());
+
+  fetch(url.toString(), {
+    method: 'GET',
+    headers: {
+      'x-rapidapi-host': 'streaming-availability.p.rapidapi.com',
+      'x-rapidapi-key': 'cb332fab10msh89e2fc877672ccfp14515bjsn3b00399489a8'
+    }
+  })
+  .then(response => {
+    if (!response.ok) {
+      return response.text().then(text => {
+        console.error("Error en la respuesta de la API de búsqueda:", text);
+        console.error("URL que causó el error:", url.toString());
+        throw new Error(`API error: ${response.status} - ${text}`);
+      });
+    }
+    return response.json();
+  })
+  .then(data => {
+    console.log("Respuesta de búsqueda por título:", data);
+    
+    // Procesar los datos para asegurarnos de que todas las películas tengan la estructura correcta
+    const processResults = (movies) => {
+      if (!movies || movies.length === 0) {
+        return [];
+      }
+      
+      return movies.map(movie => {
+        // Procesar la estructura de imageSet si es necesario
+        let processedMovie = { ...movie };
+        
+        // Si no tiene imageSet pero tiene posterURLs, convertirlos al formato esperado
+        if (!processedMovie.imageSet && processedMovie.posterURLs) {
+          processedMovie.imageSet = {
+            verticalPoster: {
+              w240: processedMovie.posterURLs?.w342 || processedMovie.posterURLs?.w500,
+              w500: processedMovie.posterURLs?.w500 || processedMovie.posterURLs?.w780,
+              w720: processedMovie.posterURLs?.w780 || processedMovie.posterURLs?.original
+            }
+          };
+        }
+        
+        // Asegurar que haya una URL de poster para mostrar
+        if (processedMovie.verticalPoster && !processedMovie.imageSet) {
+          processedMovie.imageSet = {
+            verticalPoster: {
+              w240: processedMovie.verticalPoster,
+              w500: processedMovie.verticalPoster,
+              w720: processedMovie.verticalPoster
+            }
+          };
+        }
+        
+        return processedMovie;
+      });
+    };
+    
+    // Verificar el formato de la respuesta
+    // Si la respuesta es un array en lugar de un objeto con propiedad 'result'
+    if (Array.isArray(data)) {
+      return {
+        shows: processResults(data),
+        hasMore: false,
+        nextCursor: null,
+        isSimplifiedSearch: false
+      };
+    }
+    
+    // Si no hay resultados pero tenemos un título con espacios, intentar con un título simplificado
+    if ((!data.result || data.result.length === 0) && title.includes(" ")) {
+      console.log("No se encontraron resultados con el título completo, intentando con palabras clave...");
+      
+      // Crear una nueva URL con solo la primera palabra del título (generalmente más efectivo)
+      const simpleTitle = title.split(" ")[0];
+      const newUrl = new URL('https://streaming-availability.p.rapidapi.com/shows/search/title');
+      newUrl.searchParams.append('country', 'us');
+      newUrl.searchParams.append('title', simpleTitle);
+      newUrl.searchParams.append('show_type', 'movie');
+      newUrl.searchParams.append('output_language', 'es');
+      newUrl.searchParams.append('series_granularity', 'show');
+      
+      console.log("Intentando búsqueda con título simplificado:", newUrl.toString());
+      
+      // Realizar una segunda búsqueda con el título simplificado
+      return fetch(newUrl.toString(), {
+        method: 'GET',
+        headers: {
+          'x-rapidapi-host': 'streaming-availability.p.rapidapi.com',
+          'x-rapidapi-key': 'cb332fab10msh89e2fc877672ccfp14515bjsn3b00399489a8'
+        }
+      })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`API responded with status ${response.status}`);
+        }
+        return response.json();
+      })
+      .then(secondData => {
+        console.log("Respuesta de búsqueda con título simplificado:", secondData);
+        
+        // Verificar si la respuesta es un array
+        if (Array.isArray(secondData)) {
+          return {
+            shows: processResults(secondData),
+            hasMore: false,
+            nextCursor: null,
+            isSimplifiedSearch: true
+          };
+        }
+        
+        return {
+          shows: processResults(secondData.result || []),
+          hasMore: false,
+          nextCursor: null,
+          isSimplifiedSearch: true
+        };
+      });
+    }
+    
+    // Procesamos los resultados para mantener consistencia con el formato
+    // que espera el resto de la aplicación
+    return {
+      shows: processResults(data.result || []),
+      hasMore: false, // La API de búsqueda por título no soporta paginación
+      nextCursor: null,
+      isSimplifiedSearch: false
+    };
+  })
+  .then(processedResults => {
+    // Si no se encontraron resultados incluso con la búsqueda simplificada,
+    // intentar con la API de filtros como último recurso
+    if (processedResults.shows.length === 0 && !processedResults.isSimplifiedSearch) {
+      console.log("No se encontraron resultados. Intentando con búsqueda por filtro keyword...");
+      
+      // Usar la función getExternalMovies pero con el título como keyword
+      getExternalMovies(
+        null, // sin cursor
+        { 
+          showType: 'movie',
+          keyword: title.trim()
+        },
+        data => {
+          console.log("Resultados de búsqueda por keyword:", data);
+          onSuccess(data);
+        },
+        onErrors
+      );
+    } else {
+      onSuccess(processedResults);
+    }
+  })
+  .catch(onErrors);
+};

@@ -1,0 +1,194 @@
+.search-wrapper {
+    width: 100%;
+    margin-bottom: 20px;
+  }
+  
+  .search-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+  }
+  
+  .search-input {
+    flex: 1;
+    padding: 14px 16px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 16px;
+    min-height: 50px;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    outline: none;
+  }
+  
+  .search-input:focus {
+    border-color: var(--primary-color-light);
+    box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.15);
+  }
+  
+  .search-input.dark {
+    background-color: #2d2d2d;
+    color: #fff;
+    border-color: #444;
+  }
+  
+  .search-input.dark:focus {
+    border-color: var(--primary-color-dark);
+    box-shadow: 0 0 0 3px rgba(121, 82, 179, 0.25);
+  }
+  
+  .search-buttons {
+    display: flex;
+    gap: 10px;
+  }
+  
+  /* Estilos para los botones */
+  .search-button,
+  .clear-search-button {
+    padding: 12px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    min-width: 100px;
+    min-height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .search-button {
+    background-color: var(--primary-color-light);
+    color: white;
+  }
+  
+  .search-button:hover:not(:disabled) {
+    background-color: #0d8aee;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  }
+  
+  .search-button:active:not(:disabled) {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .search-button:disabled {
+    background-color: #ccc;
+    color: #666;
+    cursor: not-allowed;
+    box-shadow: none;
+  }
+  
+  .clear-search-button {
+    background-color: #f44336;
+    color: white;
+  }
+  
+  .clear-search-button:hover {
+    background-color: #d32f2f;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  }
+  
+  .clear-search-button:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .search-button.dark {
+    background-color: var(--primary-color-dark);
+  }
+  
+  .search-button.dark:disabled {
+    background-color: #444;
+    color: #999;
+  }
+  
+  .clear-search-button.dark {
+    background-color: #c62828;
+  }
+  
+  /* Mejora para la legibilidad del texto del botón */
+  .button-text {
+    font-size: 0.95rem;
+    letter-spacing: 0.5px;
+  }
+  
+  /* Medias queries para diferentes tamaños de pantalla */
+  @media (max-width: 768px) {
+    .search-container {
+      max-width: 100%;
+    }
+    
+    .search-input {
+      font-size: 15px;
+    }
+    
+    .search-button,
+    .clear-search-button {
+      padding: 12px 16px;
+    }
+  }
+  
+  @media (max-width: 600px) {
+    .search-container {
+      flex-direction: column;
+    }
+    
+    .search-buttons {
+      display: flex;
+      width: 100%;
+    }
+    
+    .search-button,
+    .clear-search-button {
+      flex: 1;
+      padding: 12px 0;
+      font-size: 0.95rem;
+    }
+  }
+  
+  @media (max-width: 400px) {
+    .search-input {
+      padding: 12px 14px;
+      min-height: 46px;
+    }
+    
+    .search-button,
+    .clear-search-button {
+      min-height: 46px;
+      font-size: 0.9rem;
+    }
+  }
+  
+  /* Soporte para dispositivos táctiles */
+  @media (hover: none) {
+    .search-button:hover:not(:disabled),
+    .clear-search-button:hover {
+      transform: none;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+  }
+  
+  /* Mejora para pantallas de alta densidad */
+  @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+    .search-input {
+      font-smoothing: antialiased;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    
+    .button-text {
+      font-smoothing: antialiased;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+  }

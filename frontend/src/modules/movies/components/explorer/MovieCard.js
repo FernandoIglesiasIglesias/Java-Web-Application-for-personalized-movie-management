@@ -5,9 +5,11 @@ import './MovieCard.css';
 const MovieCard = ({ movie, onClick, theme, source }) => {
   const [imageError, setImageError] = useState(false);
   
-  console.log("MovieCard rendering with data:", movie); // Para depuración
+  // Depuración
+  console.log("MovieCard rendering with data:", movie);
 
   const handleImageError = () => {
+    console.log(`Error cargando imagen para película: ${movie.title}`, movie.posterUrl);
     setImageError(true);
   };
 
@@ -23,6 +25,17 @@ const MovieCard = ({ movie, onClick, theme, source }) => {
                               movie.userRating !== undefined && 
                               movie.userRating !== 0;
 
+  // Obtener iniciales para placeholder
+  const getInitials = () => {
+    if (!movie.title) return "??";
+    return movie.title
+      .split(' ')
+      .map(word => word[0])
+      .join('')
+      .toUpperCase()
+      .substring(0, 2);
+  };
+
   return (
     <div
       className={`movie-card ${theme} ${source === 'topRated' ? 'top-rated' : ''}`}
@@ -34,37 +47,44 @@ const MovieCard = ({ movie, onClick, theme, source }) => {
             <span>★ Top Rated</span>
           </div>
         )}
-        <img
-          src={imageError ? "https://via.placeholder.com/240x360?text=No+Image" : (movie.posterUrl || "https://via.placeholder.com/240x360?text=No+Image")}
-          alt={movie.title}
-          className={`movie-poster ${imageError ? 'error' : ''}`}
-          loading="lazy"
-          onError={handleImageError}
-        />
+        {imageError ? (
+          <div className="movie-placeholder">
+            <div className="movie-initials">{getInitials()}</div>
+          </div>
+        ) : (
+          <img
+            src={movie.posterUrl || "https://via.placeholder.com/240x360?text=No+Image"}
+            alt={movie.title}
+            className="movie-poster"
+            loading="lazy"
+            onError={handleImageError}
+          />
+        )}
         <div className="movie-overlay">
           <div className="movie-year">{movie.year || '???'}</div>
           <div className="movie-ratings">
             {movie.rating && (
               <div className="movie-rating imdb" title="Valoración IMDB">
-                IMDB: {formatRating(movie.rating)}
+                <span className="rating-icon">⭐</span>
+                <span className="rating-value">{formatRating(movie.rating)}</span>
               </div>
             )}
             {shouldShowUserRating && (
-              <div className="movie-rating users" title="Valoración de usuarios">
-                Users: {formatRating(movie.userRating)}
+              <div className="movie-rating user" title="Valoración de usuarios">
+                <span className="rating-icon">👤</span>
+                <span className="rating-value">{formatRating(movie.userRating)}</span>
               </div>
-            )}
-            {!movie.rating && !shouldShowUserRating && (
-              <div className="movie-rating">N/A</div>
             )}
           </div>
         </div>
       </div>
       <div className="movie-info">
-        <h3 className="movie-title">{movie.title}</h3>
-        <p className="movie-genres">
-          {movie.genres && movie.genres.length > 0 ? movie.genres.join(', ') : ''}
-        </p>
+        <h3 className="movie-title">{movie.title || 'Sin título'}</h3>
+        <div className="movie-genres">
+          {(movie.genres || []).slice(0, 2).map((genre, index) => (
+            <span key={index} className="movie-genre">{genre}</span>
+          ))}
+        </div>
       </div>
     </div>
   );
@@ -73,8 +93,8 @@ const MovieCard = ({ movie, onClick, theme, source }) => {
 MovieCard.propTypes = {
   movie: PropTypes.shape({
     id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-    imdbId: PropTypes.string,
-    title: PropTypes.string.isRequired,
+    imdbId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    title: PropTypes.string,
     posterUrl: PropTypes.string,
     year: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     rating: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),

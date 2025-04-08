@@ -1,121 +1,151 @@
-/* Importar variables primero */
-@import './ShowMovieComponents/variables.css';
-
-/* Contenedor principal */
-.movie-detail-page {
-  position: relative;
-  min-height: 100vh;
-  padding-top: calc(var(--header-height, 60px) - 0.5rem);
+.movie-explorer {
   width: 100%;
+  min-height: calc(100vh - var(--header-height));
+  transition: background-color var(--transition-duration);
 }
 
-/* Fondo con efecto de poster desenfocado */
-.movie-backdrop {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-size: cover;
-  background-position: center;
-  filter: blur(25px);
-  opacity: 0.25;
-  z-index: -1;
+.movie-explorer.light {
+  background-color: #f5f7fa;
+  color: #333;
 }
 
-.backdrop-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.92), rgba(255, 255, 255, 0.98));
+.movie-explorer.dark {
+  background-color: #1a1a1a;
+  color: #eee;
 }
 
-.backdrop-overlay.dark {
-  background: linear-gradient(to bottom, rgba(18, 18, 18, 0.94), rgba(18, 18, 18, 0.98));
-}
-
-/* Contenedor del detalle */
-.movie-detail-container {
+.explorer-container {
   width: 100%;
-  max-width: 1100px;
+  max-width: 1400px;
   margin: 0 auto;
-  padding: 0.5rem 1.25rem;
-  position: relative;
-  z-index: 10;
+  padding: 1.5rem;
+  animation: fadeIn 0.5s ease-out;
 }
 
-/* Contenedor del contenido principal */
-.movie-detail-content {
-  display: grid;
-  grid-template-columns: 250px 1fr;
-  gap: 1.5rem;
-  align-items: start;
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
-/* Secciones dentro de la página */
-.movie-section {
-  margin-bottom: 1.5rem;
-  background-color: var(--card-background-light);
-  padding: 1rem;
+.error-container {
+  margin: 1rem 0;
+  padding: 1.25rem;
+  background-color: rgba(220, 53, 69, 0.1);
+  border-left: 4px solid #ff5252;
   border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  animation: slideIn 0.3s ease-out;
 }
 
-.movie-detail-container.dark .movie-section {
-  background-color: var(--card-background-dark);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+@keyframes slideIn {
+  from { transform: translateX(-10px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
 }
 
-/* Overlay general para modales */
-.modal-overlay {
-  position: fixed;
-  top: 0;
+.error-message {
+  color: var(--danger-color-light);
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.movie-explorer.dark .error-container {
+  background-color: rgba(220, 53, 69, 0.2);
+  border-left-color: #ff5252;
+}
+
+.movie-explorer.dark .error-message {
+  color: var(--danger-color-dark);
+}
+
+/* Contenedores de secciones */
+.explorer-section {
+  margin-bottom: 2rem;
+}
+
+.explorer-section-title {
+  font-size: 1.8rem;
+  margin-top: 0.25rem;
+  margin-bottom: 1.25rem;
+  color: var(--text-color-light);
+  position: relative;
+}
+
+.movie-explorer.dark .explorer-section-title {
+  color: var(--text-color-dark);
+}
+
+.explorer-section-title::after {
+  content: '';
+  position: absolute;
+  bottom: -0.5rem;
   left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.7);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-  padding: 20px;
+  width: 3rem;
+  height: 3px;
+  background-color: var(--primary-color-light);
+  border-radius: 2px;
+  transition: width 0.3s ease-out;
 }
 
-/* Sección de reseñas */
-.reviews-section {
-  margin-top: 40px;
+.explorer-section-title:hover::after {
+  width: 4rem;
 }
 
-/* Responsive */
+.movie-explorer.dark .explorer-section-title::after {
+  background-color: var(--primary-color-dark);
+}
+
+/* Mensaje cuando no hay resultados */
+.no-results {
+  text-align: center;
+  padding: 30px;
+  background-color: rgba(0,0,0,0.05);
+  border-radius: 8px;
+  margin: 20px 0;
+  font-size: 16px;
+  color: #666;
+}
+
+.no-results.dark {
+  background-color: rgba(255,255,255,0.05);
+  color: #bbb;
+}
+
+/* Media queries optimizadas */
+@media (max-width: 992px) {
+  .explorer-container {
+    padding: 1.25rem;
+  }
+}
+
 @media (max-width: 768px) {
-  .movie-detail-page {
-    padding-top: var(--header-height, 60px);
+  .explorer-container {
+    padding: 1rem;
   }
   
-  .movie-detail-content {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-  }
-
-  .movie-info-container {
-    margin-top: 0;
-    width: 100%;
+  .explorer-section-title {
+    font-size: 1.6rem;
   }
 }
 
 @media (max-width: 576px) {
-  .movie-detail-container {
-    padding: 0.75rem 1rem;
-    width: 100%;
-    overflow-x: hidden;
+  .explorer-container {
+    padding: 1rem 0.75rem;
+  }
+  
+  .explorer-section-title {
+    font-size: 1.4rem;
+  }
+  
+  .error-container {
+    padding: 1rem;
+  }
+  
+  .error-message {
+    font-size: 0.9rem;
   }
 }
 
-@media (max-width: 375px) {
-  .movie-detail-container {
-    padding: 0.5rem;
-  }
+/* Eliminar margen superior cuando SearchBar esté dentro de otro componente */
+.movie-explorer .search-wrapper {
+  margin-top: 0;
 }

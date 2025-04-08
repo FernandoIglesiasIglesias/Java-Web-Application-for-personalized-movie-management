@@ -16,7 +16,8 @@ const MovieResults = ({
   hasMore, 
   onLoadMore,
   onRetry,
-  theme 
+  theme,
+  searchTitle = "" 
 }) => {
   const navigate = useNavigate();
 
@@ -25,6 +26,10 @@ const MovieResults = ({
   };
 
   const renderTitle = () => {
+    if (searchTitle) {
+      return `Resultados para "${searchTitle}"`;
+    }
+    
     if (movieSource === 'external') {
       return filters.keyword ? `Resultados para "${filters.keyword}"` : 'Películas más populares';
     } else {
@@ -33,7 +38,7 @@ const MovieResults = ({
   };
 
   const renderContent = () => {
-    // Show loading indicator
+    // Mostrar indicador de carga
     if ((movieSource === 'external' && loadingExternal) || 
         (movieSource === 'topRated' && loadingTopRated)) {
       return (
@@ -44,69 +49,107 @@ const MovieResults = ({
       );
     }
 
-    // Show external movies
-    if (movieSource === 'external' && externalMovies.length > 0) {
+    // Mostrar resultados de búsqueda o películas externas
+    if ((searchTitle || movieSource === 'external') && externalMovies.length > 0) {
+      // Normalizar datos para asegurar que cada película tiene la estructura correcta
+      const normalizedMovies = externalMovies.map(movie => ({
+        id: movie.id,
+        imdbId: movie.imdbId || movie.ids?.imdb,
+        title: movie.title,
+        // Manejar múltiples formatos de poster
+        posterUrl: movie.posterUrl || 
+                  movie.imageSet?.verticalPoster?.w240 || 
+                  movie.posterURLs?.w342 || 
+                  movie.posterURLs?.w500 || 
+                  movie.verticalPoster,
+        year: movie.releaseYear || movie.year,
+        rating: movie.imdbRating || movie.rating,
+        userRating: movie.averageRating,
+        genres: (movie.genres || []).map(g => typeof g === 'string' ? g : g.name)
+      }));
+
       return (
         <>
-          <MovieCarousel 
-            movies={externalMovies} 
-            onMovieClick={handleMovieClick} 
-            theme={theme} 
-          />
+          {searchTitle ? (
+            <MovieGrid 
+              movies={normalizedMovies} 
+              onMovieClick={handleMovieClick} 
+              theme={theme} 
+              source="search"
+            />
+          ) : (
+            <MovieCarousel 
+              movies={normalizedMovies} 
+              onMovieClick={handleMovieClick} 
+              theme={theme}
+            />
+          )}
           
-          {hasMore && (
+          {/* Solo mostrar el botón de cargar más si no es una búsqueda */}
+          {!searchTitle && hasMore && !loadingMoreExternal && (
             <div className="load-more-container">
               <button 
-                className={`load-more-button ${theme}`} 
+                className={`load-more-button ${theme}`}
                 onClick={onLoadMore}
-                disabled={loadingMoreExternal}
               >
-                {loadingMoreExternal ? (
-                  <>
-                    <span className="load-spinner"></span>
-                    <span>Cargando más...</span>
-                  </>
-                ) : 'Cargar más películas'}
+                Cargar más películas
               </button>
+            </div>
+          )}
+          
+          {!searchTitle && loadingMoreExternal && (
+            <div className="loading-more-container">
+              <div className="loading-spinner small"></div>
+              <p>Cargando más películas...</p>
             </div>
           )}
         </>
       );
     }
-
-    // Show top rated movies
+    
+    // Mostrar películas mejor valoradas
     if (movieSource === 'topRated' && topRatedMovies.length > 0) {
-      console.log("Rendering top rated movies:", topRatedMovies); // Para depuración
       return (
         <MovieGrid 
-          movies={topRatedMovies} 
-          onMovieClick={handleMovieClick} 
-          theme={theme} 
+          movies={topRatedMovies.map(movie => ({
+            ...movie,
+            // Asegurar que cada película tenga una URL de poster válida
+            posterUrl: movie.posterUrl || movie.verticalPoster
+          }))}
+          onMovieClick={handleMovieClick}
+          theme={theme}
           source="topRated"
         />
       );
     }
-
-    // Show no results message
+    
+    // Mostrar mensaje de no resultados
     return (
-      <div className="no-movies-container">
-        <div className="no-movies-icon">🎬</div>
-        <p className="no-movies-message">No se encontraron películas.</p>
-        <button 
-          className={`retry-button ${theme}`}
-          onClick={onRetry}
-        >
-          Reintentar
-        </button>
+      <div className="no-results-container">
+        <p className="no-results-message">
+          {searchTitle 
+            ? `No se encontraron películas para "${searchTitle}"` 
+            : movieSource === 'external' 
+              ? 'No se encontraron películas con los filtros seleccionados'
+              : 'No hay películas valoradas por usuarios aún'}
+        </p>
+        {onRetry && (
+          <button 
+            className={`retry-button ${theme}`} 
+            onClick={onRetry}
+          >
+            Intentar de nuevo
+          </button>
+        )}
       </div>
     );
   };
 
   return (
-    <section className="movies-section">
-      <h2 className="section-title">{renderTitle()}</h2>
+    <div className="movie-results-container">
+      <h2 className="results-title">{renderTitle()}</h2>
       {renderContent()}
-    </section>
+    </div>
   );
 };
 
@@ -114,14 +157,15 @@ MovieResults.propTypes = {
   movieSource: PropTypes.string.isRequired,
   externalMovies: PropTypes.array.isRequired,
   topRatedMovies: PropTypes.array.isRequired,
-  filters: PropTypes.object.isRequired,
-  loadingExternal: PropTypes.bool.isRequired,
-  loadingMoreExternal: PropTypes.bool.isRequired,
-  loadingTopRated: PropTypes.bool.isRequired,
-  hasMore: PropTypes.bool.isRequired,
-  onLoadMore: PropTypes.func.isRequired,
-  onRetry: PropTypes.func.isRequired,
-  theme: PropTypes.string.isRequired
+  filters: PropTypes.object,
+  loadingExternal: PropTypes.bool,
+  loadingMoreExternal: PropTypes.bool,
+  loadingTopRated: PropTypes.bool,
+  hasMore: PropTypes.bool,
+  onLoadMore: PropTypes.func,
+  onRetry: PropTypes.func,
+  theme: PropTypes.string.isRequired,
+  searchTitle: PropTypes.string
 };
 
 export default MovieResults;

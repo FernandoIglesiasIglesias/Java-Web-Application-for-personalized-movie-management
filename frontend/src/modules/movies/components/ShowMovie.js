@@ -274,22 +274,11 @@ const ShowMovie = ({ authenticatedUser }) => {
         // Primero intenta buscar por imdbId para evitar el problema de duplicados por nombre
         import('../../../backend/directorService').then(directorService => {
           try {
-            directorService.updateDirectorByImdbId(
-              director.imdbId,
+            directorService.updateDirectorByName(
+              director.name,
               directorToUpdate,
-              () => {
-                console.log(`Director actualizado por imdbId: ${director.name}`);
-              },
-              (error) => {
-                console.error(`Error al actualizar director por imdbId: ${error}`);
-                // Si falla, intentar por nombre como fallback
-                directorService.updateDirectorByName(
-                  director.name,
-                  directorToUpdate,
-                  () => {},
-                  () => {}
-                );
-              }
+              () => {},
+              () => {}
             );
           } catch (error) {
             console.error(`Error general al actualizar director: ${error}`);
