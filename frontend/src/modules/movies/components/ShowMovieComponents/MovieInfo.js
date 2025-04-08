@@ -106,7 +106,12 @@ const MovieInfo = ({ movie, theme, averageRating, loadingRating, navigate }) => 
         <h2>Dónde ver</h2>
         {movie.streamingOptions?.es && movie.streamingOptions.es.length > 0 ? (
           <div className="streaming-platforms">
-            {movie.streamingOptions.es.map((option) => (
+            {/* Utilizamos un Map para eliminar duplicados basados en service.id */}
+            {Array.from(
+              new Map(
+                movie.streamingOptions.es.map(option => [option.service.id, option])
+              ).values()
+            ).map((option) => (
               <a
                 key={option.service.id}
                 href={option.link}
@@ -116,9 +121,11 @@ const MovieInfo = ({ movie, theme, averageRating, loadingRating, navigate }) => 
                 title={`Ver en ${option.service.name}`}
               >
                 <img
-                  src={theme === 'dark' && option.service.imageSet?.darkThemeImage 
-                    ? option.service.imageSet.darkThemeImage 
-                    : option.service.imageSet?.lightThemeImage}
+                  src={
+                    theme === 'dark' && option.service.imageSet?.darkThemeImage
+                      ? option.service.imageSet.darkThemeImage
+                      : option.service.imageSet?.lightThemeImage
+                  }
                   alt={option.service.name}
                   className={`platform-logo ${theme}`}
                 />
@@ -127,7 +134,9 @@ const MovieInfo = ({ movie, theme, averageRating, loadingRating, navigate }) => 
             ))}
           </div>
         ) : (
-          <p className={`no-streaming ${theme}`}>No disponible actualmente en plataformas de streaming.</p>
+          <p className={`no-streaming ${theme}`}>
+            No disponible actualmente en plataformas de streaming.
+          </p>
         )}
       </div>
     </div>

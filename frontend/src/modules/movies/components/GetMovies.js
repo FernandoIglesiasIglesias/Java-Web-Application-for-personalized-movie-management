@@ -27,6 +27,7 @@ const GetMovies = () => {
     orderBy: "popularity_1month",
     orderDirection: "desc",
     showOriginalLanguage: "",
+    genresRelation: "or"
   });
   
   const [showFilters, setShowFilters] = useState(false);
@@ -52,6 +53,7 @@ const GetMovies = () => {
     { id: "17", name: "Bélica" },
     { id: "18", name: "Western" }
   ];
+  
   
   const orderOptions = [
     { value: "original_title", label: "Título" },
