@@ -4,7 +4,6 @@ import { useTheme } from '../../../context/ThemeContext';
 import PersonHeader from './PersonHeader';
 import PersonBio from './PersonBio';
 import PersonDetails from './PersonDetails';
-import AddToListButton from "../../common/components/AddToListButton";
 import './ShowPerson.css';
 
 const ShowPerson = ({ 
@@ -62,13 +61,11 @@ const ShowPerson = ({
         const response = await fetch(apiEndpoint, {
           headers: {
             'x-rapidapi-host': 'imdb232.p.rapidapi.com',
-            'x-rapidapi-key': 'b90b7b033bmshd65009747d8402ep1037c5jsna9bfb9b67977'
+            'x-rapidapi-key': 'cdbfa3dd29mshcd4df13fafdf647p1c3170jsn3d0e626a103b'
           }
         });
         
         if (!response.ok) {
-          // Si la respuesta no es exitosa, no lanzo un error, simplemente termino
-          console.log(`API de IMDB respondió con ${response.status}. No se cargarán datos adicionales.`);
           setFetchingImdb(false);
           return;
         }
@@ -76,7 +73,6 @@ const ShowPerson = ({
         const data = await response.json();
         
         if (!data || !data.data) {
-          console.log('La API de IMDB no devolvió datos para este actor/director');
           setFetchingImdb(false);
           return;
         }
@@ -133,7 +129,6 @@ const ShowPerson = ({
     
     // Actualizar la persona en nuestra base de datos solo si hay cambios
     if (Object.keys(personData).length > 3) {
-      console.log('Actualizando datos de la persona con nueva información de IMDB');
       updatePersonData(personData);
       
       // Actualizar el estado local con los nuevos datos
@@ -147,7 +142,7 @@ const ShowPerson = ({
   if (loading) {
     return (
       <div className={`loading-container theme-${theme}`}>
-        <div className="loading-indicator"></div>
+        <div className="loading-spinner"></div>
         <p>Cargando información de {personType === 'actor' ? 'actor' : 'director'}...</p>
       </div>
     );

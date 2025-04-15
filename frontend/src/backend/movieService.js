@@ -24,14 +24,11 @@ export const saveMovie = (movie, onSuccess, onErrors) => {
       imdbId: director.imdbId || null
     }))
   }));
-  
-  console.log("Guardando película con cast:", movieToSave.cast);
-  
+    
   appFetch(
     "/movies/saveMovie",
     fetchConfig("POST", movieToSave),
     (savedMovie) => {
-      console.log("Película guardada en BD:", savedMovie);
       onSuccess(savedMovie);
     },
     onErrors
@@ -158,7 +155,7 @@ export const getExternalMovies = (cursor, filters, onSuccess, onErrors) => {
     method: 'GET',
     headers: {
       'x-rapidapi-host': 'streaming-availability.p.rapidapi.com',
-      'x-rapidapi-key': 'b90b7b033bmshd65009747d8402ep1037c5jsna9bfb9b67977'
+      'x-rapidapi-key': 'cdbfa3dd29mshcd4df13fafdf647p1c3170jsn3d0e626a103b'
     }
   })
   .then(response => {
@@ -187,7 +184,7 @@ export const getMovieCast = (imdbId, onSuccess, onErrors) => {
     method: 'GET',
     headers: {
       'x-rapidapi-host': 'imdb236.p.rapidapi.com',
-      'x-rapidapi-key': 'b90b7b033bmshd65009747d8402ep1037c5jsna9bfb9b67977'
+      'x-rapidapi-key': 'cdbfa3dd29mshcd4df13fafdf647p1c3170jsn3d0e626a103b'
     }
   })
   .then(response => {
@@ -231,7 +228,7 @@ export const searchMoviesByTitle = (title, onSuccess, onErrors) => {
     method: 'GET',
     headers: {
       'x-rapidapi-host': 'streaming-availability.p.rapidapi.com',
-      'x-rapidapi-key': 'b90b7b033bmshd65009747d8402ep1037c5jsna9bfb9b67977'
+      'x-rapidapi-key': 'cdbfa3dd29mshcd4df13fafdf647p1c3170jsn3d0e626a103b'
     }
   })
   .then(response => {
@@ -297,7 +294,7 @@ export const searchMoviesByTitle = (title, onSuccess, onErrors) => {
         method: 'GET',
         headers: {
           'x-rapidapi-host': 'streaming-availability.p.rapidapi.com',
-          'x-rapidapi-key': 'b90b7b033bmshd65009747d8402ep1037c5jsna9bfb9b67977'
+          'x-rapidapi-key': 'cdbfa3dd29mshcd4df13fafdf647p1c3170jsn3d0e626a103b'
         }
       })
       .then(response => {

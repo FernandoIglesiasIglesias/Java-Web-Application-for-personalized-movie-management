@@ -38,7 +38,6 @@ const MovieReviews = ({ movieId, authenticatedUser }) => {
         movieId,
         userId,
         (data) => {
-          console.log("Reseñas cargadas:", data);
           // data siempre será un array (posiblemente vacío)
           setReviews(data);
           
@@ -53,7 +52,6 @@ const MovieReviews = ({ movieId, authenticatedUser }) => {
           setLoading(false);
         },
         (error) => {
-          console.error("Error al cargar reseñas:", error);
           setReviews([]);
           setLoading(false);
         }
@@ -69,19 +67,14 @@ const MovieReviews = ({ movieId, authenticatedUser }) => {
   const handleVote = (reviewId, isHelpful) => {
     if (!authenticatedUser) {
       return;
-    }
-    
-    console.log(`Votando en reseña ${reviewId}, es útil: ${isHelpful}`);
-    
+    }    
     voteReview(
       reviewId,
       isHelpful,
       (data) => {
-        console.log("Voto registrado correctamente:", data);
         loadReviews(); // Recargar reseñas para mostrar los nuevos votos
       },
       (error) => {
-        console.error("Error al votar:", error);
         setErrors(error);
       }
     );
@@ -90,14 +83,10 @@ const MovieReviews = ({ movieId, authenticatedUser }) => {
   const handleRemoveVote = (reviewId) => {
     if (!authenticatedUser) {
       return;
-    }
-    
-    console.log(`Eliminando voto de reseña ${reviewId}`);
-    
+    }    
     removeVote(
       reviewId,
       () => {
-        console.log("Voto eliminado correctamente");
         loadReviews(); // Recargar reseñas para actualizar los votos
       },
       (error) => {

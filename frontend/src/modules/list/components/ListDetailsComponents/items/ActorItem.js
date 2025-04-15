@@ -16,7 +16,6 @@ const ActorItem = ({ actor, theme, onRemove }) => {
   
   // Verificar si actor es undefined antes de continuar
   if (!actor) {
-    console.log("ActorItem recibió un actor undefined");
     return null;
   }
   
@@ -34,13 +33,6 @@ const ActorItem = ({ actor, theme, onRemove }) => {
       .toUpperCase()
       .substring(0, 2);
   };
-  
-  // Para depurar el problema de la imagen
-  console.log(`Actor ${actor.id} - ${actor.name}:`, {
-    hasImage: !!actor.imageUrl,
-    imageUrl: actor.imageUrl,
-    hasError: hasImageError
-  });
 
   return (
     <div className={`item-card actor-item ${theme}`} onClick={handleClick}>
@@ -51,7 +43,6 @@ const ActorItem = ({ actor, theme, onRemove }) => {
             alt={actor.name || 'Actor'}
             className="item-image"
             onError={(e) => {
-              console.log(`Error cargando imagen para actor ${actor.name}:`, e);
               e.target.onerror = null;
               setHasImageError(true);
               e.target.src = `https://via.placeholder.com/300x450/cccccc/666666?text=${getInitials(actor.name || 'Act')}`;

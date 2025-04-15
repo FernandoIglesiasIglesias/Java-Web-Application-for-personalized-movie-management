@@ -134,9 +134,7 @@ const MovieExplorer = ({ user }) => {
       year,
       20, // pageSize
       0, // page
-      (data) => {
-        console.log("Top rated movies data:", data); // Para depuración
-        
+      (data) => {        
         // Procesamos los datos para agregar la URL de la imagen y la valoración media
         const processedData = data.map(movie => {
           // Verificar si ya existe una valoración media en los datos
@@ -159,14 +157,11 @@ const MovieExplorer = ({ user }) => {
             averageRating: ratingValue
           };
         });
-        
-        console.log("Processed top rated movies:", processedData); // Para depuración
-        
+                
         setTopRatedMovies(processedData);
         setLoadingTopRated(false);
       },
       (error) => {
-        console.error("Error fetching top rated movies:", error); // Para depuración
         setErrors(error);
         setLoadingTopRated(false);
       }

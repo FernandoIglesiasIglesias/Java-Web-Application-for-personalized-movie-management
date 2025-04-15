@@ -34,10 +34,7 @@ const ShowDirector = ({ authenticatedUser }) => {
               setDirector(data);
               setLoading(false);
             },
-            (error) => {
-              // Si hay un error al obtener (404), crear un nuevo director con datos básicos
-              console.log('Director no encontrado en base de datos, creando nuevo:', error);
-              
+            (error) => {              
               // Crear un nuevo director con datos mínimos
               const newDirector = {
                 name: "Director", // Nombre genérico temporal

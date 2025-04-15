@@ -5,11 +5,7 @@ import './MovieCard.css';
 const MovieCard = ({ movie, onClick, theme, source }) => {
   const [imageError, setImageError] = useState(false);
   
-  // Depuración
-  console.log("MovieCard rendering with data:", movie);
-
   const handleImageError = () => {
-    console.log(`Error cargando imagen para película: ${movie.title}`, movie.posterUrl);
     setImageError(true);
   };
 

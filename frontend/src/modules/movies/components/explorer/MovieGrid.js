@@ -3,15 +3,11 @@ import PropTypes from 'prop-types';
 import MovieCard from './MovieCard';
 import './MovieGrid.css';
 
-const MovieGrid = ({ movies, onMovieClick, theme, source }) => {
-  console.log("MovieGrid received movies:", movies); // Para depuración
-  
+const MovieGrid = ({ movies, onMovieClick, theme, source }) => {  
   return (
     <div className="movies-grid-container">
       <div className="movies-grid">
-        {movies.map((movie) => {
-          console.log("Processing movie in grid:", movie); // Para depuración más detallada
-          
+        {movies.map((movie) => {          
           return (
             <MovieCard 
               key={`${movie.id || movie.imdbId}`}

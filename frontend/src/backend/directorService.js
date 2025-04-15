@@ -39,8 +39,6 @@ export const getDirectorByName = (name, onSuccess, onErrors) => {
 };
 
 export const createDirector = (directorData, onSuccess, onErrors) => {
-  console.log("Enviando director al backend:", directorData);
-
   appFetch(
     "/directors/create",
     fetchConfig("POST", directorData),

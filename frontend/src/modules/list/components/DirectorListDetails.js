@@ -13,9 +13,7 @@ const DirectorListDetails = () => {
   const renderDirectors = (list, theme, handleRemoveDirector, itemsIcon, noItemsMessage, noItemsSuggestion) => {
     // Asegurar que directors es un array incluso si es undefined
     const directors = list && list.directors ? list.directors : [];
-    
-    console.log('Directors from list:', directors); // Ayuda a depurar los datos
-    
+        
     return (
       <ItemsGrid
         items={directors}

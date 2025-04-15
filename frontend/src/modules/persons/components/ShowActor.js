@@ -34,10 +34,7 @@ const ShowActor = ({ authenticatedUser }) => {
               setActor(data);
               setLoading(false);
             },
-            (error) => {
-              // Si hay un error al obtener (404), crear un nuevo actor con datos básicos
-              console.log('Actor no encontrado en base de datos, creando nuevo:', error);
-              
+            (error) => {              
               // Crear un nuevo actor con datos mínimos
               const newActor = {
                 name: "Actor", // Nombre genérico temporal
@@ -49,7 +46,6 @@ const ShowActor = ({ authenticatedUser }) => {
                 newActor,
                 (createdActor) => {
                   // Actor creado, ahora lo podemos usar
-                  console.log('Actor creado correctamente:', createdActor);
                   setActor(createdActor);
                   setLoading(false);
                 },
@@ -102,7 +98,6 @@ const ShowActor = ({ authenticatedUser }) => {
         actorData.name,
         actorData,
         () => {
-          console.log('Actor updated successfully');
           // Update local state with new data
           setActor({...actor, ...actorData});
         },

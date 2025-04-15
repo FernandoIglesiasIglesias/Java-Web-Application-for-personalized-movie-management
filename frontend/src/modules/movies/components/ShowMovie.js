@@ -101,7 +101,6 @@ const ShowMovie = ({ authenticatedUser }) => {
 
   const saveActorToDatabase = async (actor) => {
     if (!actor?.name || !actor?.imdbId) {
-      console.log(`Skipping actor with missing required data:`, actor);
       return null;
     }
   
@@ -109,28 +108,31 @@ const ShowMovie = ({ authenticatedUser }) => {
       const actorData = {
         name: actor.name,
         imdbId: String(actor.imdbId).trim(),
-        character: actor.character,
+        // Eliminamos el character para no guardarlo en BD
       };
   
       return new Promise((resolve) => {
         createActor(
           actorData,
-          (createdActor) => resolve(createdActor),
+          (createdActor) => {
+            // Añadimos el personaje al objeto retornado pero sin enviarlo a BD
+            if (actor.character) {
+              createdActor.character = actor.character;
+            }
+            resolve(createdActor);
+          },
           (error) => {
-            console.error(`Error creating actor ${actorData.name}:`, error);
             resolve(null);
           }
         );
       });
     } catch (error) {
-      console.error(`Error processing actor ${actor?.name}:`, error);
       return null;
     }
   };
   
   const saveDirectorToDatabase = async (director) => {
     if (!director?.name || !director?.imdbId) {
-      console.log(`Skipping director with missing required data:`, director);
       return null;
     }
   
@@ -145,13 +147,11 @@ const ShowMovie = ({ authenticatedUser }) => {
           directorData,
           (createdDirector) => resolve(createdDirector),
           (error) => {
-            console.error(`Error creating director ${directorData.name}:`, error);
             resolve(null);
           }
         );
       });
     } catch (error) {
-      console.error(`Error processing director ${director?.name}:`, error);
       return null;
     }
   };
@@ -162,7 +162,6 @@ const ShowMovie = ({ authenticatedUser }) => {
       // Skip if cast is already loaded
       if (movieRef.current && movieRef.current.castLoaded && 
           movieRef.current.imdbId === imdbId) {
-        console.log('Cast already loaded for this movie, skipping');
         return;
       }
     
@@ -187,7 +186,6 @@ const ShowMovie = ({ authenticatedUser }) => {
               const personName = person.fullName || '';
               
               if (!personImdbId || !personName) {
-                console.log("Skipping person with missing ID or name:", person);
                 return;
               }
               
@@ -205,31 +203,24 @@ const ShowMovie = ({ authenticatedUser }) => {
               }
             });
           }
-          
-          console.log('Cast procesado de API externa:', processedCast);
-          
+                    
           if (processedCast.actors.length > 0 || processedCast.directors.length > 0) {
             updateMovieWithCast(processedCast);
           } else {
-            console.log('No se encontró ningún actor o director con imdbId');
             setLoadingCast(false);
           }
         } catch (error) {
-          console.error('Error procesando reparto:', error);
           setLoadingCast(false);
         }
       },
       (error) => {
-        console.error('Error obteniendo reparto:', error);
         setLoadingCast(false);
       }
     );
   };
 
   const updateMovieWithCast = async (processedCast) => {
-    try {
-      console.log("Iniciando updateMovieWithCast con:", processedCast);
-      
+    try {      
       // Filtrar actores y directores duplicados antes de procesar
       // Set para rastrear los nombres e imdbIds ya procesados para evitar duplicados
       const processedActorNames = new Set();
@@ -247,12 +238,10 @@ const ShowMovie = ({ authenticatedUser }) => {
         
         // Si ya hemos procesado este actor por nombre o ID, omitirlo
         if (normalizedId && processedActorIds.has(normalizedId)) {
-          console.log(`Actor duplicado por imdbId, omitiendo: ${actor.name} (${normalizedId})`);
           return false;
         }
         
         if (processedActorNames.has(normalizedName)) {
-          console.log(`Actor duplicado por nombre, omitiendo: ${actor.name}`);
           return false;
         }
         
@@ -271,12 +260,10 @@ const ShowMovie = ({ authenticatedUser }) => {
         const normalizedId = director.imdbId ? String(director.imdbId).trim() : null;
         
         if (normalizedId && processedDirectorIds.has(normalizedId)) {
-          console.log(`Director duplicado por imdbId, omitiendo: ${director.name} (${normalizedId})`);
           return false;
         }
         
         if (processedDirectorNames.has(normalizedName)) {
-          console.log(`Director duplicado por nombre, omitiendo: ${director.name}`);
           return false;
         }
         
@@ -285,9 +272,7 @@ const ShowMovie = ({ authenticatedUser }) => {
         
         return true;
       });
-      
-      console.log(`Procesando ${uniqueActors.length} actores únicos y ${uniqueDirectors.length} directores únicos`);
-      
+            
       // Crear promesas para actores/directores filtrados
       const actorPromises = uniqueActors.map(actor => {
         return () => saveActorToDatabase(actor);
@@ -322,9 +307,6 @@ const ShowMovie = ({ authenticatedUser }) => {
           savedDirectors.push(savedDirector);
         }
       }
-      
-      console.log("Actores guardados:", savedActors);
-      console.log("Directores guardados:", savedDirectors);
       
       // Update the movie state once with the complete cast
       setMovie(prevMovie => {
@@ -387,7 +369,8 @@ const ShowMovie = ({ authenticatedUser }) => {
                   ...existingItem,
                   ...item,
                   // Asegurar que se preserva el ID de IMDB (prioridad para el nuevo)
-                  imdbId: item.imdbId || existingItem.imdbId
+                  imdbId: item.imdbId || existingItem.imdbId,
+                  character: item.character || existingItem.character
                 };
                 
                 // Si el elemento fusionado tiene imdbId, usarlo como clave
@@ -446,7 +429,7 @@ const ShowMovie = ({ authenticatedUser }) => {
               cast: (currentMovie.cast || []).map(actor => ({
                 name: actor.name,
                 imdbId: actor.imdbId || null,
-                character: actor.character || null
+                // No incluimos el character al guardar
               })),
               directors: (currentMovie.directors || []).map(director => ({
                 name: director.name,
@@ -457,11 +440,9 @@ const ShowMovie = ({ authenticatedUser }) => {
             saveMovie(
               movieToSave,
               (savedMovie) => {
-                console.log("Película actualizada con nuevo reparto", savedMovie);
                 resolve(savedMovie);
               },
               (error) => {
-                console.error("Error al actualizar película:", error);
                 reject(error);
               }
             );
@@ -535,7 +516,6 @@ const ShowMovie = ({ authenticatedUser }) => {
     
     // Clear cache only when navigating to a different movie
     if (movieRef.current?.imdbId !== id) {
-      console.log('New movie, clearing person cache');
       processedPersonsCache.clear();
     }
     
@@ -545,7 +525,7 @@ const ShowMovie = ({ authenticatedUser }) => {
         method: "GET",
         headers: {
           "x-rapidapi-host": "streaming-availability.p.rapidapi.com",
-          "x-rapidapi-key": "b90b7b033bmshd65009747d8402ep1037c5jsna9bfb9b67977",
+          "x-rapidapi-key": "cdbfa3dd29mshcd4df13fafdf647p1c3170jsn3d0e626a103b",
         },
       }
     )

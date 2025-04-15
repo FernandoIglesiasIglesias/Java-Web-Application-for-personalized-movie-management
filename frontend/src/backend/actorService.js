@@ -49,8 +49,6 @@ export const getActorByName = (name, onSuccess, onErrors) => {
 };
 
 export const createActor = (actorData, onSuccess, onErrors) => {
-  console.log("Enviando actor al backend:", actorData);
-
   const { character, ...actorDataWithoutCharacter } = actorData;
 
   appFetch(

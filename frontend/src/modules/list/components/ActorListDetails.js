@@ -13,9 +13,7 @@ const ActorListDetails = () => {
   const renderActors = (list, theme, handleRemoveActor, itemsIcon, noItemsMessage, noItemsSuggestion) => {
     // Asegurar que actors es un array incluso si es undefined
     const actors = list && list.actors ? list.actors : [];
-    
-    console.log('Actors from list:', actors); // Ayuda a depurar los datos
-    
+        
     return (
       <ItemsGrid
         items={actors}
