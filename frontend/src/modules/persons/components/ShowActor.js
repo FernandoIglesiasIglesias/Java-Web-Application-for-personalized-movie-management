@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import ShowPerson from './ShowPerson';
-import { updateActorByName, getActorByImdbId, getActorByName } from '../../../backend/actorService';
+import { updateActorByName, getActorByImdbId, getActorByName, createActor } from '../../../backend/actorService';
 import AddActorToListModal from '../../list/components/modals/AddActorToListModal';
 
 const ShowActor = ({ authenticatedUser }) => {
@@ -27,7 +27,7 @@ const ShowActor = ({ authenticatedUser }) => {
         const isImdbId = actorName.startsWith('nm') && /^nm\d+$/.test(actorName);
         
         if (isImdbId) {
-          // If it's an IMDB ID, use getActorByImdbId
+          // If it's an IMDB ID, try to get from our database first
           getActorByImdbId(
             actorName,
             (data) => {
@@ -35,9 +35,30 @@ const ShowActor = ({ authenticatedUser }) => {
               setLoading(false);
             },
             (error) => {
-              console.error('Error fetching actor by IMDB ID:', error);
-              setError("No se encontró el actor con el ID especificado");
-              setLoading(false);
+              // Si hay un error al obtener (404), crear un nuevo actor con datos básicos
+              console.log('Actor no encontrado en base de datos, creando nuevo:', error);
+              
+              // Crear un nuevo actor con datos mínimos
+              const newActor = {
+                name: "Actor", // Nombre genérico temporal
+                imdbId: actorName,
+                firstName: "Actor"
+              };
+              
+              createActor(
+                newActor,
+                (createdActor) => {
+                  // Actor creado, ahora lo podemos usar
+                  console.log('Actor creado correctamente:', createdActor);
+                  setActor(createdActor);
+                  setLoading(false);
+                },
+                (createError) => {
+                  console.error('Error al crear el actor:', createError);
+                  setError("No se pudo crear el actor con el ID especificado");
+                  setLoading(false);
+                }
+              );
             }
           );
         } else {
@@ -117,7 +138,7 @@ const ShowActor = ({ authenticatedUser }) => {
 
   if (!actor) {
     return <div className="not-found-container">
-      No se encontró el actor con el ID de IMDB: {actorName}
+      No se encontró el actor: {actorName}
     </div>;
   }
 

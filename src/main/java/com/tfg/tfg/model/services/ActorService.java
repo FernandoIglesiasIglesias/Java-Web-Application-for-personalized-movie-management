@@ -11,6 +11,14 @@ import java.util.List;
 public interface ActorService {
     
     /**
+     * Adds a new actor to the database.
+     *
+     * @param actor the actor to add
+     * @return the added actor
+     */
+    public Actor createActor(Actor actor);
+
+    /**
      * Updates an actor with new information.
      * The actor must already exist in the database and is identified by first and last name.
      *

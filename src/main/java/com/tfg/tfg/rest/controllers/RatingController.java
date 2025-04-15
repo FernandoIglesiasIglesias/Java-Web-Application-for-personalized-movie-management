@@ -43,15 +43,10 @@ public class RatingController {
     }
 
     @ExceptionHandler(NoRatingsException.class)
-    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public ErrorsDto handleNoRatingsException(NoRatingsException exception, Locale locale) {
-        String errorMessage = messageSource.getMessage(
-            "project.exceptions.NoRatingsException", 
-            new Object[] {}, 
-            exception.getMessage(), locale);
-        
-        return new ErrorsDto(errorMessage);
+        return null;
     }
 
     @PostMapping("/{userId}/{imdbId}")

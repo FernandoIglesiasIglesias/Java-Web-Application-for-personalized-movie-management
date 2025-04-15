@@ -36,7 +36,9 @@ CREATE TABLE IF NOT EXISTS Actors (
     height VARCHAR(50),
     bio TEXT,
     imageUrl VARCHAR(600),
-    CONSTRAINT ActorPK PRIMARY KEY (id)
+    CONSTRAINT ActorPK PRIMARY KEY (id),
+    CONSTRAINT ActorNameUniqueKey UNIQUE (name),
+    CONSTRAINT ActorImdbIdUniqueKey UNIQUE (imdbId)
 );
 
 CREATE TABLE IF NOT EXISTS Directors (
@@ -48,7 +50,9 @@ CREATE TABLE IF NOT EXISTS Directors (
     height VARCHAR(50),
     bio TEXT,
     imageUrl VARCHAR(600),
-    CONSTRAINT DirectorPK PRIMARY KEY (id)
+    CONSTRAINT DirectorPK PRIMARY KEY (id),
+    CONSTRAINT DirectorNameUniqueKey UNIQUE (name),
+    CONSTRAINT DirectorImdbIdUniqueKey UNIQUE (imdbId)
 );
 
 CREATE TABLE IF NOT EXISTS CustomLists (

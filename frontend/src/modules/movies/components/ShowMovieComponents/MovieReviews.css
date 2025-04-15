@@ -241,9 +241,22 @@
   border-left-color: var(--primary-color-dark);
 }
 
-/* Tarjetas que destacan las reseñas propias */
+.user-own-review-message {
+  font-size: 0.9rem;
+  font-style: italic;
+  color: var(--text-secondary-light);
+  padding: 0.5rem 0;
+  text-align: center;
+  width: 100%;
+}
+
+.review-item.dark .user-own-review-message {
+  color: var(--text-secondary-dark);
+}
+
 .review-item[data-user-own="true"] {
   position: relative;
+  border-left-width: 5px;
 }
 
 .review-item[data-user-own="true"].light {
@@ -254,6 +267,61 @@
 .review-item[data-user-own="true"].dark {
   border-left-color: #66bb6a;
   background-color: rgba(102, 187, 106, 0.08);
+}
+
+.review-item[data-user-own="true"]::after {
+  content: "Tu reseña";
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  font-size: 0.75rem;
+  background-color: #4caf50;
+  color: white;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+}
+
+.review-item.dark[data-user-own="true"]::after {
+  background-color: #66bb6a;
+}
+
+.review-vote-stats {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  margin-top: 0.75rem;
+}
+
+.vote-stat {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.9rem;
+  color: var(--text-secondary-light);
+}
+
+.review-item.dark .vote-stat {
+  color: var(--text-secondary-dark);
+}
+
+.vote-icon {
+  opacity: 0.7;
+}
+
+.vote-icon.thumbs-up {
+  color: #4caf50;
+}
+
+.vote-icon.thumbs-down {
+  color: #f44336;
+}
+
+.review-item.dark .vote-icon.thumbs-up {
+  color: #66bb6a;
+}
+
+.review-item.dark .vote-icon.thumbs-down {
+  color: #ef5350;
 }
 
 .review-header {

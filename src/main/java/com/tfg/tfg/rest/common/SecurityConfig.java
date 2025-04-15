@@ -57,16 +57,18 @@ public class SecurityConfig {
                 .requestMatchers(antMatcher("/actors/all")).permitAll()
                 .requestMatchers(antMatcher("/actors/{id}")).permitAll()
                 .requestMatchers(antMatcher("/actors/imdb/{imdbId}")).permitAll()
-                .requestMatchers(antMatcher("/actors/name")).permitAll()
+                .requestMatchers(antMatcher("/actors/name/{name}")).permitAll() 
+                .requestMatchers(antMatcher("/actors/create")).permitAll()
                 .requestMatchers(antMatcher("/actors/name/{name}")).permitAll()
 
                 // Director endpoints
                 .requestMatchers(antMatcher("/directors/all")).permitAll()
                 .requestMatchers(antMatcher("/directors/{id}")).permitAll()
                 .requestMatchers(antMatcher("/directors/imdb/{imdbId}")).permitAll()
-                .requestMatchers(antMatcher("/directors/name")).permitAll()
+                .requestMatchers(antMatcher("/directors/name/{name}")).permitAll() 
+                .requestMatchers(antMatcher("/directors/create")).permitAll()
                 .requestMatchers(antMatcher("/directors/name/{name}")).permitAll()
-
+                
                 // ActorList endpoints
                 .requestMatchers(antMatcher("/actor-lists/user/{userId}")).hasRole(USER)
                 .requestMatchers(antMatcher("/actor-lists/{listId}")).hasRole(USER)

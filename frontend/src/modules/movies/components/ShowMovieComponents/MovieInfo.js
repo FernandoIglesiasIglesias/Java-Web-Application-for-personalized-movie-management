@@ -25,7 +25,7 @@ const MovieInfo = ({ movie, theme, averageRating, loadingRating, navigate }) => 
               </div>
             ) : (
               <>
-                {averageRating ? (
+                {averageRating !== null && typeof averageRating === 'number' ? (
                   <span className="movie-user-rating">
                     <span className="user-star-icon">★</span> 
                     <span className="user-rating-value">Usuarios: {averageRating.toFixed(1)}</span>

@@ -10,27 +10,29 @@ export const getAllMovies = (onSuccess, onErrors) => {
 };
 
 export const saveMovie = (movie, onSuccess, onErrors) => {
-  console.log("Enviando película al backend:", JSON.stringify(movie));
-  
-  // Asegurarnos de que cada actor y director tiene un imdbId explícito
-  const movieToSave = {
+  // Crear una copia profunda para evitar problemas de referencia
+  const movieToSave = JSON.parse(JSON.stringify({
     ...movie,
-    cast: movie.cast.map(actor => ({
+    cast: (movie.cast || []).map(actor => ({
       ...actor,
-      imdbId: actor.imdbId || null // Asegurarnos de que no se envía undefined
+      // Asegurar que imdbId se preserva
+      imdbId: actor.imdbId || null
     })),
-    directors: movie.directors.map(director => ({
+    directors: (movie.directors || []).map(director => ({
       ...director,
-      imdbId: director.imdbId || null // Asegurarnos de que no se envía undefined
+      // Asegurar que imdbId se preserva
+      imdbId: director.imdbId || null
     }))
-  };
+  }));
+  
+  console.log("Guardando película con cast:", movieToSave.cast);
   
   appFetch(
     "/movies/saveMovie",
     fetchConfig("POST", movieToSave),
-    (result) => {
-      console.log("Respuesta del backend al guardar película:", result);
-      onSuccess(result);
+    (savedMovie) => {
+      console.log("Película guardada en BD:", savedMovie);
+      onSuccess(savedMovie);
     },
     onErrors
   );
@@ -39,27 +41,21 @@ export const saveMovie = (movie, onSuccess, onErrors) => {
 export const getExternalMovies = (cursor, filters, onSuccess, onErrors) => {
   const url = new URL('https://streaming-availability.p.rapidapi.com/shows/search/filters');
   
-  // Parámetro obligatorio: país (utilizamos España)
   url.searchParams.append('country', 'us');
   
-  // Paginación con cursor
   if (cursor) {
     url.searchParams.append('cursor', cursor);
   }
   
-  // Add filters if provided
   if (filters) {
-    // Show type (movie is default)
     if (filters.showType) {
       url.searchParams.append('show_type', filters.showType);
     }
     
-    // Search keyword
     if (filters.keyword) {
       url.searchParams.append('keyword', filters.keyword);
     }
     
-    // Year range
     if (filters.yearMin) {
       url.searchParams.append('year_min', filters.yearMin);
     }
@@ -68,7 +64,6 @@ export const getExternalMovies = (cursor, filters, onSuccess, onErrors) => {
       url.searchParams.append('year_max', filters.yearMax);
     }
     
-    // Rating range - Según la documentación debe ser un número entre 0-100
     if (filters.ratingMin !== undefined && filters.ratingMin !== "") {
       url.searchParams.append('rating_min', filters.ratingMin);
     }
@@ -77,31 +72,28 @@ export const getExternalMovies = (cursor, filters, onSuccess, onErrors) => {
       url.searchParams.append('rating_max', filters.ratingMax);
     }
     
-    // Géneros - La API espera los ID de género como strings
     if (filters.genres && filters.genres.length > 0) {
-      // Mapeo correcto según la documentación de la API
       const genreMap = {
-        '1': 'action',       // Acción
-        '2': 'adventure',    // Aventura
-        '3': 'animation',    // Animación
-        '4': 'comedy',       // Comedia
-        '5': 'crime',        // Crimen
-        '6': 'documentary',  // Documental
-        '7': 'drama',        // Drama
-        '8': 'family',       // Familiar
-        '9': 'fantasy',      // Fantasía
-        '10': 'history',     // Historia
-        '11': 'horror',      // Terror
-        '12': 'music',       // Música
-        '13': 'mystery',     // Misterio
-        '14': 'romance',     // Romance
-        '15': 'scifi',       // Ciencia Ficción
-        '16': 'thriller',    // Thriller
-        '17': 'war',         // Bélica
-        '18': 'western'      // Western
+        '1': 'action',       
+        '2': 'adventure',    
+        '3': 'animation',    
+        '4': 'comedy',       
+        '5': 'crime',        
+        '6': 'documentary',  
+        '7': 'drama',        
+        '8': 'family',       
+        '9': 'fantasy',      
+        '10': 'history',     
+        '11': 'horror',      
+        '12': 'music',       
+        '13': 'mystery',     
+        '14': 'romance',     
+        '15': 'scifi',       
+        '16': 'thriller',    
+        '17': 'war',         
+        '18': 'western'      
       };
       
-      // Mapear IDs a nombres de género y filtrar los no reconocidos
       const genreNames = filters.genres
         .map(id => genreMap[id])
         .filter(name => name !== undefined);
@@ -110,26 +102,19 @@ export const getExternalMovies = (cursor, filters, onSuccess, onErrors) => {
         const genresStr = genreNames.join(',');
         url.searchParams.append('genres', genresStr);
         
-        // Si hay más de un género, especificar la relación entre ellos
         if (genreNames.length > 1) {
           url.searchParams.append('genres_relation', filters.genresRelation || 'or');
         }
-        
-        // Logging para debug
-        console.log("Géneros enviados:", genresStr);
       }
     }
     
-    // Idioma original
     if (filters.showOriginalLanguage) {
       url.searchParams.append('show_original_language', filters.showOriginalLanguage);
     }
     
-    // Ordenación - Mapear correctamente a los valores de la API
     if (filters.orderBy) {
       let apiOrderBy;
       
-      // Mapeo correcto según la documentación
       switch (filters.orderBy) {
         case 'original_title':
           apiOrderBy = 'original_title';
@@ -152,44 +137,33 @@ export const getExternalMovies = (cursor, filters, onSuccess, onErrors) => {
       
       url.searchParams.append('order_by', apiOrderBy);
     } else {
-      // Por defecto ordenar por popularidad
       url.searchParams.append('order_by', 'popularity_1month');
     }
     
-    // Dirección de ordenación
     if (filters.orderDirection) {
       url.searchParams.append('order_direction', filters.orderDirection);
     } else {
       url.searchParams.append('order_direction', 'desc');
     }
   } else {
-    // Default values when no filters provided
     url.searchParams.append('show_type', 'movie');
     url.searchParams.append('order_by', 'popularity_1month');
     url.searchParams.append('order_direction', 'desc');
   }
   
-  // Always set output language to Spanish
   url.searchParams.append('output_language', 'es');
-  
-  // Series granularity - Obtener información detallada de episodios
   url.searchParams.append('series_granularity', 'episode');
-
-  // Log de la URL completa para debugging
-  console.log("URL de petición:", url.toString());
 
   fetch(url.toString(), {
     method: 'GET',
     headers: {
       'x-rapidapi-host': 'streaming-availability.p.rapidapi.com',
-      'x-rapidapi-key': 'cb332fab10msh89e2fc877672ccfp14515bjsn3b00399489a8'
+      'x-rapidapi-key': 'b90b7b033bmshd65009747d8402ep1037c5jsna9bfb9b67977'
     }
   })
   .then(response => {
     if (!response.ok) {
       return response.text().then(text => {
-        console.error("Error en la respuesta de la API:", text);
-        console.error("URL que causó el error:", url.toString());
         throw new Error(`API error: ${response.status} - ${text}`);
       });
     }
@@ -199,22 +173,42 @@ export const getExternalMovies = (cursor, filters, onSuccess, onErrors) => {
   .catch(onErrors);
 };
 
+// Almacenar en caché los resultados del reparto para evitar llamadas repetidas
+const castCache = new Map();
+
 export const getMovieCast = (imdbId, onSuccess, onErrors) => {
+  // Si ya tenemos el reparto en caché, usar eso en lugar de hacer otra llamada
+  if (castCache.has(imdbId)) {
+    setTimeout(() => onSuccess(castCache.get(imdbId)), 0);
+    return;
+  }
+  
   fetch(`https://imdb236.p.rapidapi.com/imdb/${imdbId}/cast`, {
     method: 'GET',
     headers: {
       'x-rapidapi-host': 'imdb236.p.rapidapi.com',
-      'x-rapidapi-key': 'cb332fab10msh89e2fc877672ccfp14515bjsn3b00399489a8'
+      'x-rapidapi-key': 'b90b7b033bmshd65009747d8402ep1037c5jsna9bfb9b67977'
     }
   })
   .then(response => {
     if (!response.ok) {
+      if (response.status === 403) {
+        // Probablemente límite de API excedido, devolver un arreglo vacío
+        return [];
+      }
       throw new Error(`API responded with status ${response.status}`);
     }
     return response.json();
   })
-  .then(onSuccess)
-  .catch(onErrors);
+  .then(data => {
+    // Guardar en caché para futuras solicitudes
+    castCache.set(imdbId, data);
+    onSuccess(data);
+  })
+  .catch(error => {
+    // Si hay un error, devolver un arreglo vacío para evitar fallos en la UI
+    onErrors(error);
+  });
 };
 
 export const searchMoviesByTitle = (title, onSuccess, onErrors) => {
@@ -223,53 +217,40 @@ export const searchMoviesByTitle = (title, onSuccess, onErrors) => {
     return;
   }
 
-  // Normalizar el título: quitar acentos, pasar a minúsculas
   const normalizedTitle = title.trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
   
   const url = new URL('https://streaming-availability.p.rapidapi.com/shows/search/title');
   
-  // Parámetros obligatorios
   url.searchParams.append('country', 'us');
   url.searchParams.append('title', normalizedTitle);
-  
-  // Parámetros opcionales pero con valores específicos
-  url.searchParams.append('show_type', 'movie');  // Solo películas
-  url.searchParams.append('output_language', 'es');  // Resultados en español
-  url.searchParams.append('series_granularity', 'show');  // No incluir detalles de temporadas/episodios
-
-  console.log("URL de búsqueda por título:", url.toString());
+  url.searchParams.append('show_type', 'movie');
+  url.searchParams.append('output_language', 'es');
+  url.searchParams.append('series_granularity', 'show');
 
   fetch(url.toString(), {
     method: 'GET',
     headers: {
       'x-rapidapi-host': 'streaming-availability.p.rapidapi.com',
-      'x-rapidapi-key': 'cb332fab10msh89e2fc877672ccfp14515bjsn3b00399489a8'
+      'x-rapidapi-key': 'b90b7b033bmshd65009747d8402ep1037c5jsna9bfb9b67977'
     }
   })
   .then(response => {
     if (!response.ok) {
       return response.text().then(text => {
-        console.error("Error en la respuesta de la API de búsqueda:", text);
-        console.error("URL que causó el error:", url.toString());
         throw new Error(`API error: ${response.status} - ${text}`);
       });
     }
     return response.json();
   })
   .then(data => {
-    console.log("Respuesta de búsqueda por título:", data);
-    
-    // Procesar los datos para asegurarnos de que todas las películas tengan la estructura correcta
     const processResults = (movies) => {
       if (!movies || movies.length === 0) {
         return [];
       }
       
       return movies.map(movie => {
-        // Procesar la estructura de imageSet si es necesario
         let processedMovie = { ...movie };
         
-        // Si no tiene imageSet pero tiene posterURLs, convertirlos al formato esperado
         if (!processedMovie.imageSet && processedMovie.posterURLs) {
           processedMovie.imageSet = {
             verticalPoster: {
@@ -280,7 +261,6 @@ export const searchMoviesByTitle = (title, onSuccess, onErrors) => {
           };
         }
         
-        // Asegurar que haya una URL de poster para mostrar
         if (processedMovie.verticalPoster && !processedMovie.imageSet) {
           processedMovie.imageSet = {
             verticalPoster: {
@@ -295,8 +275,6 @@ export const searchMoviesByTitle = (title, onSuccess, onErrors) => {
       });
     };
     
-    // Verificar el formato de la respuesta
-    // Si la respuesta es un array en lugar de un objeto con propiedad 'result'
     if (Array.isArray(data)) {
       return {
         shows: processResults(data),
@@ -306,11 +284,7 @@ export const searchMoviesByTitle = (title, onSuccess, onErrors) => {
       };
     }
     
-    // Si no hay resultados pero tenemos un título con espacios, intentar con un título simplificado
     if ((!data.result || data.result.length === 0) && title.includes(" ")) {
-      console.log("No se encontraron resultados con el título completo, intentando con palabras clave...");
-      
-      // Crear una nueva URL con solo la primera palabra del título (generalmente más efectivo)
       const simpleTitle = title.split(" ")[0];
       const newUrl = new URL('https://streaming-availability.p.rapidapi.com/shows/search/title');
       newUrl.searchParams.append('country', 'us');
@@ -319,14 +293,11 @@ export const searchMoviesByTitle = (title, onSuccess, onErrors) => {
       newUrl.searchParams.append('output_language', 'es');
       newUrl.searchParams.append('series_granularity', 'show');
       
-      console.log("Intentando búsqueda con título simplificado:", newUrl.toString());
-      
-      // Realizar una segunda búsqueda con el título simplificado
       return fetch(newUrl.toString(), {
         method: 'GET',
         headers: {
           'x-rapidapi-host': 'streaming-availability.p.rapidapi.com',
-          'x-rapidapi-key': 'cb332fab10msh89e2fc877672ccfp14515bjsn3b00399489a8'
+          'x-rapidapi-key': 'b90b7b033bmshd65009747d8402ep1037c5jsna9bfb9b67977'
         }
       })
       .then(response => {
@@ -336,9 +307,6 @@ export const searchMoviesByTitle = (title, onSuccess, onErrors) => {
         return response.json();
       })
       .then(secondData => {
-        console.log("Respuesta de búsqueda con título simplificado:", secondData);
-        
-        // Verificar si la respuesta es un array
         if (Array.isArray(secondData)) {
           return {
             shows: processResults(secondData),
@@ -357,30 +325,22 @@ export const searchMoviesByTitle = (title, onSuccess, onErrors) => {
       });
     }
     
-    // Procesamos los resultados para mantener consistencia con el formato
-    // que espera el resto de la aplicación
     return {
       shows: processResults(data.result || []),
-      hasMore: false, // La API de búsqueda por título no soporta paginación
+      hasMore: false,
       nextCursor: null,
       isSimplifiedSearch: false
     };
   })
   .then(processedResults => {
-    // Si no se encontraron resultados incluso con la búsqueda simplificada,
-    // intentar con la API de filtros como último recurso
     if (processedResults.shows.length === 0 && !processedResults.isSimplifiedSearch) {
-      console.log("No se encontraron resultados. Intentando con búsqueda por filtro keyword...");
-      
-      // Usar la función getExternalMovies pero con el título como keyword
       getExternalMovies(
-        null, // sin cursor
+        null,
         { 
           showType: 'movie',
           keyword: title.trim()
         },
         data => {
-          console.log("Resultados de búsqueda por keyword:", data);
           onSuccess(data);
         },
         onErrors

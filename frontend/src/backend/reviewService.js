@@ -1,12 +1,35 @@
 import { appFetch, fetchConfig } from "./appFetch";
 
-export const getMovieReviews = (imdbId, onSuccess, onErrors) => {
-  appFetch(
-    `/reviews/movie/${imdbId}`,
-    fetchConfig("GET"),
-    onSuccess,
-    onErrors
-  );
+export const getMovieReviews = (imdbId, userId, onSuccess, onErrors) => {
+  // Si no hay ID de película, devolver lista vacía
+  if (!imdbId) {
+    setTimeout(() => onSuccess([]), 0);
+    return;
+  }
+
+  const url = userId ? `/reviews/movie/${imdbId}?userId=${userId}` : `/reviews/movie/${imdbId}`;
+  
+  // En lugar de usar appFetch, usaremos fetch directamente para evitar problemas de autenticación
+  // cuando se obtienen reseñas públicas
+  fetch(`${process.env.REACT_APP_BACKEND_URL || ''}/tfg${url}`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  })
+  .then(response => {
+    if (response.ok) {
+      return response.json();
+    } else {
+      // Para cualquier error, incluyendo 403, devolvemos una lista vacía
+      return [];
+    }
+  })
+  .then(data => onSuccess(data || []))
+  .catch(() => {
+    // En caso de cualquier error, simplemente devolvemos una lista vacía
+    onSuccess([]);
+  });
 };
 
 export const getUserReviews = (userId, onSuccess, onErrors) => {

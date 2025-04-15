@@ -48,9 +48,19 @@ export const getActorByName = (name, onSuccess, onErrors) => {
   );
 };
 
-/**
- * Updates an actor by name.
- */
+export const createActor = (actorData, onSuccess, onErrors) => {
+  console.log("Enviando actor al backend:", actorData);
+
+  const { character, ...actorDataWithoutCharacter } = actorData;
+
+  appFetch(
+    "/actors/create",
+    fetchConfig("POST", actorDataWithoutCharacter),
+    onSuccess,
+    onErrors
+  );
+};
+
 export const updateActorByName = (name, actorData, onSuccess, onErrors) => {
   appFetch(
     `/actors/name/${encodeURIComponent(name)}`,
