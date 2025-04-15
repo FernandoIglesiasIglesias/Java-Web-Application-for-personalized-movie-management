@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useTheme } from "../../../context/ThemeContext";
 import { saveMovie, getMovieCast } from "../../../backend/movieService";
@@ -8,6 +8,8 @@ import {
   getAverageRatingForMovie,
   deleteRating
 } from "../../../backend/rateService";
+import { createActor, getActorByName, getActorByImdbId, updateActorByName } from "../../../backend/actorService";
+import { createDirector, getDirectorByName, getDirectorByImdbId, updateDirectorByName } from "../../../backend/directorService";
 import AddToListModal from "../../list/components/modals/AddMovieToListModal";
 import MovieReviews from './ShowMovieComponents/MovieReviews';
 import MovieHeader from "./ShowMovieComponents/MovieHeader";
@@ -20,20 +22,17 @@ import ErrorState from "./ShowMovieComponents/ErrorState";
 import "./ShowMovie.css";
 
 const ShowMovie = ({ authenticatedUser }) => {
-  // Hooks y estado
   const { id } = useParams();
   const navigate = useNavigate();
   const { theme } = useTheme();
   const userId = authenticatedUser ? authenticatedUser.user.id : null;
   
-  // Estados principales
   const [movie, setMovie] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
   const [loadingCast, setLoadingCast] = useState(false);
   const [castDetails, setCastDetails] = useState(null);
   
-  // Estados relacionados con valoraciones
   const [averageRating, setAverageRating] = useState(null);
   const [loadingRating, setLoadingRating] = useState(false);
   const [ratingValue, setRatingValue] = useState("");
@@ -41,12 +40,20 @@ const ShowMovie = ({ authenticatedUser }) => {
   const [ratingErrors, setRatingErrors] = useState(null);
   const [ratingSuccess, setRatingSuccess] = useState(false);
   
-  // Estados para los modales
   const [showAddToListModal, setShowAddToListModal] = useState(false);
   const [showRatingForm, setShowRatingForm] = useState(false);
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
 
-  // Funciones de utilidad
+  // Caché para evitar procesamiento duplicado de actores y directores
+  const processedPersonsCache = useRef(new Map()).current;
+  // Referencia para almacenar el estado actual de la película
+  const movieRef = useRef(null);
+
+  // Actualizar la referencia cuando cambie el estado de movie
+  useEffect(() => {
+    movieRef.current = movie;
+  }, [movie]);
+
   const parseMovieJson = (json) => {
     const ensureString = (value) => {
       if (value === null || value === undefined) return '';
@@ -92,37 +99,119 @@ const ShowMovie = ({ authenticatedUser }) => {
     };
   };
 
-  // Funciones de carga de datos
+  const saveActorToDatabase = async (actor) => {
+    if (!actor?.name || !actor?.imdbId) {
+      return null;
+    }
+  
+    try {
+      const actorData = {
+        name: actor.name,
+        imdbId: String(actor.imdbId).trim(),
+        // Eliminamos el character para no guardarlo en BD
+      };
+  
+      return new Promise((resolve) => {
+        createActor(
+          actorData,
+          (createdActor) => {
+            // Añadimos el personaje al objeto retornado pero sin enviarlo a BD
+            if (actor.character) {
+              createdActor.character = actor.character;
+            }
+            resolve(createdActor);
+          },
+          (error) => {
+            resolve(null);
+          }
+        );
+      });
+    } catch (error) {
+      return null;
+    }
+  };
+  
+  const saveDirectorToDatabase = async (director) => {
+    if (!director?.name || !director?.imdbId) {
+      return null;
+    }
+  
+    try {
+      const directorData = {
+        name: director.name,
+        imdbId: String(director.imdbId).trim(),
+      };
+  
+      return new Promise((resolve) => {
+        createDirector(
+          directorData,
+          (createdDirector) => resolve(createdDirector),
+          (error) => {
+            resolve(null);
+          }
+        );
+      });
+    } catch (error) {
+      return null;
+    }
+  };
+  
   const loadCastDetails = (imdbId) => {
+    if (!imdbId || loadingCast) return; // Added loadingCast check to prevent duplicate calls
+    
+      // Skip if cast is already loaded
+      if (movieRef.current && movieRef.current.castLoaded && 
+          movieRef.current.imdbId === imdbId) {
+        return;
+      }
+    
     setLoadingCast(true);
+    
     getMovieCast(
       imdbId,
       (data) => {
-        const processedCast = {
-          actors: [],
-          directors: []
-        };
-        
-        if (Array.isArray(data)) {
-          data.forEach(person => {
-            if (person.job === "actor" || person.job === "actress") {
-              processedCast.actors.push({
-                imdbId: person.id,
-                name: person.fullName,
-                character: person.characters && person.characters.length > 0 ? person.characters[0] : null
-              });
-            } else if (person.job === "director") {
-              processedCast.directors.push({
-                imdbId: person.id,
-                name: person.fullName
-              });
-            }
-          });
+        try {
+          const processedCast = {
+            actors: [],
+            directors: []
+          };
+          
+          if (Array.isArray(data)) {
+            data.forEach(person => {
+              // Verify valid ID
+              if (!person?.id) return;
+              
+              // Ensure it's a string
+              const personImdbId = String(person.id);
+              const personName = person.fullName || '';
+              
+              if (!personImdbId || !personName) {
+                return;
+              }
+              
+              if (person.job === "actor" || person.job === "actress") {
+                processedCast.actors.push({
+                  imdbId: personImdbId,
+                  name: personName,
+                  character: person.characters?.[0] || null
+                });
+              } else if (person.job === "director") {
+                processedCast.directors.push({
+                  imdbId: personImdbId,
+                  name: personName
+                });
+              }
+            });
+          }
+                    
+          if (processedCast.actors.length > 0 || processedCast.directors.length > 0) {
+            updateMovieWithCast(processedCast);
+          } else {
+            setLoadingCast(false);
+          }
+        } catch (error) {
+          setLoadingCast(false);
         }
-        
-        setCastDetails(processedCast);
-        updateMovieWithCast(processedCast);
-        setLoadingCast(false);
       },
       (error) => {
         setLoadingCast(false);
@@ -130,202 +219,313 @@ const ShowMovie = ({ authenticatedUser }) => {
     );
   };
 
-  const updateMovieWithCast = (processedCast) => {
-    setMovie(prevMovie => {
-      if (!prevMovie) return null;
+  const updateMovieWithCast = async (processedCast) => {
+    try {      
+      // Filtrar actores y directores duplicados antes de procesar
+      // Set para rastrear los nombres e imdbIds ya procesados para evitar duplicados
+      const processedActorNames = new Set();
+      const processedActorIds = new Set();
+      const processedDirectorNames = new Set();
+      const processedDirectorIds = new Set();
       
-      // Actualizar actores
-      let updatedCast = getUpdatedCast(prevMovie.cast, processedCast.actors);
-      // Actualizar directores
-      let updatedDirectors = getUpdatedDirectors(prevMovie.directors, processedCast.directors);
-      
-      // Actualizar actores y directores en la base de datos
-      updateActorsInDatabase(updatedCast);
-      updateDirectorsInDatabase(updatedDirectors);
-      
-      // Crear objeto de película actualizada
-      const updatedMovie = {
-        ...prevMovie,
-        cast: updatedCast.map(actor => ({
-          name: actor.name,
-          imdbId: actor.imdbId || null,
-          character: actor.character || null
-        })),
-        directors: updatedDirectors.map(director => ({
-          name: director.name,
-          imdbId: director.imdbId || null
-        }))
-      };
-      
-      // Guardar la película actualizada
-      saveMovie(updatedMovie, () => {}, () => {});
-      
-      return updatedMovie;
-    });
-  };
-
-  const getUpdatedCast = (existingCast, apiActors) => {
-    if (!existingCast || existingCast.length === 0) {
-      return apiActors.map(actor => ({
-        name: actor.name,
-        imdbId: actor.imdbId,
-        character: actor.character
-      }));
-    }
-    
-    let updatedCast = existingCast.map(actor => {
-      const detailedActor = apiActors.find(
-        a => a.name.toLowerCase() === actor.name.toLowerCase()
-      );
-      
-      if (detailedActor) {
-        return {
-          ...actor,
-          imdbId: detailedActor.imdbId,
-          character: detailedActor.character
-        };
-      }
-      return actor;
-    });
-    
-    apiActors.forEach(apiActor => {
-      const exists = updatedCast.some(
-        actor => actor.name.toLowerCase() === apiActor.name.toLowerCase()
-      );
-      if (!exists) {
-        updatedCast.push({
-          name: apiActor.name,
-          imdbId: apiActor.imdbId,
-          character: apiActor.character
-        });
-      }
-    });
-    
-    return updatedCast;
-  };
-
-  const getUpdatedDirectors = (existingDirectors, apiDirectors) => {
-    if (!existingDirectors || existingDirectors.length === 0) {
-      return apiDirectors.map(director => ({
-        name: director.name,
-        imdbId: director.imdbId
-      }));
-    }
-    
-    let updatedDirectors = existingDirectors.map(director => {
-      const detailedDirector = apiDirectors.find(
-        d => d.name.toLowerCase() === director.name.toLowerCase()
-      );
-      
-      if (detailedDirector) {
-        return {
-          ...director,
-          imdbId: detailedDirector.imdbId
-        };
-      }
-      return director;
-    });
-    
-    apiDirectors.forEach(apiDirector => {
-      const exists = updatedDirectors.some(
-        director => director.name.toLowerCase() === apiDirector.name.toLowerCase()
-      );
-      if (!exists) {
-        updatedDirectors.push({
-          name: apiDirector.name,
-          imdbId: apiDirector.imdbId
-        });
-      }
-    });
-    
-    return updatedDirectors;
-  };
-
-  const updateActorsInDatabase = (actors) => {
-    actors.forEach(actor => {
-      if (actor.imdbId) {
-        const actorToUpdate = {
-          name: actor.name,
-          imdbId: actor.imdbId,
-          firstName: actor.name.split(' ')[0] || actor.name
-        };
+      // Filtrar actores duplicados
+      const uniqueActors = (processedCast.actors || []).filter(actor => {
+        if (!actor || !actor.name) return false;
         
-        import('../../../backend/actorService').then(actorService => {
-          actorService.updateActorByName(
-            actor.name,
-            actorToUpdate,
-            () => {},
-            () => {}
-          );
-        });
-      }
-    });
-  };
-
-  const updateDirectorsInDatabase = (directors) => {
-    directors.forEach(director => {
-      if (director.imdbId) {
-        const directorToUpdate = {
-          name: director.name,
-          imdbId: director.imdbId,
-          firstName: director.name.split(' ')[0] || director.name
-        };
+        // Normalizar nombre e ID
+        const normalizedName = actor.name.toLowerCase().trim();
+        const normalizedId = actor.imdbId ? String(actor.imdbId).trim() : null;
         
-        import('../../../backend/directorService').then(directorService => {
-          directorService.updateDirectorByName(
-            director.name,
-            directorToUpdate,
-            () => {},
-            () => {}
-          );
-        });
-      }
-    });
-  };
-
-  const loadUserRating = (movieImdbId) => {
-    if (!userId) return;
-    
-    getUserRatingForMovie(
-      userId,
-      movieImdbId,
-      (data) => {
-        if (data && data.rating !== undefined) {
-          setUserRating({
-            rating: data.rating,
-            id: data.id
-          });
-          setRatingValue(data.rating.toString());
+        // Si ya hemos procesado este actor por nombre o ID, omitirlo
+        if (normalizedId && processedActorIds.has(normalizedId)) {
+          return false;
         }
-      },
-      () => {}
-    );
+        
+        if (processedActorNames.has(normalizedName)) {
+          return false;
+        }
+        
+        // Marcar este actor como procesado
+        if (normalizedId) processedActorIds.add(normalizedId);
+        processedActorNames.add(normalizedName);
+        
+        return true;
+      });
+      
+      // Hacer lo mismo para directores
+      const uniqueDirectors = (processedCast.directors || []).filter(director => {
+        if (!director || !director.name) return false;
+        
+        const normalizedName = director.name.toLowerCase().trim();
+        const normalizedId = director.imdbId ? String(director.imdbId).trim() : null;
+        
+        if (normalizedId && processedDirectorIds.has(normalizedId)) {
+          return false;
+        }
+        
+        if (processedDirectorNames.has(normalizedName)) {
+          return false;
+        }
+        
+        if (normalizedId) processedDirectorIds.add(normalizedId);
+        processedDirectorNames.add(normalizedName);
+        
+        return true;
+      });
+            
+      // Crear promesas para actores/directores filtrados
+      const actorPromises = uniqueActors.map(actor => {
+        return () => saveActorToDatabase(actor);
+      });
+      
+      const directorPromises = uniqueDirectors.map(director => {
+        return () => saveDirectorToDatabase(director);
+      });
+      
+      // Process actors sequentially to avoid race conditions
+      const savedActors = [];
+      const processedImdbIds = new Set();
+  
+      for (const actorPromise of actorPromises) {
+        const savedActor = await actorPromise();
+        if (savedActor && savedActor.imdbId && !processedImdbIds.has(savedActor.imdbId)) {
+          processedImdbIds.add(savedActor.imdbId);
+          savedActors.push(savedActor);
+        } else if (savedActor && !savedActor.imdbId) {
+          savedActors.push(savedActor);
+        }
+      }
+      
+      // Process directors sequentially
+      const savedDirectors = [];
+      for (const directorPromise of directorPromises) {
+        const savedDirector = await directorPromise();
+        if (savedDirector && savedDirector.imdbId && !processedImdbIds.has(savedDirector.imdbId)) {
+          processedImdbIds.add(savedDirector.imdbId);
+          savedDirectors.push(savedDirector);
+        } else if (savedDirector && !savedDirector.imdbId) {
+          savedDirectors.push(savedDirector);
+        }
+      }
+      
+      // Update the movie state once with the complete cast
+      setMovie(prevMovie => {
+        if (!prevMovie) return null;
+        
+        const mergeArrays = (existingItems, newItems) => {
+          // Create a Map with imdbId or name as keys to avoid duplicates
+          const combinedMap = new Map();
+          
+          // Process existing items first
+          if (Array.isArray(existingItems)) {
+            existingItems.forEach(item => {
+              if (item && item.imdbId) {
+                // Normalizar el ID de IMDB (asegurarse de que es un string y no tiene espacios)
+                const normalizedImdbId = String(item.imdbId).trim();
+                if (normalizedImdbId) {
+                  combinedMap.set(normalizedImdbId, item);
+                }
+              } else if (item && item.name) {
+                // Normalizar nombre para comparación insensible a mayúsculas/minúsculas
+                const normalizedName = item.name.toLowerCase().trim().replace(/\s+/g, ' ');
+                combinedMap.set(`name-${normalizedName}`, item);
+              }
+            });
+          }
+          
+          // Process new items, checking for duplicates more carefully
+          if (Array.isArray(newItems)) {
+            newItems.forEach(item => {
+              if (!item) return;
+              
+              // Try to find matching existing item by imdbId or name
+              let existingItem = null;
+              let itemKey = null;
+              
+              if (item.imdbId) {
+                // Normalizar el ID de IMDB del nuevo elemento
+                const normalizedImdbId = String(item.imdbId).trim();
+                if (normalizedImdbId) {
+                  // Check by imdbId
+                  existingItem = combinedMap.get(normalizedImdbId);
+                  itemKey = normalizedImdbId;
+                }
+              }
+              
+              if (!existingItem && item.name) {
+                // Si no se encuentra por imdbId, buscar por nombre normalizado
+                const normalizedName = item.name.toLowerCase().trim().replace(/\s+/g, ' ');
+                const nameKey = `name-${normalizedName}`;
+                existingItem = combinedMap.get(nameKey);
+                
+                if (!itemKey) {
+                  itemKey = nameKey;
+                }
+              }
+              
+              // Si se encontró un elemento existente, fusionarlo con el nuevo
+              if (existingItem) {
+                const mergedItem = {
+                  ...existingItem,
+                  ...item,
+                  // Asegurar que se preserva el ID de IMDB (prioridad para el nuevo)
+                  imdbId: item.imdbId || existingItem.imdbId,
+                  character: item.character || existingItem.character
+                };
+                
+                // Si el elemento fusionado tiene imdbId, usarlo como clave
+                if (mergedItem.imdbId) {
+                  const normalizedImdbId = String(mergedItem.imdbId).trim();
+                  combinedMap.set(normalizedImdbId, mergedItem);
+                  
+                  // Si teníamos una entrada basada en nombre, eliminarla para evitar duplicados
+                  if (existingItem.name) {
+                    const normalizedName = existingItem.name.toLowerCase().trim().replace(/\s+/g, ' ');
+                    combinedMap.delete(`name-${normalizedName}`);
+                  }
+                } else if (mergedItem.name) {
+                  // Si no hay imdbId, usar el nombre como clave
+                  const normalizedName = mergedItem.name.toLowerCase().trim().replace(/\s+/g, ' ');
+                  combinedMap.set(`name-${normalizedName}`, mergedItem);
+                }
+              } else {
+                // Si no existe un elemento para fusionar, agregar el nuevo
+                if (item.imdbId) {
+                  const normalizedImdbId = String(item.imdbId).trim();
+                  combinedMap.set(normalizedImdbId, item);
+                } else if (item.name) {
+                  const normalizedName = item.name.toLowerCase().trim().replace(/\s+/g, ' ');
+                  combinedMap.set(`name-${normalizedName}`, item);
+                }
+              }
+            });
+          }
+          
+          // Convertir mapa a array para devolver
+          return Array.from(combinedMap.values());
+        };
+        
+        const updatedMovie = {
+          ...prevMovie,
+          cast: mergeArrays(prevMovie.cast || [], savedActors),
+          directors: mergeArrays(prevMovie.directors || [], savedDirectors),
+          castLoaded: true // Add this flag to track if we've already loaded cast
+        };
+        
+        // Update the reference
+        movieRef.current = updatedMovie;
+        
+        return updatedMovie;
+      });
+      
+      // Save the updated movie to database
+      const currentMovie = movieRef.current;
+      if (currentMovie && currentMovie.imdbId) {
+        try {
+          await new Promise((resolve, reject) => {
+            // Make a clean copy with only the necessary data
+            const movieToSave = {
+              ...currentMovie,
+              cast: (currentMovie.cast || []).map(actor => ({
+                name: actor.name,
+                imdbId: actor.imdbId || null,
+                // No incluimos el character al guardar
+              })),
+              directors: (currentMovie.directors || []).map(director => ({
+                name: director.name,
+                imdbId: director.imdbId || null
+              }))
+            };
+            
+            saveMovie(
+              movieToSave,
+              (savedMovie) => {
+                resolve(savedMovie);
+              },
+              (error) => {
+                reject(error);
+              }
+            );
+          });
+        } catch (error) {
+          console.error("Error saving movie:", error);
+        }
+      }
+      
+      setLoadingCast(false);
+    } catch (error) {
+      console.error("Error en updateMovieWithCast:", error);
+      setLoadingCast(false);
+    }
+  };
+  
+  const loadUserRating = (movieImdbId) => {
+    if (!userId || !movieImdbId) return;
+    
+    try {
+      getUserRatingForMovie(
+        userId,
+        movieImdbId,
+        (data) => {
+          if (data && data.rating !== undefined) {
+            setUserRating({
+              rating: data.rating,
+              id: data.id
+            });
+            setRatingValue(data.rating.toString());
+          }
+        },
+        () => {} // Silently ignore errors
+      );
+    } catch (error) {
+      // Ignorar errores silenciosamente
+    }
   };
 
   const loadAverageRating = (movieImdbId) => {
+    if (!movieImdbId) return;
+    
     setLoadingRating(true);
-    getAverageRatingForMovie(
-      movieImdbId,
-      (rating) => {
-        setAverageRating(rating);
-        setLoadingRating(false);
-      },
-      () => {
-        setLoadingRating(false);
-      }
-    );
+    try {
+      getAverageRatingForMovie(
+        movieImdbId,
+        (rating) => {
+          setAverageRating(rating);
+          setLoadingRating(false);
+        },
+        () => {
+          setAverageRating(null);
+          setLoadingRating(false);
+        }
+      );
+    } catch (error) {
+      setAverageRating(null);
+      setLoadingRating(false);
+    }
   };
 
   // Cargar datos iniciales
   useEffect(() => {
     setLoading(true);
+    
+    if (!id) {
+      setError(new Error("ID de película no válido"));
+      setLoading(false);
+      return;
+    }
+    
+    // Clear cache only when navigating to a different movie
+    if (movieRef.current?.imdbId !== id) {
+      processedPersonsCache.clear();
+    }
+    
     fetch(
       `https://streaming-availability.p.rapidapi.com/shows/${id}?series_granularity=episode&output_language=es`,
       {
         method: "GET",
         headers: {
           "x-rapidapi-host": "streaming-availability.p.rapidapi.com",
-          "x-rapidapi-key": "cb332fab10msh89e2fc877672ccfp14515bjsn3b00399489a8",
+          "x-rapidapi-key": "cdbfa3dd29mshcd4df13fafdf647p1c3170jsn3d0e626a103b",
         },
       }
     )
@@ -341,22 +541,39 @@ const ShowMovie = ({ authenticatedUser }) => {
         }
         
         const parsedData = parseMovieJson(data);
+        parsedData.castLoaded = false; // Initialize the flag
         setMovie(parsedData);
+        movieRef.current = parsedData;
         setLoading(false);
         
-        saveMovie(
-          parsedData,
-          (savedMovie) => {
-            if (savedMovie && savedMovie.imdbId) {
-              loadAverageRating(savedMovie.imdbId);
-              if (userId) {
-                loadUserRating(savedMovie.imdbId);
+        // Use one-time flag to avoid multiple triggers
+        let dataProcessed = false;
+        
+        // Separar la lógica para evitar bloquear la visualización
+        setTimeout(() => {
+          try {
+            if (dataProcessed) return;
+            dataProcessed = true;
+            
+            saveMovie(
+              parsedData,
+              (savedMovie) => {
+                if (savedMovie && savedMovie.imdbId) {
+                  loadAverageRating(savedMovie.imdbId);
+                  if (userId) {
+                    loadUserRating(savedMovie.imdbId);
+                  }
+                  loadCastDetails(savedMovie.imdbId);
+                }
+              }, 
+              (error) => {
+                console.error("Error al guardar película:", error);
               }
-              loadCastDetails(savedMovie.imdbId);
-            }
-          }, 
-          () => {}
-        );
+            );
+          } catch (error) {
+            console.error("Error en el guardado inicial:", error);
+          }
+        }, 100);
       })
       .catch((error) => {
         setError(error);
@@ -423,25 +640,29 @@ const ShowMovie = ({ authenticatedUser }) => {
       return;
     }
     
-    rateMovie(
-      userId,
-      movie.imdbId,
-      valueFloat,
-      (data) => {
-        setUserRating({
-          rating: data.rating,
-          id: data.id
-        });
-        setRatingSuccess(true);
-        setTimeout(() => setRatingSuccess(false), 3000);
-        
-        loadAverageRating(movie.imdbId);
-        setShowRatingForm(false);
-      },
-      (errors) => {
-        setRatingErrors(errors);
-      }
-    );
+    try {
+      rateMovie(
+        userId,
+        movie.imdbId,
+        valueFloat,
+        (data) => {
+          setUserRating({
+            rating: data.rating,
+            id: data.id
+          });
+          setRatingSuccess(true);
+          setTimeout(() => setRatingSuccess(false), 3000);
+          
+          loadAverageRating(movie.imdbId);
+          setShowRatingForm(false);
+        },
+        (errors) => {
+          setRatingErrors(errors);
+        }
+      );
+    } catch (error) {
+      setRatingErrors({ globalError: "Error al enviar la valoración." });
+    }
   };
 
   const handleDeleteRating = () => {
@@ -464,27 +685,51 @@ const ShowMovie = ({ authenticatedUser }) => {
       return;
     }
     
-    deleteRating(
-      userId,
-      movie.imdbId,
-      () => {
-        setUserRating(null);
-        setRatingValue("");
-        setShowDeleteConfirmation(false);
-        
-        setRatingSuccess(true);
-        setTimeout(() => {
-          setRatingSuccess(false);
-        }, 3000);
-        
-        loadAverageRating(movie.imdbId);
-      },
-      (errors) => {
-        setRatingErrors(errors);
-        setShowDeleteConfirmation(false);
-      }
-    );
+    try {
+      deleteRating(
+        userId,
+        movie.imdbId,
+        () => {
+          setUserRating(null);
+          setRatingValue("");
+          setShowDeleteConfirmation(false);
+          
+          setRatingSuccess(true);
+          setTimeout(() => {
+            setRatingSuccess(false);
+          }, 3000);
+          
+          loadAverageRating(movie.imdbId);
+        },
+        (errors) => {
+          setRatingErrors(errors);
+          setShowDeleteConfirmation(false);
+        }
+      );
+    } catch (error) {
+      setRatingErrors({ globalError: "Error al eliminar la valoración." });
+      setShowDeleteConfirmation(false);
+    }
   };
+
+  // Componente ErrorBoundary para manejar errores en MovieReviews
+  class ErrorBoundary extends React.Component {
+    constructor(props) {
+      super(props);
+      this.state = { hasError: false };
+    }
+
+    static getDerivedStateFromError(error) {
+      return { hasError: true };
+    }
+
+    render() {
+      if (this.state.hasError) {
+        return this.props.fallback;
+      }
+      return this.props.children;
+    }
+  }
 
   // Renderizado condicional
   if (error) {
@@ -538,7 +783,21 @@ const ShowMovie = ({ authenticatedUser }) => {
         
         {/* Sección de reseñas */}
         <div className="movie-section reviews-section">
-          <MovieReviews movieId={movie.imdbId} authenticatedUser={authenticatedUser} />
+          {movie && movie.imdbId ? (
+            <ErrorBoundary fallback={<div className={`no-reviews-container ${theme}`}>
+              <p>No se pueden cargar las reseñas en este momento</p>
+            </div>}>
+              <MovieReviews 
+                key={movie.imdbId} // Añadir una key para forzar remontaje cuando cambia el ID
+                movieId={movie.imdbId} 
+                authenticatedUser={authenticatedUser} 
+              />
+            </ErrorBoundary>
+          ) : (
+            <div className={`no-reviews-container ${theme}`}>
+              <p>No se pueden cargar reseñas para esta película</p>
+            </div>
+          )}
         </div>
       </div>
       

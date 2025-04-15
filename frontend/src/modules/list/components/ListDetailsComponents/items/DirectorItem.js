@@ -16,7 +16,6 @@ const DirectorItem = ({ director, theme, onRemove }) => {
   
   // Verificar si director es undefined antes de continuar
   if (!director) {
-    console.log("DirectorItem recibió un director undefined");
     return null;
   }
   
@@ -35,13 +34,6 @@ const DirectorItem = ({ director, theme, onRemove }) => {
       .substring(0, 2);
   };
   
-  // Para depurar el problema de la imagen
-  console.log(`Director ${director.id} - ${director.name}:`, {
-    hasImage: !!director.imageUrl,
-    imageUrl: director.imageUrl,
-    hasError: hasImageError
-  });
-  
   return (
     <div className={`item-card director-item ${theme}`} onClick={handleClick}>
       <div className="item-image-container">
@@ -51,7 +43,6 @@ const DirectorItem = ({ director, theme, onRemove }) => {
             alt={director.name || 'Director'}
             className="item-image"
             onError={(e) => {
-              console.log(`Error cargando imagen para director ${director.name}:`, e);
               e.target.onerror = null;
               setHasImageError(true);
               e.target.src = `https://via.placeholder.com/300x450/cccccc/666666?text=${getInitials(director.name || 'Dir')}`;

@@ -8,6 +8,14 @@ import com.tfg.tfg.model.services.exceptions.InstanceNotFoundException;
 public interface DirectorService {
     
     /**
+     * Adds a new director to the system.
+     *
+     * @param director The director object to be added
+     * @return The added director entity
+     */
+    Director createDirector(Director director);
+
+    /**
      * Updates an existing director in the system.
      *
      * @param director The director object with updated information

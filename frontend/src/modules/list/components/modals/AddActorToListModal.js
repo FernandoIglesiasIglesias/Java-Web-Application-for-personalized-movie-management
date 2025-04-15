@@ -66,7 +66,6 @@ const AddActorToListModal = ({ actor, onClose, authenticatedUser }) => {
               });
             },
             (error) => {
-              console.error(`Error al obtener detalles de la lista ${list.name}:`, error);
               resolve({
                 ...list,
                 actors: [],

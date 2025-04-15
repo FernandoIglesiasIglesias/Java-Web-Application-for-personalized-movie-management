@@ -34,7 +34,6 @@ const UserLists = ({ authenticatedUser }) => {
         setMovieLists(fetchedLists);
       },
       (error) => {
-        console.error("Error al cargar listas de películas:", error);
         if (error.globalError !== "project.exceptions.EmptyUserListsException") {
           setErrors(error);
         } else {
@@ -52,7 +51,6 @@ const UserLists = ({ authenticatedUser }) => {
         setActorLists(fetchedLists);
       },
       (error) => {
-        console.error("Error al cargar listas de actores:", error);
         if (error.globalError !== "project.exceptions.EmptyUserListsException") {
           setErrors(error);
         } else {
@@ -70,7 +68,6 @@ const UserLists = ({ authenticatedUser }) => {
         setDirectorLists(fetchedLists);
       },
       (error) => {
-        console.error("Error al cargar listas de directores:", error);
         if (error.globalError !== "project.exceptions.EmptyUserListsException") {
           setErrors(error);
         } else {

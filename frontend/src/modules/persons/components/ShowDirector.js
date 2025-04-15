@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import ShowPerson from './ShowPerson';
-import { updateDirectorByName, getDirectorByImdbId, getDirectorByName } from '../../../backend/directorService';
+import { updateDirectorByName, getDirectorByImdbId, getDirectorByName, createDirector } from '../../../backend/directorService';
 import AddDirectorToListModal from '../../list/components/modals/AddDirectorToListModal';
 
 const ShowDirector = ({ authenticatedUser }) => {
@@ -27,17 +27,35 @@ const ShowDirector = ({ authenticatedUser }) => {
         const isImdbId = directorName.startsWith('nm') && /^nm\d+$/.test(directorName);
         
         if (isImdbId) {
-          // If it's an IMDB ID, use getDirectorByImdbId
+          // If it's an IMDB ID, try to get from our database first
           getDirectorByImdbId(
             directorName,
             (data) => {
               setDirector(data);
               setLoading(false);
             },
-            (error) => {
-              console.error('Error fetching director by IMDB ID:', error);
-              setError("No se encontró el director con el ID especificado");
-              setLoading(false);
+            (error) => {              
+              // Crear un nuevo director con datos mínimos
+              const newDirector = {
+                name: "Director", // Nombre genérico temporal
+                imdbId: directorName,
+                firstName: "Director"
+              };
+              
+              createDirector(
+                newDirector,
+                (createdDirector) => {
+                  // Director creado, ahora lo podemos usar
+                  console.log('Director creado correctamente:', createdDirector);
+                  setDirector(createdDirector);
+                  setLoading(false);
+                },
+                (createError) => {
+                  console.error('Error al crear el director:', createError);
+                  setError("No se pudo crear el director con el ID especificado");
+                  setLoading(false);
+                }
+              );
             }
           );
         } else {

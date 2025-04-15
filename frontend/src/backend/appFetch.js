@@ -111,8 +111,38 @@ export const fetchConfig = (method, body) => {
 };
 
 export const appFetch = (path, options, onSuccess, onErrors) => {
-  const url = path.startsWith("http") ? path : `${config.BASE_PATH}${path}`;
-  fetch(url, options)
-    .then((response) => handleResponse(response, onSuccess, onErrors))
-    .catch(networkErrorCallback);
+  const requestUrl = `${process.env.REACT_APP_BACKEND_URL || ''}/tfg${path}`;
+
+  fetch(requestUrl, options)
+    .then(response => {
+      // Añadir manejo especial para errores 404
+      if (response.status === 404) {
+        // Para errores 404, creamos un objeto de error con información
+        return Promise.reject({
+          status: 404,
+          message: `Recurso no encontrado: ${path}`,
+          isNotFound: true
+        });
+      }
+      
+      return handleResponse(response, onSuccess);
+    })
+    .catch(error => {
+      // Verificar si es un error 404 que hemos creado
+      if (error.isNotFound) {
+        console.warn(`Recurso no encontrado (404): ${path}`);
+        // Podemos manejar 404 de manera diferente, por ejemplo, no mostrando mensajes de error
+        // ya que es un comportamiento esperado cuando buscamos recursos que pueden no existir
+        onErrors(error);
+      } else {
+        console.error("Error procesando petición:", error);
+        
+        if (error instanceof TypeError && error.message === 'Failed to fetch') {
+          // Error de red, probablemente el servidor está caído
+          onErrors(new NetworkError());
+        } else {
+          onErrors(error);
+        }
+      }
+    });
 };

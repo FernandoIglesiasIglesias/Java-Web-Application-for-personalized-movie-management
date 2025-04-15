@@ -135,8 +135,8 @@ public class ActorServiceTest {
     @Test
     public void testUpdateActorNotFound() {
         Actor nonExistentActor = new Actor();
-        nonExistentActor.setName("Non Existent");
-        
+        nonExistentActor.setImdbId("non_existent_imdb_id");
+    
         assertThrows(InstanceNotFoundException.class, () -> {
             actorService.updateActor(nonExistentActor);
         });
@@ -185,5 +185,132 @@ public class ActorServiceTest {
         assertThrows(IllegalArgumentException.class, () -> {
             actorService.updateActor(actorWithNullName);
         });
+    }
+
+    @Test
+    public void testCreateActorWithNewImdbId() {
+        // Crear un actor con un imdbId único
+        Actor newActor = new Actor();
+        newActor.setName("Chris Hemsworth");
+        newActor.setImdbId("nm1165110");
+
+        Actor result = actorService.createActor(newActor);
+
+        // Verificar que se creó un nuevo actor
+        assertNotNull(result);
+        assertNotEquals(testActor.getId(), result.getId());
+        assertEquals("Chris Hemsworth", result.getName());
+        assertEquals("nm1165110", result.getImdbId());
+    }
+
+    @Test
+    public void testUpdateActorByImdbId() throws InstanceNotFoundException {
+        // Crear una copia del actor con datos actualizados
+        Actor updatedData = new Actor();
+        updatedData.setImdbId("nm0000375"); // Buscar por IMDB ID
+        updatedData.setBio("Updated biography");
+        updatedData.setHeight("1.80 m");
+
+        Actor result = actorService.updateActor(updatedData);
+
+        assertNotNull(result);
+        assertEquals(testActor.getId(), result.getId());
+        assertEquals("Updated biography", result.getBio());
+        assertEquals("1.80 m", result.getHeight());
+    }
+
+    @Test
+    public void testUpdateActorByName() throws InstanceNotFoundException {
+        // Crear una copia del actor con datos actualizados
+        Actor updatedData = new Actor();
+        updatedData.setName("Robert Downey Jr."); // Buscar por nombre
+        updatedData.setBio("Updated biography");
+        updatedData.setHeight("1.80 m");
+
+        Actor result = actorService.updateActor(updatedData);
+
+        assertNotNull(result);
+        assertEquals(testActor.getId(), result.getId());
+        assertEquals("Updated biography", result.getBio());
+        assertEquals("1.80 m", result.getHeight());
+    }
+
+    @Test
+    public void testCreateActorWithExistingName() {
+        // Intentar crear un actor con el mismo nombre que el actor de prueba
+        Actor newActor = new Actor();
+        newActor.setName("Robert Downey Jr."); // Mismo nombre que testActor
+        newActor.setImdbId("nm9999999"); // ImdbId diferente
+
+        Actor result = actorService.createActor(newActor);
+
+        // Verificar que no se creó un nuevo actor, sino que se devolvió el existente
+        assertNotNull(result);
+        assertEquals(testActor.getId(), result.getId());
+        assertEquals("Robert Downey Jr.", result.getName());
+        
+        // Verificar que se actualizó el imdbId del actor existente
+        assertEquals("nm9999999", result.getImdbId());
+    }
+
+    @Test
+    public void testCreateActorWithExistingImdbId() {
+        // Intentar crear un actor con el mismo imdbId que el actor de prueba
+        Actor newActor = new Actor();
+        newActor.setName("Different Actor Name"); // Nombre diferente
+        newActor.setImdbId("nm0000375"); // Mismo imdbId que testActor
+
+        Actor result = actorService.createActor(newActor);
+
+        // Verificar que no se creó un nuevo actor, sino que se devolvió el existente
+        assertNotNull(result);
+        assertEquals(testActor.getId(), result.getId());
+        
+        // El nombre no debería cambiar porque estamos usando el imdbId como clave principal
+        assertEquals("Robert Downey Jr.", result.getName());
+        assertEquals("nm0000375", result.getImdbId());
+    }
+
+    @Test
+    public void testCreateActorWithExistingNameAndImdbId() {
+        // Intentar crear un actor con el mismo nombre e imdbId que el actor de prueba
+        Actor newActor = new Actor();
+        newActor.setName("Robert Downey Jr."); 
+        newActor.setImdbId("nm0000375");
+        newActor.setBio("New biography text"); // Datos adicionales
+
+        Actor result = actorService.createActor(newActor);
+
+        // Verificar que no se creó un nuevo actor, sino que se devolvió el existente
+        assertNotNull(result);
+        assertEquals(testActor.getId(), result.getId());
+        assertEquals("Robert Downey Jr.", result.getName());
+        assertEquals("nm0000375", result.getImdbId());
+        
+        // Verificar que se actualizaron otros campos
+        assertEquals("New biography text", result.getBio());
+    }
+
+    @Test
+    public void testConcurrentActorCreation() {
+        // Simular creaciones concurrentes del mismo actor
+        Actor actor1 = new Actor();
+        actor1.setName("Tom Hanks");
+        actor1.setImdbId("nm0000158");
+        
+        Actor actor2 = new Actor();
+        actor2.setName("Tom Hanks");
+        actor2.setImdbId("nm0000158");
+        
+        // Crear el primer actor
+        Actor result1 = actorService.createActor(actor1);
+        assertNotNull(result1);
+        
+        // Crear el segundo actor con los mismos datos
+        Actor result2 = actorService.createActor(actor2);
+        assertNotNull(result2);
+        
+        // Verificar que ambos resultados apuntan al mismo actor en la base de datos
+        assertEquals(result1.getId(), result2.getId());
     }
 }

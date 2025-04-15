@@ -30,19 +30,28 @@ export const getDirectorByImdbId = (imdbId, onSuccess, onErrors) => {
 };
 
 export const getDirectorByName = (name, onSuccess, onErrors) => {
-    appFetch(
-      `/directors/name?name=${encodeURIComponent(name)}`,
-      fetchConfig("GET"),
-      onSuccess,
-      onErrors
-    );
-  };
-  
-  export const updateDirectorByName = (name, directorData, onSuccess, onErrors) => {
-    appFetch(
-      `/directors/name/${encodeURIComponent(name)}`,
-      fetchConfig("PUT", directorData),
-      onSuccess,
-      onErrors
-    );
-  };
+  appFetch(
+    `/directors/name/${encodeURIComponent(name)}`,
+    fetchConfig("GET"),
+    onSuccess,
+    onErrors
+  );
+};
+
+export const createDirector = (directorData, onSuccess, onErrors) => {
+  appFetch(
+    "/directors/create",
+    fetchConfig("POST", directorData),
+    onSuccess,
+    onErrors
+  );
+};
+
+export const updateDirectorByName = (name, directorData, onSuccess, onErrors) => {
+  appFetch(
+    `/directors/name/${encodeURIComponent(name)}`,
+    fetchConfig("PUT", directorData),
+    onSuccess,
+    onErrors
+  );
+};

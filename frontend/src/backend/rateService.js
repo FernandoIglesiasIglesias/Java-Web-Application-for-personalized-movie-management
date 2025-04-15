@@ -1,9 +1,9 @@
-import {fetchConfig, appFetch} from './appFetch';
+import {appFetch, fetchConfig} from './appFetch';
 
 export const rateMovie = (userId, imdbId, value, onSuccess, onErrors) => {
-  appFetch(`/ratings/${userId}/${imdbId}?value=${value}`, 
-    fetchConfig('POST'), 
-    onSuccess, 
+  appFetch(`/ratings/${userId}/${imdbId}?value=${value}`,
+    fetchConfig('POST'),
+    onSuccess,
     onErrors);
 };
 
@@ -17,28 +17,39 @@ export const getUserRatingForMovie = (userId, imdbId, onSuccess, onErrors) => {
 export const getAverageRatingForMovie = (imdbId, onSuccess, onErrors) => {
   appFetch(`/ratings/movie/${imdbId}/average`,
     fetchConfig('GET'),
-    (data) => {
-      // Solo llamar a onSuccess si hay datos válidos
-      if (data !== null && data !== undefined) {
-        onSuccess(data);
-      } else {
-        // Si no hay datos, llamar a onErrors con un mensaje descriptivo
-        onErrors({ message: "No hay valoraciones disponibles para esta película" });
-      }
-    },
-    (error) => {
-      // Si el error es un 404, significa que no hay valoraciones
-      if (error && error.status === 404) {
-        onErrors({ message: "No hay valoraciones para esta película" });
-      } else {
-        onErrors(error);
-      }
-    });
+    onSuccess,
+    onErrors);
+};
+
+export const getUserRatings = (userId, onSuccess, onErrors) => {
+  appFetch(`/ratings/user/${userId}`,
+    fetchConfig('GET'),
+    onSuccess,
+    onErrors);
+};
+
+export const getMovieRatings = (imdbId, onSuccess, onErrors) => {
+  appFetch(`/ratings/movie/${imdbId}`,
+    fetchConfig('GET'),
+    onSuccess,
+    onErrors);
 };
 
 export const deleteRating = (userId, imdbId, onSuccess, onErrors) => {
   appFetch(`/ratings/${userId}/${imdbId}`,
     fetchConfig('DELETE'),
+    onSuccess,
+    onErrors);
+};
+
+export const getTopRatedMovies = (genre, year, pageSize, page, onSuccess, onErrors) => {
+  let url = `/ratings/topRated?pageSize=${pageSize}&page=${page}`;
+  
+  if (genre) url += `&genre=${encodeURIComponent(genre)}`;
+  if (year) url += `&year=${year}`;
+  
+  appFetch(url,
+    fetchConfig('GET'),
     onSuccess,
     onErrors);
 };

@@ -1,0 +1,345 @@
+.movie-card {
+  display: flex;
+  flex-direction: column;
+  border-radius: 12px;
+  overflow: hidden;
+  background-color: #fff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), 
+              box-shadow 0.3s ease,
+              background-color 0.3s ease;
+  cursor: pointer;
+  height: 100%;
+  position: relative;
+  width: 100%;
+  min-width: 160px;
+}
+
+/* Destacar películas top rated */
+.movie-card.top-rated {
+  box-shadow: 0 4px 18px rgba(255, 193, 7, 0.3);
+}
+
+.movie-card.dark.top-rated {
+  box-shadow: 0 4px 18px rgba(255, 193, 7, 0.2);
+}
+
+.movie-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+  z-index: 1;
+}
+
+.movie-card.top-rated:hover {
+  box-shadow: 0 12px 28px rgba(255, 193, 7, 0.35);
+}
+
+.movie-card.dark.top-rated:hover {
+  box-shadow: 0 12px 28px rgba(255, 193, 7, 0.25);
+}
+
+.movie-card:active {
+  transform: translateY(-4px);
+  transition: transform 0.1s;
+}
+
+.movie-card.dark {
+  background-color: #2a2a2a;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+}
+
+.movie-card.dark:hover {
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.35);
+}
+
+.movie-poster-wrapper {
+  position: relative;
+  overflow: hidden;
+  padding-top: 150%; /* Aspect ratio 2:3 for movie posters */
+  background-color: #f0f0f0;
+}
+
+.movie-card.dark .movie-poster-wrapper {
+  background-color: #444;
+}
+
+.movie-poster {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.movie-card:hover .movie-poster {
+  transform: scale(1.05);
+}
+
+.movie-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 1rem;
+  background: linear-gradient(to top, 
+                rgba(0, 0, 0, 0.9) 0%, 
+                rgba(0, 0, 0, 0.7) 40%,
+                rgba(0, 0, 0, 0) 100%);
+  color: white;
+  font-size: 0.9rem;
+  display: flex;
+  justify-content: space-between;
+  transition: opacity 0.3s ease;
+}
+
+.movie-year {
+  font-weight: 500;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+}
+
+.movie-rating {
+  background-color: rgba(255, 111, 97, 0.9);
+  padding: 0.2rem 0.6rem;
+  border-radius: 4px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  text-shadow: none;
+  font-size: 0.85rem;
+}
+
+.movie-rating.imdb {
+  background-color: rgba(245, 197, 24, 0.9);
+  color: #000;
+}
+
+.movie-rating.users {
+  background-color: rgba(33, 150, 243, 0.9);
+  color: #fff;
+}
+
+.top-rated-badge {
+  position: absolute;
+  top: 10px;
+  left: -30px;
+  background-color: rgba(255, 193, 7, 0.95);
+  color: #333;
+  padding: 4px 30px;
+  font-weight: 600;
+  font-size: 0.8rem;
+  transform: rotate(-45deg);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  z-index: 2;
+}
+
+.top-rated-badge span {
+  display: inline-block;
+  transform: translateY(1px);
+}
+
+.movie-info {
+  padding: 1rem;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  min-height: 70px;
+}
+
+.movie-title {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0 0 0.4rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: #333;
+  transition: color 0.3s ease;
+  line-height: 1.3;
+}
+
+.movie-card.dark .movie-title {
+  color: #eee;
+}
+
+.movie-genres {
+  font-size: 0.85rem;
+  color: #666;
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  line-height: 1.4;
+  transition: color 0.3s ease;
+}
+
+.movie-card.dark .movie-genres {
+  color: #aaa;
+}
+
+/* Efecto de reflejo para añadir profundidad - optimizado para rendimiento */
+.movie-poster-wrapper::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 200%;
+  height: 100%;
+  background: linear-gradient(
+    to right,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.3) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  transform: translateX(-100%);
+  transition: transform 0.5s ease-out;
+  will-change: transform;
+  pointer-events: none;
+}
+
+.movie-card:hover .movie-poster-wrapper::after {
+  transform: translateX(100%);
+}
+
+/* Mejora visual para indicador de año y rating */
+.movie-overlay > div {
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+/* Estados de accesibilidad y hover */
+.movie-card:focus {
+  outline: none;
+}
+
+.movie-card:focus-visible {
+  outline: 3px solid #1976d2;
+  outline-offset: 3px;
+}
+
+.movie-card.dark:focus-visible {
+  outline-color: #2196f3;
+}
+
+/* Animación de latido para el rating al hover */
+.movie-card:hover .movie-rating {
+  animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+/* Placeholder para imágenes que fallan */
+.movie-poster.error {
+  object-fit: contain;
+  padding: 20%;
+  background-color: #f0f0f0;
+  color: #999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-style: italic;
+}
+
+.movie-card.dark .movie-poster.error {
+  background-color: #444;
+  color: #bbb;
+}
+
+/* Media queries para diseño responsive */
+@media (max-width: 992px) {
+  .movie-card {
+    border-radius: 10px;
+    min-width: 150px;
+  }
+  
+  .movie-info {
+    padding: 0.9rem;
+    min-height: 65px;
+  }
+  
+  .movie-title {
+    font-size: 0.95rem;
+  }
+  
+  .movie-genres {
+    font-size: 0.8rem;
+  }
+  
+  .movie-overlay {
+    padding: 0.9rem;
+  }
+
+  .top-rated-badge {
+    font-size: 0.75rem;
+    padding: 3px 25px;
+  }
+}
+
+@media (max-width: 768px) {
+  .movie-card {
+    border-radius: 8px;
+    min-width: 140px;
+  }
+  
+  .movie-info {
+    padding: 0.8rem;
+    min-height: 62px;
+  }
+  
+  .movie-title {
+    font-size: 0.9rem;
+  }
+  
+  .movie-genres {
+    font-size: 0.75rem;
+  }
+  
+  .movie-overlay {
+    padding: 0.8rem;
+    opacity: 1; /* Siempre visible en móviles */
+  }
+  
+  .movie-rating {
+    padding: 0.15rem 0.45rem;
+    font-size: 0.8rem;
+  }
+
+  .top-rated-badge {
+    font-size: 0.7rem;
+    padding: 2px 20px;
+    top: 8px;
+    left: -25px;
+  }
+}
+
+@media (max-width: 480px) {
+  .movie-info {
+    padding: 0.7rem;
+    min-height: 58px;
+  }
+  
+  .movie-title {
+    font-size: 0.85rem;
+    margin-bottom: 0.3rem;
+  }
+  
+  .movie-genres {
+    font-size: 0.7rem;
+  }
+  
+  .movie-overlay {
+    padding: 0.7rem;
+  }
+  
+  .movie-rating {
+    padding: 0.1rem 0.4rem;
+    font-size: 0.75rem;
+  }
+}

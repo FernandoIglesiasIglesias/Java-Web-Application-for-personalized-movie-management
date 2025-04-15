@@ -2,8 +2,11 @@ package com.tfg.tfg.model.services;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -12,6 +15,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.tfg.tfg.model.entities.Genre;
+import com.tfg.tfg.model.entities.GenreDao;
 import com.tfg.tfg.model.entities.Movie;
 import com.tfg.tfg.model.entities.MovieDao;
 import com.tfg.tfg.model.entities.Rating;
@@ -41,6 +46,9 @@ class RatingServiceTest {
     
     @Autowired
     private RatingDao ratingDao;
+    
+    @Autowired
+    private GenreDao genreDao;
     
     private Users testUser;
     private Movie testMovie;
@@ -467,5 +475,114 @@ class RatingServiceTest {
         assertThrows(InvalidRatingException.class, () -> {
             ratingService.rateMovie(testUser.getId(), testMovie.getImdbId(), 7.123f);
         });
+    }
+    
+    // Nuevos tests para la funcionalidad de películas mejor valoradas
+    
+    @Test
+    void testGetTopRatedMovies() throws InstanceNotFoundException, InvalidRatingException {
+        // Crear géneros
+        Genre drama = new Genre();
+        drama.setName("Drama");
+        genreDao.save(drama);
+
+        Genre comedy = new Genre();
+        comedy.setName("Comedia");
+        genreDao.save(comedy);
+        
+        // Configurar películas con géneros
+        Set<Genre> dramaGenreSet = new HashSet<>();
+        dramaGenreSet.add(drama);
+        List<Genre> dramaGenres = new ArrayList<>(dramaGenreSet);
+        testMovie.setGenres(dramaGenres);
+        movieDao.save(testMovie);
+        
+        Set<Genre> comedyGenreSet = new HashSet<>();
+        comedyGenreSet.add(comedy);
+        List<Genre> comedyGenres = new ArrayList<>(comedyGenreSet);
+        testMovie2.setGenres(comedyGenres);
+        movieDao.save(testMovie2);
+        
+        // Crear usuario adicional para valoraciones
+        Users user2 = new Users();
+        user2.setUserName("testUser2");
+        user2.setPassword("password");
+        user2.setEmail("test2@example.com");
+        user2.setAvatar("/images/default-avatar.webp");
+        user2.setRole(Users.RoleType.USER);
+        user2 = usersDao.save(user2);
+        
+        // Crear valoraciones
+        ratingService.rateMovie(testUser.getId(), testMovie.getImdbId(), 9.0f); 
+        ratingService.rateMovie(user2.getId(), testMovie.getImdbId(), 8.0f);
+        
+        ratingService.rateMovie(testUser.getId(), testMovie2.getImdbId(), 7.5f); 
+        
+        // Test: Obtener todas las películas mejor valoradas
+        List<Movie> allTopRatedMovies = ratingService.getTopRatedMovies(null, null, 10, 0);
+        
+        // Verificar que devuelve las películas en orden de valoración
+        assertEquals(2, allTopRatedMovies.size());
+        assertEquals(testMovie.getImdbId(), allTopRatedMovies.get(0).getImdbId()); // Primera es testMovie con promedio de 8.5
+        assertEquals(testMovie2.getImdbId(), allTopRatedMovies.get(1).getImdbId()); // Segunda es testMovie2 con promedio de 7.5
+        
+        // Test: Filtrar por género Drama
+        List<Movie> dramaMovies = ratingService.getTopRatedMovies("Drama", null, 10, 0);
+        assertEquals(1, dramaMovies.size());
+        assertEquals(testMovie.getImdbId(), dramaMovies.get(0).getImdbId());
+        
+        // Test: Filtrar por género Comedia
+        List<Movie> comedyMovies = ratingService.getTopRatedMovies("Comedia", null, 10, 0);
+        assertEquals(1, comedyMovies.size());
+        assertEquals(testMovie2.getImdbId(), comedyMovies.get(0).getImdbId());
+        
+        // Test: Filtrar por año 2023
+        List<Movie> movies2023 = ratingService.getTopRatedMovies(null, 2023, 10, 0);
+        assertEquals(1, movies2023.size());
+        assertEquals(testMovie.getImdbId(), movies2023.get(0).getImdbId());
+        
+        // Test: Filtrar por año 2022
+        List<Movie> movies2022 = ratingService.getTopRatedMovies(null, 2022, 10, 0);
+        assertEquals(1, movies2022.size());
+        assertEquals(testMovie2.getImdbId(), movies2022.get(0).getImdbId());
+        
+        // Test: Filtrar por género y año
+        List<Movie> dramMovies2023 = ratingService.getTopRatedMovies("Drama", 2023, 10, 0);
+        assertEquals(1, dramMovies2023.size());
+        assertEquals(testMovie.getImdbId(), dramMovies2023.get(0).getImdbId());
+        
+        // Test: Filtrar por género y año sin coincidencias
+        List<Movie> comedyMovies2023 = ratingService.getTopRatedMovies("Comedia", 2023, 10, 0);
+        assertEquals(0, comedyMovies2023.size());
+        
+        // Test: Probar paginación
+        List<Movie> pagedMovies = ratingService.getTopRatedMovies(null, null, 1, 0);
+        assertEquals(1, pagedMovies.size());
+        assertEquals(testMovie.getImdbId(), pagedMovies.get(0).getImdbId());
+        
+        List<Movie> secondPageMovies = ratingService.getTopRatedMovies(null, null, 1, 1);
+        assertEquals(1, secondPageMovies.size());
+        assertEquals(testMovie2.getImdbId(), secondPageMovies.get(0).getImdbId());
+    }
+    
+    @Test
+    void testGetTopRatedMoviesWithNoRatings() {
+        // Verificar que una consulta sin valoraciones devuelve una lista vacía
+        List<Movie> movies = ratingService.getTopRatedMovies(null, null, 10, 0);
+        assertTrue(movies.isEmpty());
+    }
+    
+    @Test
+    void testGetTopRatedMoviesWithNonExistingGenre() {
+        // Verificar que un género no existente devuelve lista vacía
+        List<Movie> movies = ratingService.getTopRatedMovies("GeneroNoExistente", null, 10, 0);
+        assertTrue(movies.isEmpty());
+    }
+    
+    @Test
+    void testGetTopRatedMoviesWithNonExistingYear() {
+        // Verificar que un año sin películas devuelve lista vacía
+        List<Movie> movies = ratingService.getTopRatedMovies(null, 1900, 10, 0);
+        assertTrue(movies.isEmpty());
     }
 }

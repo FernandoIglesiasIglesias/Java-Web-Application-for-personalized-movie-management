@@ -4,7 +4,6 @@ import { useTheme } from '../../../context/ThemeContext';
 import PersonHeader from './PersonHeader';
 import PersonBio from './PersonBio';
 import PersonDetails from './PersonDetails';
-import AddToListButton from "../../common/components/AddToListButton";
 import './ShowPerson.css';
 
 const ShowPerson = ({ 
@@ -49,42 +48,51 @@ const ShowPerson = ({
     loadPerson();
   }, [personType, fetchPersonById]);
   
-  // Obtener datos de la API de IMDB cuando tenemos el ID de IMDB de la persona
   useEffect(() => {
     if (!person || !person.imdbId || dataUpdated.current) return;
     
     const fetchImdbData = async () => {
       try {
         setFetchingImdb(true);
-        const response = await fetch(`https://imdb232.p.rapidapi.com/api/actors/get-overview?limit=25&nm=${person.imdbId}`, {
+        
+        // Usar una nueva API que es más fiable
+        const apiEndpoint = `https://imdb232.p.rapidapi.com/api/actors/get-overview?limit=25&nm=${person.imdbId}`;
+        
+        const response = await fetch(apiEndpoint, {
           headers: {
             'x-rapidapi-host': 'imdb232.p.rapidapi.com',
-            'x-rapidapi-key': 'cb332fab10msh89e2fc877672ccfp14515bjsn3b00399489a8'
+            'x-rapidapi-key': 'cdbfa3dd29mshcd4df13fafdf647p1c3170jsn3d0e626a103b'
           }
         });
         
         if (!response.ok) {
-          throw new Error('Error al obtener datos de IMDB');
+          setFetchingImdb(false);
+          return;
         }
         
         const data = await response.json();
+        
+        if (!data || !data.data) {
+          setFetchingImdb(false);
+          return;
+        }
+        
         setImdbData(data.data);
         
         // Actualizar nuestra base de datos con la nueva información
-        if (data.data) {
-          updatePersonInDb(data.data);
-          dataUpdated.current = true;
-        }
+        updatePersonInDb(data.data);
+        dataUpdated.current = true;
         
         setFetchingImdb(false);
       } catch (error) {
         console.error('Error al obtener datos de IMDB:', error);
+        // No marcamos un error en la UI, simplemente terminamos silenciosamente
         setFetchingImdb(false);
       }
     };
     
     fetchImdbData();
-  }, [person]); 
+  }, [person, updatePersonData]); 
   
   // Procesar datos de IMDB y actualizar nuestra base de datos
   const updatePersonInDb = (data) => {
@@ -121,7 +129,6 @@ const ShowPerson = ({
     
     // Actualizar la persona en nuestra base de datos solo si hay cambios
     if (Object.keys(personData).length > 3) {
-      console.log('Actualizando datos de la persona con nueva información de IMDB');
       updatePersonData(personData);
       
       // Actualizar el estado local con los nuevos datos
@@ -135,7 +142,7 @@ const ShowPerson = ({
   if (loading) {
     return (
       <div className={`loading-container theme-${theme}`}>
-        <div className="loading-indicator"></div>
+        <div className="loading-spinner"></div>
         <p>Cargando información de {personType === 'actor' ? 'actor' : 'director'}...</p>
       </div>
     );

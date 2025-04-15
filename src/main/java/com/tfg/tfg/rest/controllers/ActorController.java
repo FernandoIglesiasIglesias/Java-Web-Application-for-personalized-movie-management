@@ -95,16 +95,31 @@ public class ActorController {
     }
 
     /**
-     * Endpoint to get an actor by first name and last name.
+     * Endpoint to get an actor by name.
      *
-     * @param firstName the actor's first name
-     * @param lastName the actor's last name
-     * @return the actor if found
-     * @throws InstanceNotFoundException if the actor is not found
+     * @param name the actor's name
+     * @return the actor if found, or a 404 status if not found
      */
     @GetMapping("/name/{name}")
-    public ActorDto getActorByName(@PathVariable String name) throws InstanceNotFoundException {
-        return ActorConversor.toActorDto(actorService.findByName(name));
+    public ResponseEntity<ActorDto> getActorByName(@PathVariable String name) {
+        try {
+            Actor actor = actorService.findByName(name);
+            return ResponseEntity.ok(ActorConversor.toActorDtoExpanded(actor));
+        } catch (InstanceNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    /**
+     * Endpoint to create a new actor.
+     *
+     * @param actorDto the actor data transfer object
+     * @return the created actor
+     */
+    @PostMapping("/create")
+    public ResponseEntity<Actor> createActor(@RequestBody ActorDto actorDto) {
+        Actor createdActor = actorService.createActor(ActorConversor.toActor(actorDto));
+        return new ResponseEntity<>(createdActor, HttpStatus.CREATED);
     }
 
     /**

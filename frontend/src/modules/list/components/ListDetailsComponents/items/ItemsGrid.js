@@ -13,10 +13,7 @@ const ItemsGrid = ({
   emptyIcon,
   emptyMessage,
   emptySuggestion
-}) => {
-  // Depuración para ver los datos exactos que estamos recibiendo
-  console.log(`Items en ItemsGrid (${itemType}):`, items);
-  
+}) => {  
   // Verificamos que items sea un array y tenga elementos
   const safeItems = Array.isArray(items) ? items : [];
   
@@ -33,7 +30,6 @@ const ItemsGrid = ({
   const renderItem = (item, index) => {
     // Si el item es undefined o null, no lo renderizamos
     if (!item) {
-      console.log(`Item ${index} es undefined o null`);
       return null;
     }
 

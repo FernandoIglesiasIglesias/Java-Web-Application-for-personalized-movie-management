@@ -1,5 +1,6 @@
 package com.tfg.tfg.rest.controllers;
 
+import com.tfg.tfg.model.entities.Actor;
 import com.tfg.tfg.model.entities.Director;
 import com.tfg.tfg.model.services.DirectorService;
 import com.tfg.tfg.model.services.exceptions.InstanceNotFoundException;
@@ -95,17 +96,31 @@ public class DirectorController {
     }
 
     /**
-     * Endpoint to get a director by first name and last name.
+     * Endpoint to get a director by name.
      *
-     * @param name the director's first name
-     * @return the director if found
-     * @throws InstanceNotFoundException if the director is not found
+     * @param name the director's name
+     * @return the director if found, or a 404 status if not found
      */
-    @GetMapping("/name")
-    public DirectorDto getDirectorByName(
-            @RequestParam String name) throws InstanceNotFoundException {
-        
-        return DirectorConversor.toDirectorDto(directorService.findByName(name));
+    @GetMapping("/name/{name}")
+    public ResponseEntity<DirectorDto> getDirectorByName(@PathVariable String name) {
+        try {
+            Director director = directorService.findByName(name);
+            return ResponseEntity.ok(DirectorConversor.toDirectorDtoExpanded(director));
+        } catch (InstanceNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    /**
+     * Endpoint to create a new director.
+     *
+     * @param directorDto the director data transfer object with information to create
+     * @return the created director
+     */
+    @PostMapping("/create")
+    public ResponseEntity<Director> createDirector(@RequestBody DirectorDto directorDto) {
+        Director createdDirector = directorService.createDirector(DirectorConversor.toDirector(directorDto));
+        return new ResponseEntity<>(createdDirector, HttpStatus.CREATED);
     }
 
     /**
