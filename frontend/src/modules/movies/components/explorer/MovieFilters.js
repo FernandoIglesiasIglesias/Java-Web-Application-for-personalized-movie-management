@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
+import { recordSearch } from '../../../../backend/recommendationService';
 import './MovieFilters.css';
 
-const MovieFilters = ({ filters, availableGenres, orderOptions, languageOptions, onSubmit, theme }) => {
+const MovieFilters = ({ filters, availableGenres, orderOptions, languageOptions, onSubmit, theme, authenticatedUser }) => {
   const [localFilters, setLocalFilters] = useState(filters);
 
   useEffect(() => {
@@ -38,8 +39,54 @@ const MovieFilters = ({ filters, availableGenres, orderOptions, languageOptions,
     }
   };
 
+  // Función auxiliar para registrar búsquedas
+  const registerSearchFilters = (filtersToRegister) => {
+    if (!authenticatedUser) return;
+    
+    // Crear una representación textual de los filtros
+    const filterParams = [];
+    
+    if (filtersToRegister.keyword) filterParams.push(`keyword:${filtersToRegister.keyword}`);
+    if (filtersToRegister.yearMin) filterParams.push(`yearMin:${filtersToRegister.yearMin}`);
+    if (filtersToRegister.yearMax) filterParams.push(`yearMax:${filtersToRegister.yearMax}`);
+    if (filtersToRegister.ratingMin) filterParams.push(`ratingMin:${filtersToRegister.ratingMin}`);
+    if (filtersToRegister.ratingMax) filterParams.push(`ratingMax:${filtersToRegister.ratingMax}`);
+    if (filtersToRegister.showOriginalLanguage) filterParams.push(`language:${filtersToRegister.showOriginalLanguage}`);
+    
+    // Añadir géneros seleccionados
+    if (filtersToRegister.genres && filtersToRegister.genres.length > 0) {
+      const genreNames = filtersToRegister.genres.map(genreId => {
+        const genre = availableGenres.find(g => g.id === genreId);
+        return genre ? genre.name : genreId;
+      });
+      filterParams.push(`genres:${genreNames.join(',')}`);
+    }
+    
+    // Añadir criterios de ordenación
+    if (filtersToRegister.orderBy) {
+      filterParams.push(`orderBy:${filtersToRegister.orderBy}`);
+      filterParams.push(`orderDirection:${filtersToRegister.orderDirection}`);
+    }
+    
+    const searchParamsText = filterParams.join(' ');
+    
+    // Solo registrar si hay algún parámetro
+    if (searchParamsText) {
+      recordSearch(
+        searchParamsText,
+        () => console.log("Búsqueda por filtros registrada para recomendaciones"),
+        (error) => console.error("Error al registrar búsqueda por filtros:", error)
+      );
+    }
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
+    
+    // Registrar la búsqueda en el sistema de recomendaciones
+    registerSearchFilters(localFilters);
+    
+    // Llamar a la función onSubmit original
     onSubmit(localFilters);
   };
 
@@ -234,7 +281,8 @@ MovieFilters.propTypes = {
   orderOptions: PropTypes.array.isRequired,
   languageOptions: PropTypes.array.isRequired,
   onSubmit: PropTypes.func.isRequired,
-  theme: PropTypes.string.isRequired
+  theme: PropTypes.string.isRequired,
+  authenticatedUser: PropTypes.object
 };
 
 export default MovieFilters;
