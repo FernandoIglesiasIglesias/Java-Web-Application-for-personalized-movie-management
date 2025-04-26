@@ -94,7 +94,12 @@ public class SecurityConfig {
                 .requestMatchers(antMatcher("/reviews/movie/{imdbId}")).permitAll()
                 .requestMatchers(antMatcher("/reviews/user/{userId}")).hasRole(USER)
                 .requestMatchers(antMatcher("/reviews/{id}/vote")).hasRole(USER)
-
+                
+                // Recommendation endpoints
+                .requestMatchers(antMatcher("/recommendations")).hasRole(USER)
+                .requestMatchers(antMatcher("/recommendations/view/{imdbId}")).hasRole(USER)
+                .requestMatchers(antMatcher("/recommendations/rate/{imdbId}")).hasRole(USER)
+                .requestMatchers(antMatcher("/recommendations/search")).hasRole(USER)
                 .anyRequest().authenticated()
             )
             .headers(headers -> headers.frameOptions().disable()) 
