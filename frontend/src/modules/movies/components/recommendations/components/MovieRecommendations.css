@@ -1,0 +1,225 @@
+/* Contenedor principal */
+.movie-recommendations {
+  margin: 1.5rem 0 2.5rem;
+  padding: 0;
+  border-radius: 8px;
+}
+
+/* Título de la sección */
+.recommendations-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 0 0 1.25rem;
+  color: var(--text-color-light);
+  position: relative;
+}
+
+.movie-recommendations.dark .recommendations-title {
+  color: var(--text-color-dark);
+}
+
+.recommendations-title::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -0.5rem;
+  width: 3rem;
+  height: 3px;
+  background: var(--primary-color-light);
+  border-radius: 2px;
+}
+
+.movie-recommendations.dark .recommendations-title::after {
+  background: var(--primary-color-dark);
+}
+
+/* Contenedor para el grid de recomendaciones */
+.recommendations-grid-container {
+  margin-top: 1rem;
+  animation: fadeIn 0.5s ease-out;
+}
+
+/* Estados de carga y error */
+.recommendations-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 0;
+  color: var(--text-secondary-light);
+}
+
+.recommendations-loading .loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(0, 0, 0, 0.1);
+  border-radius: 50%;
+  border-left-color: var(--primary-color-light);
+  animation: spin 1s linear infinite;
+  margin-bottom: 1rem;
+}
+
+.movie-recommendations.dark .recommendations-loading .loading-spinner {
+  border: 3px solid rgba(255, 255, 255, 0.1);
+  border-left-color: var(--primary-color-dark);
+}
+
+.recommendations-error {
+  text-align: center;
+  padding: 2rem 0;
+}
+
+.recommendations-error p {
+  color: var(--danger-color-light);
+  margin-bottom: 1rem;
+}
+
+.movie-recommendations.dark .recommendations-error p {
+  color: var(--danger-color-dark);
+}
+
+.retry-button {
+  padding: 0.75rem 1.5rem;
+  background-color: var(--primary-color-light);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.retry-button:hover {
+  background-color: var(--primary-hover-light);
+}
+
+.retry-button.dark {
+  background-color: var(--primary-color-dark);
+}
+
+.retry-button.dark:hover {
+  background-color: var(--primary-hover-dark);
+}
+
+/* Placeholder para imágenes que fallan */
+.movie-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f0f0f0;
+  color: #777;
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.movie-placeholder.dark {
+  background-color: #2a2a2a;
+  color: #aaa;
+}
+
+.movie-initials {
+  opacity: 0.8;
+}
+
+/* Animaciones */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Estilos para la sección de recomendaciones en el Home */
+.recommendations-wrapper {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(0,0,0,0.1);
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+}
+
+.dark .recommendations-wrapper {
+  border-top-color: rgba(255,255,255,0.1);
+}
+
+.recommendations-wrapper.has-content {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.recommendations-wrapper .section-title {
+  font-size: 1.8rem;
+  margin-bottom: 1rem;
+  color: var(--text-color-light);
+}
+
+.dark .recommendations-wrapper .section-title {
+  color: var(--text-color-dark);
+}
+
+/* Estilos para el mensaje de no recomendaciones */
+.no-recommendations-guide {
+  background: rgba(0,0,0,0.02);
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin: 1rem 0;
+  text-align: center;
+}
+
+.dark .no-recommendations-guide {
+  background: rgba(255,255,255,0.05);
+}
+
+.no-recommendations-guide p {
+  font-size: 1rem;
+  margin-bottom: 1rem;
+}
+
+.recommendation-tips {
+  max-width: 600px;
+  margin: 0 auto;
+  text-align: left;
+}
+
+.recommendation-tips h3 {
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+.recommendation-tips ul {
+  padding-left: 1.5rem;
+  margin-top: 0.5rem;
+}
+
+.recommendation-tips li {
+  margin-bottom: 0.5rem;
+  color: var(--text-secondary-light);
+}
+
+.dark .recommendation-tips li {
+  color: var(--text-secondary-dark);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .recommendations-title {
+    font-size: 1.4rem;
+  }
+  
+  .recommendations-grid-container {
+    padding: 0 0.5rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .recommendations-title {
+    font-size: 1.3rem;
+  }
+}

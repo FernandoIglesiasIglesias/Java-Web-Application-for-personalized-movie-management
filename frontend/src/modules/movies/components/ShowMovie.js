@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useTheme } from "../../../context/ThemeContext";
 import { saveMovie, getMovieCast } from "../../../backend/movieService";
+import { recordMovieView, recordMovieRating } from '../../../backend/recommendationService';
 import { 
   rateMovie, 
   getUserRatingForMovie,
@@ -562,6 +563,17 @@ const ShowMovie = ({ authenticatedUser }) => {
                   loadAverageRating(savedMovie.imdbId);
                   if (userId) {
                     loadUserRating(savedMovie.imdbId);
+                    
+                    // Registrar visualización DESPUÉS de guardar la película
+                    // para asegurar que existe en la base de datos
+                    recordMovieView(
+                      id,
+                      () => console.log("Visualización registrada para recomendaciones"),
+                      (error) => {
+                        // Capturar el error pero no interrumpir la experiencia del usuario
+                        console.error("Error al registrar visualización:", error);
+                      }
+                    );
                   }
                   loadCastDetails(savedMovie.imdbId);
                 }
@@ -641,6 +653,7 @@ const ShowMovie = ({ authenticatedUser }) => {
     }
     
     try {
+      // Guardar valoración en el sistema principal de valoraciones
       rateMovie(
         userId,
         movie.imdbId,
@@ -652,6 +665,15 @@ const ShowMovie = ({ authenticatedUser }) => {
           });
           setRatingSuccess(true);
           setTimeout(() => setRatingSuccess(false), 3000);
+          
+          // También registrar en el sistema de recomendaciones
+          // Ahora usamos movie.imdbId (que sabemos que existe en la BD) en lugar de id
+          recordMovieRating(
+            movie.imdbId, 
+            valueFloat,
+            () => console.log("Valoración registrada para recomendaciones"),
+            (error) => console.error("Error al registrar valoración para recomendaciones:", error)
+          );
           
           loadAverageRating(movie.imdbId);
           setShowRatingForm(false);

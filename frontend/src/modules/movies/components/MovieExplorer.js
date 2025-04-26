@@ -6,6 +6,8 @@ import MovieResults from "./explorer/MovieResults";
 import SearchBar from "./explorer/SearchBar";
 import { getExternalMovies, searchMoviesByTitle } from "../../../backend/movieService";
 import { getTopRatedMovies } from "../../../backend/rateService";
+import { recordSearch } from '../../../backend/recommendationService';
+
 import "./MovieExplorer.css";
 
 const MovieExplorer = ({ user }) => {
@@ -89,8 +91,15 @@ const MovieExplorer = ({ user }) => {
     setIsSearching(true);
     setLoadingExternal(true);
     setExternalMovies([]);
-    setCursor(null);
-    setHasMore(false);
+    
+    // Registrar la búsqueda en el sistema de recomendaciones si el usuario está autenticado
+    if (user) {
+      recordSearch(
+        `title:${title}`,
+        () => console.log("Búsqueda registrada para recomendaciones"),
+        (error) => console.error("Error al registrar búsqueda:", error)
+      );
+    }
     
     searchMoviesByTitle(
       title,
@@ -324,6 +333,7 @@ const MovieExplorer = ({ user }) => {
             languageOptions={languageOptions}
             onSubmit={handleFilterSubmit}
             theme={theme}
+            authenticatedUser={user} // Asegurarse de pasar el usuario autenticado
           />
         )}
         
