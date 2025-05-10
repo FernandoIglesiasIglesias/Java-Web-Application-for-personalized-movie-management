@@ -225,25 +225,35 @@
 
 .confirmation-header {
   background-color: #dc3545;
-  color: white;
-  padding: 1.2rem;
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
+  padding: 0;
+  width: 100%;
 }
 
 .confirmation-modal.dark .confirmation-header {
   background-color: #e64980;
 }
 
+
+.header-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 18px 24px;
+}
+
 .confirmation-icon {
-  font-size: 1.5rem;
+  font-size: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .confirmation-header h3 {
   margin: 0;
-  color: white;
+    color: white !important;
   font-size: 1.5rem;
+  font-weight: 600;
+  line-height: 1.4;
 }
 
 .confirmation-content {
@@ -356,13 +366,15 @@
 .confirmation-user {
   font-size: 1.2rem;
   font-weight: 500;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.25rem;
   padding-bottom: 1rem;
   border-bottom: 1px solid rgba(0,0,0,0.1);
+  color: var(--text-color-light);
 }
 
 .confirmation-modal.dark .confirmation-user {
   border-bottom-color: rgba(255,255,255,0.1);
+    color: var(--text-color-dark);
 }
 
 .warning-container {
@@ -370,8 +382,9 @@
   align-items: flex-start;
   gap: 1rem;
   background-color: rgba(220, 53, 69, 0.08);
-  padding: 1rem;
+  padding: 1.25rem;
   border-radius: 8px;
+  margin-top: 0.5rem;
 }
 
 .confirmation-modal.dark .warning-container {

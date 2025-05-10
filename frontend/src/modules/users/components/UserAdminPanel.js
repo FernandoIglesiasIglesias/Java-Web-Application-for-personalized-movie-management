@@ -126,39 +126,41 @@ const UserAdminPanel = ({ authenticatedUser }) => {
         </div>
       </div>
       
-      {showConfirmation && (
+        {showConfirmation && (
         <div className="confirmation-modal-overlay">
-          <div className={`confirmation-modal ${theme}`}>
+            <div className={`confirmation-modal ${theme}`}>
             <div className="confirmation-header">
-              <span className="confirmation-icon">⚠️</span>
-              <h3>Confirmar eliminación</h3>
+                <div className="header-content">
+                <span className="confirmation-icon">⚠️</span>
+                <h3>Confirmar eliminación</h3>
+                </div>
             </div>
             <div className="confirmation-content">
-              <p className="confirmation-user">Usuario: <strong>{username}</strong></p>
-              <div className="warning-container">
+                <p className="confirmation-user">Usuario: <strong>{username}</strong></p>
+                <div className="warning-container">
                 <span className="warning-icon">⚠️</span>
                 <p className="warning-text">Esta acción no se puede deshacer y eliminará todas las listas, valoraciones y datos asociados al usuario.</p>
-              </div>
+                </div>
             </div>
             <div className="confirmation-actions">
-              <button 
+                <button 
                 className={`admin-button secondary ${theme}`}
                 onClick={handleCancel}
                 disabled={isProcessing}
-              >
+                >
                 Cancelar
-              </button>
-              <button 
+                </button>
+                <button 
                 className={`admin-button danger ${theme}`}
                 onClick={handleDeleteUser}
                 disabled={isProcessing}
-              >
+                >
                 {isProcessing ? "Eliminando..." : "Sí, eliminar usuario"}
-              </button>
+                </button>
             </div>
-          </div>
+            </div>
         </div>
-      )}
+        )}
     </div>
   );
 };
