@@ -8,4 +8,5 @@ import java.util.List;
 public interface UserActivityDao extends JpaRepository<UserActivity, Long> {
     List<UserActivity> findByUserIdOrderByTimestampDesc(Long userId);
     List<UserActivity> findByUserIdAndActivityType(Long userId, String activityType);
+    void deleteByUserId(Long userId);
 }

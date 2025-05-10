@@ -46,6 +46,7 @@ public class SecurityConfig {
                 .requestMatchers(antMatcher("/users/{id}/changePassword")).hasRole(USER)
                 .requestMatchers(antMatcher("/movies/allMovies")).hasAnyRole(USER, ADMIN)
                 .requestMatchers(antMatcher("/movies/{id}")).hasAnyRole(USER, ADMIN)
+                .requestMatchers(antMatcher("/users/admin/deleteUser")).hasRole(ADMIN)
                 
                 // CustomList endpoints
                 .requestMatchers(antMatcher("/lists")).hasRole(USER)
