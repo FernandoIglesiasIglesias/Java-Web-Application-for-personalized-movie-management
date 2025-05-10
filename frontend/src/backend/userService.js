@@ -79,4 +79,13 @@ import {
       onSuccess,
       onErrors
     );
+
+  export const deleteUserByUsername = (userName, onSuccess, onErrors) => {
+    appFetch(
+      `/users/admin/deleteUser?userName=${encodeURIComponent(userName)}`,
+      fetchConfig("DELETE"),
+      onSuccess,
+      onErrors
+    );
+  };
   

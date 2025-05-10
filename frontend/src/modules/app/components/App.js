@@ -7,6 +7,7 @@ import Header from "./Header";
 import Login from "../../users/components/Login";
 import SignUp from "../../users/components/SignUp";
 import Title from "../../users/components/Title";
+import UserAdminPanel from "../../users/components/UserAdminPanel";
 import Home from "./Home";
 import ShowMovie from "../../movies/components/ShowMovie";
 import ShowActor from "../../persons/components/ShowActor";
@@ -79,6 +80,10 @@ const App = () => {
             <Route path="/directors/:directorName" element={<ShowDirector authenticatedUser={authenticatedUser} />} />
             {/* Ruta de fallback */}
             <Route path="*" element={<Navigate to="/" />} />
+
+            <Route path="/admin/users" element={authenticatedUser && authenticatedUser.user.role === 'ADMIN' ?    <UserAdminPanel authenticatedUser={authenticatedUser} /> : <Navigate to="/home" />
+  } 
+/>
           </Routes>
         </div>
       </Router>

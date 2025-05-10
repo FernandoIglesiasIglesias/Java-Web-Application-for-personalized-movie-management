@@ -92,6 +92,21 @@ const Settings = ({ user , setAuthenticatedUser }) => {
                             </button>
                         </div>
                     </div>
+
+                    {/* Sección de Administración agregada dentro del contenedor principal */}
+                    {user.role === 'ADMIN' && (
+                        <div className="settings-section">
+                            <h3>Administración</h3>
+                            <div className="settings-horizontal">
+                                <button 
+                                    className={`settings-subcontainer-button ${theme}`} 
+                                    onClick={() => navigate('/admin/users')}
+                                >
+                                    Gestionar usuarios
+                                </button>
+                            </div>
+                        </div>
+                    )}
                     
                     <div className="settings-section">
                         <h3>Sesión</h3>
