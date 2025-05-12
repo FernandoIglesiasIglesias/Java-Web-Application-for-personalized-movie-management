@@ -365,17 +365,46 @@ body.dark .auth-form-input input.input-error {
   }
 }
 
-.avatar-preview {
-  max-width: 100px;
-  max-height: 100px;
-  object-fit: cover;
+/* Añadir estos estilos para mejorar la interfaz de avatar */
+
+.avatar-preview-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   margin-top: 10px;
+}
+
+.avatar-preview {
+  width: 100px;
+  height: 100px;
   border-radius: 50%;
-  border: 2px solid var(--primary-color-light);
+  object-fit: cover;
+  border: 2px solid var(--border-color-light);
+  background-color: var(--card-background-light);
+  margin-bottom: 10px;
+  transition: all 0.3s ease;
 }
 
 body.dark .avatar-preview {
-  border-color: var(--primary-color-dark);
+  border-color: var(--border-color-dark);
+  background-color: var(--card-background-dark);
+}
+
+.avatar-upload-info {
+  font-size: 0.8rem;
+  color: var(--text-muted-light);
+  margin-top: 5px;
+  text-align: center;
+}
+
+body.dark .avatar-upload-info {
+  color: var(--text-muted-dark);
+}
+
+.avatar-input-container {
+  position: relative;
+  width: 100%;
+  margin-top: 10px;
 }
 
 .login-link-container {
@@ -397,3 +426,4 @@ body.dark .avatar-preview {
 .login-link.dark {
   color: var(--primary-color-dark);
 }
+

@@ -3,7 +3,7 @@ CREATE TABLE IF NOT EXISTS Users (
     userName VARCHAR(60) NOT NULL,
     password VARCHAR(60) NOT NULL, 
     email VARCHAR(60) NOT NULL, 
-    avatar VARCHAR(255) NOT NULL,
+    avatar TEXT NOT NULL,
     role TINYINT NOT NULL,
     CONSTRAINT UserPK PRIMARY KEY (id),
     CONSTRAINT UserNameUniqueKey UNIQUE (userName),
