@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { login, logout } from "../../../backend/userService";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { Errors } from "../../common";
 import { useTheme } from "../../../context/ThemeContext";
 import './Login.css';
@@ -35,6 +35,7 @@ const Login = ({ setAuthenticatedUser }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     setLoginError("");
+    setBackendErrors(null); // Limpiar errores previos
     setIsSubmitting(true);
     
     // Validar campos obligatorios
@@ -53,9 +54,16 @@ const Login = ({ setAuthenticatedUser }) => {
         },
         (error) => {
           if (error.globalError) {
+            // Siempre mostrar este mensaje específico para errores de login
             setLoginError("Nombre de usuario o contraseña incorrectos");
-          } else {
+            setBackendErrors(null); // No usar el componente Errors para este caso
+          } else if (error.fieldErrors && error.fieldErrors.length > 0) {
             setBackendErrors(error);
+            setLoginError(""); // Limpiar el error de login si hay errores de campo
+          } else {
+            // Para otros errores genéricos
+            setLoginError("Nombre de usuario o contraseña incorrectos");
+            setBackendErrors(null);
           }
           setIsSubmitting(false);
         },
@@ -71,17 +79,31 @@ const Login = ({ setAuthenticatedUser }) => {
     }
   };
 
+  // Renderizar el mensaje de error de login
+  const renderLoginError = () => {
+    if (!loginError) return null;
+    
+    return (
+      <div className={`login-error-container ${theme}`}>
+        <div className={`login-error-message ${theme}`}>
+          <span className="error-icon">⚠️</span>
+          <p>{loginError}</p>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className={`auth-container ${theme}`}>
       <h1>Identificarse</h1>
-      {backendErrors && <Errors errors={backendErrors} onClose={() => setBackendErrors(null)} />}
+      
+      {/* Solo mostrar el componente Errors cuando realmente hay errores de campo específicos */}
+      {backendErrors && backendErrors.fieldErrors && backendErrors.fieldErrors.length > 0 && 
+        <Errors errors={backendErrors} onClose={() => setBackendErrors(null)} />
+      }
+      
       <div className={`auth-form-container ${theme}`}>
-        {loginError && (
-          <div className={`login-error-message ${theme}`}>
-            <span className="error-icon">⚠️</span>
-            <p>{loginError}</p>
-          </div>
-        )}
+        {renderLoginError()}
         <form ref={node => form = node} onSubmit={handleSubmit} noValidate>
           <div className="auth-form-input">
             <h3>Nombre de usuario <span className="required-field">*</span></h3>
@@ -118,6 +140,10 @@ const Login = ({ setAuthenticatedUser }) => {
             />
           </div>
           <p className="form-footer-note">Los campos marcados con <span className="required-field">*</span> son obligatorios</p>
+          
+          <div className="signup-link-container">
+            <p>¿Todavía no tienes una cuenta? <Link to="/signup" className={`signup-link ${theme}`}>Regístrate</Link></p>
+          </div>
         </form>
       </div>
     </div>

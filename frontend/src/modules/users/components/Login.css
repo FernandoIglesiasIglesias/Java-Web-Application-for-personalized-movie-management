@@ -220,31 +220,73 @@ body.dark .form-footer-note {
   color: var(--text-color-dark);
 }
 
-/* Mejorar el aspecto del mensaje de error de login */
+.login-error-container {
+  width: 100%;
+  margin-bottom: 1.5rem;
+  animation: fadeInDown 0.4s ease-out;
+}
+
 .login-error-message {
   background-color: rgba(220, 53, 69, 0.1);
+  border: 1px solid rgba(220, 53, 69, 0.3);
   border-left: 4px solid #dc3545;
   color: #dc3545;
   padding: 12px 15px;
-  margin-bottom: 20px;
   border-radius: 8px;
   text-align: left;
   width: 100%;
-  font-size: 0.95rem;
+  font-size: 1rem;
+  font-weight: 500;
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  animation: fadeIn 0.3s ease-in-out;
 }
 
 .login-error-message .error-icon {
-  font-size: 1.2rem;
+  font-size: 1.3rem;
 }
 
-body.dark .login-error-message {
+.login-error-message p {
+  margin: 0;
+}
+
+body.dark .login-error-message,
+.login-error-message.dark {
   background-color: rgba(220, 53, 69, 0.2);
   color: #ff6b6b;
+  border-color: rgba(220, 53, 69, 0.3);
   border-left-color: #ff6b6b;
+}
+
+.signup-link-container {
+  margin-top: 2rem;
+  text-align: center;
+}
+
+.signup-link {
+  color: var(--primary-color-light);
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.2s;
+}
+
+.signup-link:hover {
+  text-decoration: underline;
+}
+
+.signup-link.dark {
+  color: var(--primary-color-dark);
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @keyframes fadeIn {

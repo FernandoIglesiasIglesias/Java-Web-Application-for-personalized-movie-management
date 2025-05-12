@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { Errors } from '../../common';
 import { useTheme } from '../../../context/ThemeContext';
 import { signUp, logout } from '../../../backend/userService';
@@ -357,6 +357,10 @@ const SignUp = ({ setAuthenticatedUser }) => {
             />
           </div>
           <p className="form-footer-note">Los campos marcados con <span className="required-field">*</span> son obligatorios</p>
+
+          <div className="login-link-container">
+            <p>¿Ya tienes una cuenta? <Link to="/login" className={`login-link ${theme}`}>Iniciar sesión</Link></p>
+          </div>
         </form>
       </div>
     </div>

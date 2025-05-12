@@ -364,3 +364,36 @@ body.dark .auth-form-input input.input-error {
     font-size: 1.1rem;
   }
 }
+
+.avatar-preview {
+  max-width: 100px;
+  max-height: 100px;
+  object-fit: cover;
+  margin-top: 10px;
+  border-radius: 50%;
+  border: 2px solid var(--primary-color-light);
+}
+
+body.dark .avatar-preview {
+  border-color: var(--primary-color-dark);
+}
+
+.login-link-container {
+  margin-top: 2rem;
+  text-align: center;
+}
+
+.login-link {
+  color: var(--primary-color-light);
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.2s;
+}
+
+.login-link:hover {
+  text-decoration: underline;
+}
+
+.login-link.dark {
+  color: var(--primary-color-dark);
+}

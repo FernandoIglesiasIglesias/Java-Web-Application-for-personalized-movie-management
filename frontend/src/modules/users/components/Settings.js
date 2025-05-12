@@ -132,21 +132,25 @@ const Settings = ({ user , setAuthenticatedUser }) => {
             {passwordChange && <ChangePassword user={user} onClose={() => setPasswordChange(false)} />}
             
             {confirmLogout && (
-                <div className="confirm-modal">
+                <div className="confirm-modal-centered">
                     <div className={`confirm-content ${theme}`}>
-                        <h3>¿Estás seguro que quieres cerrar sesión?</h3>
+                        <div className={`confirm-header ${theme}`}>
+                            <span className="confirm-icon">🚪</span>
+                            <h3>¿Estás seguro que quieres cerrar sesión?</h3>
+                        </div>
+                        <p className="confirm-message">Tu sesión actual se cerrará y volverás a la página de inicio.</p>
                         <div className="confirm-actions">
                             <button 
                                 className={`settings-subcontainer-button red ${theme}`} 
                                 onClick={handleLogOut}
                             >
-                                Cerrar sesión
+                                <span className="button-icon">✓</span> Cerrar sesión
                             </button>
                             <button 
-                                className={`settings-subcontainer-button ${theme}`} 
+                                className={`settings-subcontainer-button grey ${theme}`} 
                                 onClick={() => setConfirmLogout(false)}
                             >
-                                Cancelar
+                                <span className="button-icon">✕</span> Cancelar
                             </button>
                         </div>
                     </div>
