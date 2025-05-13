@@ -1,7 +1,14 @@
 package com.tfg.tfg.rest.controllers;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -78,16 +85,68 @@ public class MovieReviewController {
     }
     
     @GetMapping("/movie/{imdbId}")
-    public List<MovieReviewDto> getMovieReviews(@RequestParam(required = false) Long userId, 
-                                            @PathVariable String imdbId) 
+    public Map<String, Object> getMovieReviews(
+                                    @RequestParam(required = false) Long userId, 
+                                    @PathVariable String imdbId,
+                                    @RequestParam(defaultValue = "0") int page,
+                                    @RequestParam(defaultValue = "10") int size,
+                                    @RequestParam(defaultValue = "date") String sort) 
             throws InstanceNotFoundException {
         
-        return MovieReviewConversor.toMovieReviewDtosWithVotes(
-            movieReviewService.getMovieReviews(imdbId),
+        // Convertir criterio de ordenación a Pageable
+        Sort sortCriteria;
+        switch (sort) {
+            case "likes":
+            case "dislikes":
+                // Para likes y dislikes, solo ordenamos por createdAt y después haremos ordenación en memoria
+                sortCriteria = Sort.by("createdAt").descending();
+                break;
+            case "date":
+            default:
+                // Ordenar por fecha de creación (más recientes primero)
+                sortCriteria = Sort.by("createdAt").descending();
+        }
+        
+        // Crear objeto Pageable con la página, tamaño y ordenación
+        Pageable pageable = PageRequest.of(page, size, sortCriteria);
+        
+        // Obtener página de reseñas
+        Page<MovieReview> reviewPage = movieReviewService.getMovieReviewsPaged(imdbId, pageable);
+        
+        // Convertir reseñas a DTOs con información de votos
+        List<MovieReviewDto> reviewDtos = MovieReviewConversor.toMovieReviewDtosWithVotes(
+            reviewPage.getContent(),
             userId,
             movieReviewService,
             reviewVoteDao
         );
+        
+        // Crear una nueva lista mutable para poder ordenarla
+        List<MovieReviewDto> sortedReviewDtos = new ArrayList<>(reviewDtos);
+        
+        // Ordenar según el criterio seleccionado
+        if ("likes".equals(sort)) {
+            sortedReviewDtos.sort((dto1, dto2) -> {
+                Long votes1 = dto1.getHelpfulVotes() != null ? dto1.getHelpfulVotes() : 0L;
+                Long votes2 = dto2.getHelpfulVotes() != null ? dto2.getHelpfulVotes() : 0L;
+                return votes2.compareTo(votes1); // Orden descendente
+            });
+        } else if ("dislikes".equals(sort)) {
+            sortedReviewDtos.sort((dto1, dto2) -> {
+                Long votes1 = dto1.getUnhelpfulVotes() != null ? dto1.getUnhelpfulVotes() : 0L;
+                Long votes2 = dto2.getUnhelpfulVotes() != null ? dto2.getUnhelpfulVotes() : 0L;
+                return votes2.compareTo(votes1); // Orden descendente
+            });
+        }
+        
+        // Crear mapa con reseñas y metadatos de paginación
+        Map<String, Object> response = new HashMap<>();
+        response.put("reviews", sortedReviewDtos);
+        response.put("currentPage", reviewPage.getNumber());
+        response.put("totalItems", reviewPage.getTotalElements());
+        response.put("totalPages", reviewPage.getTotalPages());
+        
+        return response;
     }
     
     @GetMapping("/user/{userId}")
