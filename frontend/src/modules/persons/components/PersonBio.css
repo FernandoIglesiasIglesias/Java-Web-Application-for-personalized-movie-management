@@ -1,0 +1,104 @@
+.person-bio {
+  padding: 1.5rem;
+  border-radius: 0.75rem;
+  background-color: rgba(0, 0, 0, 0.03);
+  margin-bottom: 2rem;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+body.dark .person-bio {
+  background-color: rgba(255, 255, 255, 0.05);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+.bio-content {
+  background-color: rgba(255, 255, 255, 0.5);
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+body.dark .bio-content {
+  background-color: rgba(255, 255, 255, 0.03);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.bio-text {
+  line-height: 1.7;
+  margin: 0 0 1rem 0;
+  color: #333;
+  font-size: 1.05rem;
+  text-align: justify;
+}
+
+body.dark .bio-text {
+  color: #f0f0f0;
+}
+
+.read-more-btn {
+  background: none;
+  border: none;
+  color: #3498db;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  font-weight: 600;
+  border-radius: 2rem;
+  background-color: rgba(52, 152, 219, 0.1);
+  transition: all 0.2s ease;
+}
+
+.read-more-btn:hover {
+  color: #2980b9;
+  background-color: rgba(52, 152, 219, 0.2);
+}
+
+body.dark .read-more-btn {
+  color: #4dabf7;
+  background-color: rgba(77, 171, 247, 0.1);
+}
+
+body.dark .read-more-btn:hover {
+  color: #339af0;
+  background-color: rgba(77, 171, 247, 0.2);
+}
+
+/* Sección de título común con PersonDetails */
+.section-title {
+  display: flex;
+  align-items: center;
+  font-size: 1.5rem;
+  margin: 0 0 1.5rem 0;
+  padding-bottom: 0.75rem;
+  border-bottom: 2px solid rgba(0, 0, 0, 0.1);
+  position: relative;
+}
+
+body.dark .section-title {
+  border-bottom-color: rgba(255, 255, 255, 0.1);
+}
+
+.section-title .icon {
+  margin-right: 0.75rem;
+}
+
+.loading-indicator-mini {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(0, 0, 0, 0.1);
+  border-top-color: #3498db;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  display: inline-block;
+  margin-left: 1rem;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+body.dark .loading-indicator-mini {
+  border-color: rgba(255, 255, 255, 0.1);
+  border-top-color: #3498db;
+}

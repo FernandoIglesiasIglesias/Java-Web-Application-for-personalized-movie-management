@@ -1,19 +1,14 @@
 package com.tfg.tfg.rest.common;
-
 /**
  * The Class JwtInfo.
  */
 public class JwtInfo {
-
 	/** The user id. */
 	private Long userId;
-
 	/** The user name. */
 	private String userName;
-
 	/** The role. */
 	private String role;
-
 	/**
 	 * Instantiates a new jwt info.
 	 *
@@ -22,13 +17,10 @@ public class JwtInfo {
 	 * @param role     the role
 	 */
 	public JwtInfo(Long userId, String userName, String role) {
-
 		this.userId = userId;
 		this.userName = userName;
 		this.role = role;
-
 	}
-
 	/**
 	 * Gets the user id.
 	 *
@@ -37,7 +29,6 @@ public class JwtInfo {
 	public Long getUserId() {
 		return userId;
 	}
-
 	/**
 	 * Sets the user id.
 	 *
@@ -46,7 +37,6 @@ public class JwtInfo {
 	public void setUserId(Long userId) {
 		this.userId = userId;
 	}
-
 	/**
 	 * Gets the user name.
 	 *
@@ -55,7 +45,6 @@ public class JwtInfo {
 	public String getUserName() {
 		return userName;
 	}
-
 	/**
 	 * Sets the user name.
 	 *
@@ -64,7 +53,6 @@ public class JwtInfo {
 	public void setUserName(String userName) {
 		this.userName = userName;
 	}
-
 	/**
 	 * Gets the role.
 	 *
@@ -73,7 +61,6 @@ public class JwtInfo {
 	public String getRole() {
 		return role;
 	}
-
 	/**
 	 * Sets the role.
 	 *
@@ -82,5 +69,4 @@ public class JwtInfo {
 	public void setRole(String role) {
 		this.role = role;
 	}
-
 }

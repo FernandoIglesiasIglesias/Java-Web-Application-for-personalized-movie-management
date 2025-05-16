@@ -1,0 +1,76 @@
+.remove-item-button {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    z-index: 10;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: none;
+    background-color: rgba(255, 255, 255, 0.85);
+    color: #333;
+    font-size: 1.4rem;
+    line-height: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    opacity: 0;
+    transform: scale(0.8);
+    transition: all 0.2s ease-in-out;
+  }
+  
+  .remove-item-button.dark {
+    background-color: rgba(30, 30, 30, 0.85);
+    color: #f1f1f1;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
+  }
+  
+  .remove-item-button:hover, .remove-item-button:focus {
+    transform: scale(1.1);
+    opacity: 1;
+    background-color: rgba(255, 77, 77, 0.95); /* Rojo al hacer hover */
+    color: white;
+  }
+  
+  .remove-item-button.dark:hover, .remove-item-button.dark:focus {
+    background-color: rgba(255, 77, 77, 0.85); /* Rojo al hacer hover en modo oscuro */
+  }
+  
+  .remove-icon {
+    display: block;
+    line-height: 0;
+    margin-top: -2px;
+  }
+  
+  /* Hacer visible el botón en dispositivos móviles y tablets */
+  @media (hover: none) {
+    .remove-item-button {
+      opacity: 0.9;
+      transform: scale(1);
+    }
+  }
+  
+  /* Mostrar el botón al pasar el mouse sobre la tarjeta de ítem */
+  .item-card:hover .remove-item-button {
+    opacity: 1;
+    transform: scale(1);
+  }
+  
+  /* Ajustes para dispositivos más pequeños */
+  @media (max-width: 768px) {
+    .remove-item-button {
+      width: 28px;
+      height: 28px;
+      font-size: 1.2rem;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .remove-item-button {
+      width: 24px;
+      height: 24px;
+      font-size: 1rem;
+    }
+  }

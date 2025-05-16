@@ -20,5 +20,4 @@ public interface JwtGenerator {
 	 * @return the info
 	 */
 	JwtInfo getInfo(String token);
-
 }

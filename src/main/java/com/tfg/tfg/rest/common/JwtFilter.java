@@ -3,7 +3,6 @@ package com.tfg.tfg.rest.common;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -12,7 +11,6 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -27,7 +25,7 @@ public class JwtFilter extends OncePerRequestFilter {
     /** The jwt generator. */
     @Autowired
     private JwtGenerator jwtGenerator;
-
+    
     /**
      * Do filter internal.
      *
@@ -83,6 +81,4 @@ public class JwtFilter extends OncePerRequestFilter {
             new UsernamePasswordAuthenticationToken(userName, null, authorities));
         
     }
-
 }
-

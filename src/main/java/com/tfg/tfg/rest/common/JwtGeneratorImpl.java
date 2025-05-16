@@ -1,10 +1,8 @@
 package com.tfg.tfg.rest.common;
 
 import java.util.Date;
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -15,15 +13,13 @@ import io.jsonwebtoken.security.Keys;
  */
 @Component
 public class JwtGeneratorImpl implements JwtGenerator {
-
+    
     /** The sign key. */
     @Value("${project.jwt.signKey}")
     private String signKey;
-
     /** The expiration minutes. */
     @Value("${project.jwt.expirationMinutes}")
     private long expirationMinutes;
-
     /**
      * Generate.
      *
@@ -32,18 +28,14 @@ public class JwtGeneratorImpl implements JwtGenerator {
      */
     @Override
     public String generate(JwtInfo info) {
-
         Claims claims = Jwts.claims();
-
         claims.setSubject(info.getUserName())
                 .setExpiration(new Date(System.currentTimeMillis() + expirationMinutes * 60 * 1000));
         claims.put("userId", info.getUserId());
         claims.put("role", info.getRole());
         
         return Jwts.builder().setClaims(claims).signWith(SignatureAlgorithm.HS512, Keys.hmacShaKeyFor(signKey.getBytes())).compact();
-
     }
-
     /**
      * Gets the info.
      *
@@ -54,10 +46,7 @@ public class JwtGeneratorImpl implements JwtGenerator {
     public JwtInfo getInfo(String token) {
         
         Claims claims = Jwts.parser().setSigningKey(Keys.hmacShaKeyFor(signKey.getBytes())).parseClaimsJws(token).getBody();
-
         return new JwtInfo(((Integer) claims.get("userId")).longValue(), claims.getSubject(),
                 (String) claims.get("role"));
-
     }
-
 }

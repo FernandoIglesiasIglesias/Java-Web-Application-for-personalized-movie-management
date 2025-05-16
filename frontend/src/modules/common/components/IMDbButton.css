@@ -1,0 +1,49 @@
+.imdb-button {
+    width: 100%;
+    max-width: 250px;
+    margin-top: 1rem;
+    padding: 0.7rem 0;
+    border: none;
+    border-radius: 6px;
+    background-color: #f5c518;
+    color: #000000;
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .imdb-button:hover {
+    background-color: #e6b800;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  }
+  
+  .imdb-button .button-icon {
+    font-size: 1.1rem;
+    font-weight: 600;
+  }
+  
+  .imdb-button .imdb-icon {
+    font-family: 'Arial Black', sans-serif;
+    font-weight: 900;
+  }
+  
+  /* Estilos responsivos para el botón */
+  @media (max-width: 768px) {
+    .imdb-button {
+      max-width: 200px;
+    }
+  }
+  
+  @media (max-width: 576px) {
+    .imdb-button {
+      max-width: 180px;
+    }
+  }

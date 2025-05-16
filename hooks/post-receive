@@ -1,0 +1,6 @@
+#!/bin/bash
+REPO_PATH="/home/oem/software/tfg"
+REDMINE_URL="http://localhost:3000"
+REDMINE_API_KEY="298ef0cbe9ecb9fe281b1ae7fe80bcf1b9f17125"
+
+curl --silent --output /dev/null -X POST --data-urlencode "key=$REDMINE_API_KEY" "$REDMINE_URL"

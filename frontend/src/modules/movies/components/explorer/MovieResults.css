@@ -1,0 +1,213 @@
+.movies-section {
+  margin-top: 2rem;
+  animation: fadeInUp 0.5s ease-out both;
+  animation-delay: 0.1s;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.section-title {
+  font-size: 1.8rem;
+  font-weight: 600;
+  margin: 0 0 1.5rem;
+  color: #333;
+  position: relative;
+}
+
+.section-title::after {
+  content: '';
+  position: absolute;
+  bottom: -0.5rem;
+  left: 0;
+  width: 3rem;
+  height: 3px;
+  background-color: #1976d2;
+  border-radius: 2px;
+  transition: width 0.3s ease;
+}
+
+/* Estilo especial para el título de películas mejor valoradas */
+.section-title:contains("mejor valoradas") {
+  color: #ff9800;
+}
+
+.section-title:contains("mejor valoradas")::after {
+  background-color: #ff9800;
+}
+
+.section-title:hover::after {
+  width: 5rem;
+}
+
+.movie-explorer.dark .section-title {
+  color: #ecf0f1;
+}
+
+.movie-explorer.dark .section-title::after {
+  background-color: #2196f3;
+}
+
+/* Estilo especial para el título de películas mejor valoradas en modo oscuro */
+.movie-explorer.dark .section-title:contains("mejor valoradas") {
+  color: #ffb74d;
+}
+
+.movie-explorer.dark .section-title:contains("mejor valoradas")::after {
+  background-color: #ff9800;
+}
+
+  
+  .loading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem 0;
+  }
+  
+  .loading-spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid rgba(25, 118, 210, 0.3);
+    border-top-color: #1976d2;
+    border-radius: 50%;
+    animation: spin 1s ease-in-out infinite;
+  }
+  
+  .movie-explorer.dark .loading-spinner {
+    border-color: rgba(33, 150, 243, 0.3);
+    border-top-color: #2196f3;
+  }
+  
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  
+  .loading-text {
+    margin-top: 1rem;
+    color: #666;
+  }
+  
+  .movie-explorer.dark .loading-text {
+    color: #aaa;
+  }
+  
+  .no-movies-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem 0;
+    text-align: center;
+  }
+  
+  .no-movies-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+  }
+  
+  .no-movies-message {
+    font-size: 1.1rem;
+    color: #666;
+    margin-bottom: 1.5rem;
+  }
+  
+  .movie-explorer.dark .no-movies-message {
+    color: #aaa;
+  }
+  
+  .retry-button {
+    padding: 0.6rem 1.2rem;
+    border: none;
+    border-radius: 4px;
+    background-color: #1976d2;
+    color: white;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+  
+  .retry-button:hover {
+    background-color: #1565c0;
+  }
+  
+  .retry-button.dark {
+    background-color: #2196f3;
+  }
+  
+  .retry-button.dark:hover {
+    background-color: #1e88e5;
+  }
+  
+  .load-more-container {
+    display: flex;
+    justify-content: center;
+    margin: 2rem 0;
+  }
+  
+  .load-more-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.6rem 1.5rem;
+    border: none;
+    border-radius: 4px;
+    background-color: #1976d2;
+    color: white;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+  
+  .load-more-button:hover {
+    background-color: #1565c0;
+  }
+  
+  .load-more-button:disabled {
+    background-color: #c5c5c5;
+    cursor: not-allowed;
+  }
+  
+  .load-more-button.dark {
+    background-color: #2196f3;
+  }
+  
+  .load-more-button.dark:hover {
+    background-color: #1e88e5;
+  }
+  
+  .load-more-button.dark:disabled {
+    background-color: #444;
+  }
+  
+  .load-spinner {
+    display: inline-block;
+    width: 1rem;
+    height: 1rem;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top-color: #ffffff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-right: 0.5rem;
+  }
+  
+  @media (max-width: 768px) {
+    .section-title {
+      font-size: 1.3rem;
+    }
+    
+    .load-more-button {
+      width: 100%;
+    }
+  }
