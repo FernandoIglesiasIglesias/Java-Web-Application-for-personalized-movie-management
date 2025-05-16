@@ -6,6 +6,7 @@ import com.tfg.tfg.model.services.exceptions.DuplicateListNameException;
 import com.tfg.tfg.model.services.exceptions.IncorrectLoginException;
 import com.tfg.tfg.model.services.exceptions.IncorrectPasswordException;
 import com.tfg.tfg.model.services.exceptions.InstanceNotFoundException;
+import com.tfg.tfg.model.services.exceptions.PermissionException;
 
 public interface UserService {
     
@@ -20,4 +21,6 @@ public interface UserService {
 	void changePassword(Long id, String oldPassword, String newPassword)
 		throws InstanceNotFoundException, IncorrectPasswordException;
     
+    void deleteUser(Long adminId, String userNameToDelete) 
+        throws InstanceNotFoundException, PermissionException;
 }

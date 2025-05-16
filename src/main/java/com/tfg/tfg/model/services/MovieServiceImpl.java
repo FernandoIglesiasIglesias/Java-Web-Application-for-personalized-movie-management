@@ -32,14 +32,17 @@ public class MovieServiceImpl implements MovieService {
         this.genreDao = genreDao;
     }
 
+    @Override
     public List<Movie> getAllMovies() {
         return movieDao.findAll();
     }
 
+    @Override
     public Optional<Movie> getMovieById(Long id) {
         return movieDao.findById(id);
     }
 
+    @Override
     public Movie saveMovie(Movie movie) {
 
         Optional<Movie> optionalMovie = movieDao.findByImdbId(movie.getImdbId());
@@ -48,13 +51,31 @@ public class MovieServiceImpl implements MovieService {
             return optionalMovie.get();
         }
 
-        for (Actor actor : movie.getActors()) {
-            actorDao.save(actor);
-        }
+        // Verificar y asociar actores existentes
+        List<Actor> processedActors = movie.getActors().stream().map(actor -> {
+            if (actor.getImdbId() != null) {
+                Optional<Actor> existingActor = actorDao.findByImdbId(actor.getImdbId());
+                return existingActor.orElseGet(() -> actorDao.save(actor));
+            } else {
+                // Si el imdbId es nulo, buscar por nombre o crear un nuevo actor
+                Optional<Actor> existingActor = actorDao.findByName(actor.getName());
+                return existingActor.orElseGet(() -> actorDao.save(actor));
+            }
+        }).toList();
+        movie.setActors(processedActors);
 
-        for (Director director : movie.getDirectors()) {
-            directorDao.save(director);
-        }
+        // Verificar y asociar directores existentes
+        List<Director> processedDirectors = movie.getDirectors().stream().map(director -> {
+            if (director.getImdbId() != null) {
+                Optional<Director> existingDirector = directorDao.findByImdbId(director.getImdbId());
+                return existingDirector.orElseGet(() -> directorDao.save(director));
+            } else {
+                // Si el imdbId es nulo, buscar por nombre o crear un nuevo director
+                Optional<Director> existingDirector = directorDao.findByName(director.getName());
+                return existingDirector.orElseGet(() -> directorDao.save(director));
+            }
+        }).toList();
+        movie.setDirectors(processedDirectors);
 
         for (Genre genre : movie.getGenres()) {
             genreDao.save(genre);

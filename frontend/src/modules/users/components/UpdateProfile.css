@@ -98,84 +98,127 @@ body.dark .modal-subcontainer input[type="email"]:focus {
   display: none;
 }
 
-/* Contenedor de avatar */
 .avatar-container {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 1rem;
-  margin-top: 0.5rem;
+  gap: 1.5rem;
+  margin: 1rem 0 1.5rem;
+  background-color: rgba(0, 0, 0, 0.02);
+  padding: 1.5rem;
+  border-radius: 12px;
+  transition: background-color var(--transition-duration);
+}
+
+body.dark .avatar-container {
+  background-color: rgba(255, 255, 255, 0.03);
 }
 
 .avatar-preview {
-  flex-shrink: 0;
+  position: relative;
 }
 
 .avatar-image {
-  width: 100px;
-  height: 100px;
+  width: 120px;
+  height: 120px;
   border-radius: 50%;
   object-fit: cover;
-  border: 2px solid var(--border-color-light);
-  background-color: var(--card-background-light);
+  border: 3px solid var(--border-color-light);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
 }
 
 body.dark .avatar-image {
   border-color: var(--border-color-dark);
-  background-color: var(--card-background-dark);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 .avatar-upload {
-  flex-grow: 1;
+  width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  align-items: center;
+  gap: 1rem;
 }
 
+.avatar-upload-actions {
+  display: flex;
+  gap: 0.85rem;
+  margin-bottom: 0.5rem;
+  width: 100%;
+  max-width: 400px;
+}
+
+/* Estilo mejorado para los botones de avatar */
 .avatar-upload-button {
-  display: inline-block;
-  padding: 0.75rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 2;
+  padding: 0.85rem 1rem;
   font-size: 0.95rem;
+  font-weight: 500;
   background-color: var(--primary-color-light);
   color: white;
   border: none;
-  border-radius: 5px;
+  border-radius: 8px;
   cursor: pointer;
   text-align: center;
-  transition: background-color var(--transition-duration);
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.avatar-upload-button::before {
+  content: '📷';
+  margin-right: 8px;
+  font-size: 1.1rem;
 }
 
 .avatar-upload-button:hover {
   background-color: var(--primary-hover-light);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
 body.dark .avatar-upload-button {
   background-color: var(--primary-color-dark);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
 }
 
 body.dark .avatar-upload-button:hover {
   background-color: var(--primary-hover-dark);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25);
 }
-
 .avatar-error {
   color: var(--danger-color-light);
-  font-size: 0.85rem;
-  margin-top: 0.25rem;
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+  background-color: rgba(220, 53, 69, 0.08);
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
 }
 
 body.dark .avatar-error {
   color: var(--danger-color-dark);
+  background-color: rgba(220, 53, 69, 0.15);
 }
 
 .avatar-help-text {
-  font-size: 0.8rem;
+  font-size: 0.85rem;
   color: var(--text-muted-light);
-  margin-top: 0.25rem;
+  margin-top: 0.5rem;
+  text-align: center;
+  font-style: italic;
 }
 
 body.dark .avatar-help-text {
   color: var(--text-muted-dark);
 }
-
 /* Acciones del modal */
 .modal-actions {
   display: flex;
@@ -235,31 +278,133 @@ body.dark .modal-button.secondary:hover:not(:disabled) {
 
 /* Mensaje de éxito */
 .success-message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   text-align: center;
-  padding: 2rem 1rem;
+  padding: 2rem 1.5rem;
+  animation: successFadeIn 0.5s ease;
+}
+
+@keyframes successFadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .success-message h2 {
-  color: var(--success-color-light);
+  color: #2e7d32;
   margin-bottom: 1rem;
+  font-size: 1.8rem;
 }
 
 body.dark .success-message h2 {
-  color: var(--success-color-dark);
+  color: #81c784;
 }
 
 .success-message p {
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
   font-size: 1.1rem;
+  line-height: 1.5;
+  color: var(--text-color-light);
+  max-width: 350px;
+}
+
+body.dark .success-message p {
+  color: var(--text-color-dark);
 }
 
 .success-icon {
-  font-size: 3rem;
-  margin-bottom: 1rem;
-  animation: fadeIn 0.5s ease-in-out;
+  font-size: 5rem;
+  margin-bottom: 1.5rem;
+  color: #66bb6a;
+  animation: successPop 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  background-color: rgba(102, 187, 106, 0.15);
+  border-radius: 50%;
+  width: 100px;
+  height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+}
+
+body.dark .success-icon {
+  color: #81c784;
+  background-color: rgba(102, 187, 106, 0.2);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+}
+
+@keyframes successPop {
+  0% { transform: scale(0); opacity: 0; }
+  70% { transform: scale(1.2); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* Responsive para dispositivos móviles */
+@media (max-width: 480px) {
+  .avatar-upload-actions {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  
+  .avatar-upload-button, 
+  .avatar-cancel-button {
+    width: 100%;
+  }
+  
+  .success-icon {
+    font-size: 4rem;
+    width: 80px;
+    height: 80px;
+  }
+  
+  .success-message h2 {
+    font-size: 1.5rem;
+  }
 }
 
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }
+}
+
+
+.avatar-cancel-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  padding: 0.85rem 1rem;
+  font-size: 0.95rem;
+  font-weight: 500;
+  background-color: var(--danger-color-light);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.avatar-cancel-button::before {
+  content: '✕';
+  margin-right: 8px;
+  font-weight: bold;
+}
+
+.avatar-cancel-button:hover {
+  background-color: var(--danger-hover-light);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+body.dark .avatar-cancel-button {
+  background-color: var(--danger-color-dark);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+body.dark .avatar-cancel-button:hover {
+  background-color: var(--danger-hover-dark);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25);
 }

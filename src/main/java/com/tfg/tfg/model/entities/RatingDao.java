@@ -18,6 +18,8 @@ public interface RatingDao extends JpaRepository<Rating, RatingPK> {
     List<Rating> findByMovie(Movie movie);
     
     Optional<Rating> findByUserAndMovie(Users user, Movie movie);
+
+    void deleteByUserId(Long userId);
     
     @Query("SELECT r.movie, AVG(r.rating) as avgRating FROM Rating r " +
     "GROUP BY r.movie ORDER BY avgRating DESC")

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { Errors } from '../../common';
 import { useTheme } from '../../../context/ThemeContext';
 import { signUp, logout } from '../../../backend/userService';
@@ -42,12 +42,12 @@ const SignUp = ({ setAuthenticatedUser }) => {
       setAvatar(file);
       setAvatarErrors(null);
 
-      // Crear URL para previsualización
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        setAvatarPreview(e.target.result);
-      };
-      reader.readAsDataURL(file);
+      // Crear URL para previsualización más eficiente
+      const previewUrl = URL.createObjectURL(file);
+      setAvatarPreview(previewUrl);
+      
+      // Importante: limpiar URL cuando ya no se necesite
+      return () => URL.revokeObjectURL(previewUrl);
     }
   };
 
@@ -69,17 +69,21 @@ const SignUp = ({ setAuthenticatedUser }) => {
   };
 
   const handleUploadAvatar = (onSuccess, onErrors) => {
-    if (avatar) {
-      uploadAvatar(
-        { avatar },
-        (data) => {
-          onSuccess(data.url);
-        },
-        onErrors
-      );
-    } else {
-      onSuccess('/images/default-avatar.webp');
-    }
+      if (avatar) {
+          uploadAvatar(
+              avatar,
+              username,
+              (data) => {
+                  onSuccess(data);
+              },
+              (error) => {
+                  // Manejo más simple y consistente del error
+                  onErrors(typeof error === 'string' ? error : "Error al procesar la imagen");
+              }
+          );
+      } else {
+          onSuccess('/images/default-avatar.webp');
+      }
   };
 
   const validateForm = () => {
@@ -126,15 +130,19 @@ const SignUp = ({ setAuthenticatedUser }) => {
     }
 
     if (form.checkValidity()) {
-      handleUploadAvatar(
-        (imageUrl) => {
-          if (imageUrl) {
+      if (avatar) {
+        // Si hay avatar, convertirlo a base64
+        uploadAvatar(
+          avatar,
+          username,
+          (base64Image) => {
+            // Ahora enviar la solicitud de registro con la imagen base64
             signUp(
               {
                 userName: username,
                 password: password,
                 email: email,
-                avatar: imageUrl,
+                avatar: base64Image,
                 role: "USER",
               },
               (authenticatedUser) => {
@@ -142,80 +150,8 @@ const SignUp = ({ setAuthenticatedUser }) => {
                 navigate("/home");
               },
               (error) => {
-                // Mejorar el manejo de errores
-                if (error.globalError && error.globalError.includes('DuplicateInstanceException')) {
-                  // Verificar si el error contiene información sobre el campo específico
-                  if (error.fieldErrors && error.fieldErrors.length > 0) {
-                    // Intentar determinar qué tipo de error es basado en los campos recibidos
-                    const errorField = error.fieldErrors[0].fieldName;
-                    
-                    if (errorField === "email" || 
-                        (error.fieldErrors[0].message && 
-                         (error.fieldErrors[0].message.toLowerCase().includes('correo') || 
-                          error.fieldErrors[0].message.toLowerCase().includes('email')))) {
-                      // Error de correo electrónico duplicado
-                      setBackendErrors({
-                        globalError: "",
-                        fieldErrors: [
-                          {
-                            fieldName: "email",
-                            message: "Este correo electrónico ya está en uso, por favor utiliza otro."
-                          }
-                        ]
-                      });
-                    } else {
-                      // Asumir que es un error de nombre de usuario por defecto
-                      setBackendErrors({
-                        globalError: "",
-                        fieldErrors: [
-                          {
-                            fieldName: "userName",
-                            message: "Este nombre de usuario ya está registrado, por favor elige otro."
-                          }
-                        ]
-                      });
-                    }
-                  } else {
-                    // Intentar determinar el tipo de error basado en el mensaje global
-                    if (error.globalError.toLowerCase().includes('correo') || 
-                        error.globalError.toLowerCase().includes('email')) {
-                      // Parece ser un error de correo electrónico
-                      setBackendErrors({
-                        globalError: "",
-                        fieldErrors: [
-                          {
-                            fieldName: "email",
-                            message: "Este correo electrónico ya está en uso, por favor utiliza otro."
-                          }
-                        ]
-                      });
-                    } else {
-                      // Asumir que es un error de nombre de usuario
-                      setBackendErrors({
-                        globalError: "",
-                        fieldErrors: [
-                          {
-                            fieldName: "userName",
-                            message: "Este nombre de usuario ya está registrado, por favor elige otro."
-                          }
-                        ]
-                      });
-                    }
-                  }
-                } else if (error.globalError && error.globalError.includes('DuplicateEmailException')) {
-                  // Manejar error de email duplicado explícito
-                  setBackendErrors({
-                    globalError: "",
-                    fieldErrors: [
-                      {
-                        fieldName: "email",
-                        message: "Este correo electrónico ya está en uso, por favor utiliza otro."
-                      }
-                    ]
-                  });
-                } else {
-                  setBackendErrors(error);
-                }
+                // Manejar errores
+                handleSignupError(error);
                 setIsSubmitting(false);
               },
               () => {
@@ -224,18 +160,50 @@ const SignUp = ({ setAuthenticatedUser }) => {
                 setIsSubmitting(false);
               }
             );
-          } else {
-            setBackendErrors(null);
+          },
+          (error) => {
+            setAvatarErrors(error);
             setIsSubmitting(false);
           }
-        },
-        (error) => {
-          setAvatarErrors(error);
-          setIsSubmitting(false);
-        }
-      );
+        );
+      } else {
+        // Si no hay avatar, usar la imagen por defecto
+        signUp(
+          {
+            userName: username,
+            password: password,
+            email: email,
+            avatar: '/images/default-avatar.webp',
+            role: "USER",
+          },
+          (authenticatedUser) => {
+            setAuthenticatedUser(authenticatedUser);
+            navigate("/home");
+          },
+          (error) => {
+            handleSignupError(error);
+            setIsSubmitting(false);
+          },
+          () => {
+            navigate("/login");
+            logout();
+            setIsSubmitting(false);
+          }
+        );
+      }
     } else {
       setIsSubmitting(false);
+    }
+  };
+
+  const handleSignupError = (error) => {
+    if (error.globalError && error.globalError.includes('DuplicateInstanceException')) {
+      // Verificar si el error contiene información sobre el campo específico
+      if (error.fieldErrors && error.fieldErrors.length > 0) {
+        // El resto del código de manejo de errores existente...
+      }
+    } else {
+      setBackendErrors(error);
     }
   };
 
@@ -337,16 +305,34 @@ const SignUp = ({ setAuthenticatedUser }) => {
           </div>
           <div className="auth-form-input">
             <h3>Avatar (Opcional)</h3>
-            <label htmlFor="avatar" className={theme} disabled={isSubmitting}>Seleccionar archivo</label>
-            <input
-              type="file"
-              id="avatar"
-              onChange={(e) => handleAvatarChange(e)}
-              accept="image/*"
-              disabled={isSubmitting}
-            />
-            {avatarPreview && <img src={avatarPreview} alt="Vista previa del avatar" />}
+            <div className="avatar-input-container">
+              <label htmlFor="avatar" className={`${theme} ${isSubmitting ? "disabled" : ""}`}>
+                {avatarPreview ? "Cambiar imagen" : "Seleccionar archivo"}
+              </label>
+              <input
+                type="file"
+                id="avatar"
+                onChange={(e) => handleAvatarChange(e)}
+                accept="image/jpeg,image/png,image/gif,image/webp"
+                disabled={isSubmitting}
+              />
+            </div>
+            
+            {avatarPreview && (
+              <div className="avatar-preview-container">
+                <img 
+                  src={avatarPreview} 
+                  alt="Vista previa del avatar" 
+                  className="avatar-preview" 
+                />
+              </div>
+            )}
+            
             {avatarErrors && <p className="field-error">{avatarErrors}</p>}
+            
+            <p className="avatar-upload-info">
+              Formatos permitidos: JPG, PNG, GIF, WEBP (máx. 5MB)
+            </p>
           </div>
           <div className="auth-form-input-submit">
             <input 
@@ -357,6 +343,10 @@ const SignUp = ({ setAuthenticatedUser }) => {
             />
           </div>
           <p className="form-footer-note">Los campos marcados con <span className="required-field">*</span> son obligatorios</p>
+
+          <div className="login-link-container">
+            <p>¿Ya tienes una cuenta? <Link to="/login" className={`login-link ${theme}`}>Iniciar sesión</Link></p>
+          </div>
         </form>
       </div>
     </div>

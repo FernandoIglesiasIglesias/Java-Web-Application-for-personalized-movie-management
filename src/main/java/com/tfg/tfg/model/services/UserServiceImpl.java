@@ -1,9 +1,19 @@
 package com.tfg.tfg.model.services;
 
+import java.util.List;
 import java.util.Optional;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.tfg.tfg.model.entities.ActorList;
+import com.tfg.tfg.model.entities.ActorListDao;
+import com.tfg.tfg.model.entities.CustomList;
+import com.tfg.tfg.model.entities.CustomListDao;
+import com.tfg.tfg.model.entities.DirectorList;
+import com.tfg.tfg.model.entities.DirectorListDao;
+import com.tfg.tfg.model.entities.RatingDao;
+import com.tfg.tfg.model.entities.UserActivityDao;
+import com.tfg.tfg.model.entities.UserProfileDao;
 import com.tfg.tfg.model.entities.Users;
 import com.tfg.tfg.model.entities.UsersDao;
 import com.tfg.tfg.model.services.exceptions.DuplicateInstanceException;
@@ -11,6 +21,8 @@ import com.tfg.tfg.model.services.exceptions.DuplicateListNameException;
 import com.tfg.tfg.model.services.exceptions.IncorrectLoginException;
 import com.tfg.tfg.model.services.exceptions.IncorrectPasswordException;
 import com.tfg.tfg.model.services.exceptions.InstanceNotFoundException;
+import com.tfg.tfg.model.services.exceptions.PermissionException;
+
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
@@ -20,17 +32,29 @@ public class UserServiceImpl implements UserService{
 	private final PermissionChecker permissionChecker;
 	private final BCryptPasswordEncoder passwordEncoder;
 	private final UsersDao userDao;
+	private final CustomListDao customListDao;
+	private final ActorListDao actorListDao;
+	private final DirectorListDao directorListDao;
 	private final CustomListService customListService;
 	private final ActorListService actorListService;
 	private final DirectorListService directorListService;
+	private final RatingDao ratingDao;
+	private final UserProfileDao userProfileDao;
+	private final UserActivityDao userActivityDao;
 
-	public UserServiceImpl(PermissionChecker permissionChecker, BCryptPasswordEncoder passwordEncoder, UsersDao userDao, CustomListService customListService, ActorListService actorListService, DirectorListService directorListService) {
+	public UserServiceImpl(PermissionChecker permissionChecker, BCryptPasswordEncoder passwordEncoder, UsersDao userDao, CustomListService customListService, ActorListService actorListService, DirectorListService directorListService, CustomListDao customListDao, ActorListDao actorListDao, DirectorListDao directorListDao, RatingDao ratingDao, UserProfileDao userProfileDao, UserActivityDao userActivityDao) {
 		this.permissionChecker = permissionChecker;
 		this.passwordEncoder = passwordEncoder;
 		this.userDao = userDao;
 		this.customListService = customListService;
 		this.actorListService = actorListService;
 		this.directorListService = directorListService;
+		this.customListDao = customListDao;
+		this.actorListDao = actorListDao;
+		this.directorListDao = directorListDao;
+		this.ratingDao = ratingDao;
+		this.userProfileDao = userProfileDao;
+		this.userActivityDao = userActivityDao;
 	}
 	
 	/**
@@ -53,8 +77,11 @@ public class UserServiceImpl implements UserService{
 		}
 			
 		user.setPassword(passwordEncoder.encode(user.getPassword()));
-		user.setRole(Users.RoleType.USER);
-		
+
+		if (user.getRole() == null) {
+        	user.setRole(Users.RoleType.USER);
+    	}
+
 		userDao.save(user);
 		
 		customListService.createList("Películas favoritas", user);
@@ -148,6 +175,59 @@ public class UserServiceImpl implements UserService{
 			user.setPassword(passwordEncoder.encode(newPassword));
 		}
 		
+	}
+
+	/**
+	 * Deletes a user from the system.
+	 * 
+	 * @param adminId The ID of the administrator attempting to delete the user
+	 * @param userNameToDelete The username of the user to be deleted
+	 * @throws InstanceNotFoundException If the user to delete does not exist
+	 * @throws PermissionException If the user attempting to delete is not an admin or if admin tries to delete themselves
+	 */
+	@Override
+	public void deleteUser(Long adminId, String userNameToDelete) 
+		throws InstanceNotFoundException, PermissionException {
+		
+		Users admin = permissionChecker.checkUser(adminId);
+		if (admin.getRole() != Users.RoleType.ADMIN) {
+			throw new PermissionException("Solo los administradores pueden eliminar usuarios");
+		}
+		
+		Optional<Users> userToDeleteOpt = userDao.findByUserName(userNameToDelete);
+		if (!userToDeleteOpt.isPresent()) {
+			throw new InstanceNotFoundException("project.entities.user", userNameToDelete);
+		}
+		
+		Users userToDelete = userToDeleteOpt.get();
+		
+		if (adminId.equals(userToDelete.getId())) {
+			throw new PermissionException("Un administrador no puede eliminarse a sí mismo");
+		}
+		
+		// Eliminar todas las listas de actores del usuario
+		List<ActorList> actorLists = actorListDao.findByUserId(userToDelete.getId());
+		actorListDao.deleteAll(actorLists);
+		
+		// Eliminar todas las listas de directores del usuario
+		List<DirectorList> directorLists = directorListDao.findByUserId(userToDelete.getId());
+		directorListDao.deleteAll(directorLists);
+		
+		// Eliminar todas las listas personalizadas del usuario
+		List<CustomList> customLists = customListDao.findByUserId(userToDelete.getId());
+		customListDao.deleteAll(customLists);
+		
+		// Eliminar las valoraciones del usuario
+		ratingDao.deleteByUserId(userToDelete.getId());
+		
+		// Eliminar actividades del usuario
+		userActivityDao.deleteByUserId(userToDelete.getId());
+		
+		// Eliminar perfil de usuario
+		userProfileDao.deleteById(userToDelete.getId());
+		
+		// Finalmente, eliminar el usuario
+		userDao.delete(userToDelete);
 	}
     
 }

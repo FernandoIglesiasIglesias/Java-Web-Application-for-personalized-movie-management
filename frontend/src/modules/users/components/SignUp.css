@@ -364,3 +364,66 @@ body.dark .auth-form-input input.input-error {
     font-size: 1.1rem;
   }
 }
+
+/* Añadir estos estilos para mejorar la interfaz de avatar */
+
+.avatar-preview-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.avatar-preview {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--border-color-light);
+  background-color: var(--card-background-light);
+  margin-bottom: 10px;
+  transition: all 0.3s ease;
+}
+
+body.dark .avatar-preview {
+  border-color: var(--border-color-dark);
+  background-color: var(--card-background-dark);
+}
+
+.avatar-upload-info {
+  font-size: 0.8rem;
+  color: var(--text-muted-light);
+  margin-top: 5px;
+  text-align: center;
+}
+
+body.dark .avatar-upload-info {
+  color: var(--text-muted-dark);
+}
+
+.avatar-input-container {
+  position: relative;
+  width: 100%;
+  margin-top: 10px;
+}
+
+.login-link-container {
+  margin-top: 2rem;
+  text-align: center;
+}
+
+.login-link {
+  color: var(--primary-color-light);
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.2s;
+}
+
+.login-link:hover {
+  text-decoration: underline;
+}
+
+.login-link.dark {
+  color: var(--primary-color-dark);
+}
+

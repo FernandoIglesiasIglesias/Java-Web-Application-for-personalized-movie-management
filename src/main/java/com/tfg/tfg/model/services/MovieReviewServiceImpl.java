@@ -12,6 +12,8 @@ import com.tfg.tfg.model.services.exceptions.InstanceNotFoundException;
 import com.tfg.tfg.model.services.exceptions.PermissionException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -230,5 +232,13 @@ public class MovieReviewServiceImpl implements MovieReviewService {
         }
         
         return movieReviewDao.countUnhelpfulVotes(reviewId);
+    }
+
+    @Override
+    public Page<MovieReview> getMovieReviewsPaged(String imdbId, Pageable pageable) throws InstanceNotFoundException {
+        Movie movie = movieDao.findByImdbId(imdbId)
+            .orElseThrow(() -> new InstanceNotFoundException("project.entities.movie", imdbId));
+            
+        return movieReviewDao.findByMovie(movie, pageable);
     }
 }

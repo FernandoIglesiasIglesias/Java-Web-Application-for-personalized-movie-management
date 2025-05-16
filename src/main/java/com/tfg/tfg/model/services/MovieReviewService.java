@@ -6,6 +6,9 @@ import com.tfg.tfg.model.services.exceptions.PermissionException;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 public interface MovieReviewService {
     
     /**
@@ -100,5 +103,15 @@ public interface MovieReviewService {
      * @throws InstanceNotFoundException If the review does not exist
      */
     Long getUnhelpfulVotesCount(Long reviewId) throws InstanceNotFoundException;
+
+    /**
+     * Retrieves a paginated list of reviews for a specific movie.
+     * 
+     * @param imdbId The IMDb identifier of the movie for which to retrieve reviews
+     * @param pageable Pagination information (page number, size, sorting)
+     * @return A Page object containing the movie reviews
+     * @throws InstanceNotFoundException If no movie with the given IMDb ID exists
+     */
+    public Page<MovieReview> getMovieReviewsPaged(String imdbId, Pageable pageable) throws InstanceNotFoundException;
     
 }

@@ -10,6 +10,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
@@ -42,9 +44,11 @@ import com.tfg.tfg.rest.dtos.UserDto;
 @RequestMapping("/users")
 public class UserController {
    
+	private static final String INSTANCE_NOT_FOUND_EXCEPTION_CODE = "project.exceptions.InstanceNotFoundException";
 	private static final String INCORRECT_LOGIN_EXCEPTION_CODE = "project.exceptions.IncorrectLoginException";
 	private static final String INCORRECT_PASSWORD_EXCEPTION_CODE = "project.exceptions.IncorrectPasswordException";
 	private static final String DUPLICATE_INSTANCE_EXCEPTION_CODE = "project.exceptions.DuplicateInstanceException";
+	private static final String PERMISSION_EXCEPTION_CODE = "project.exceptions.PermissionException";
 
 	private final MessageSource messageSource;
 	private final JwtGenerator jwtGenerator;
@@ -55,6 +59,22 @@ public class UserController {
 		this.jwtGenerator = jwtGenerator;
 		this.userService = userService;
 	}
+
+	/**
+     * Exception handler for InstanceNotFoundException.
+     * 
+     * @param exception The exception that was thrown
+     * @param locale The current locale for message localization
+     * @return ErrorsDto containing the error message
+     */
+    @ExceptionHandler(InstanceNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ResponseBody
+    public ErrorsDto handleInstanceNotFoundException(InstanceNotFoundException exception, Locale locale) {
+        String errorMessage = messageSource.getMessage(INSTANCE_NOT_FOUND_EXCEPTION_CODE, 
+            null, INSTANCE_NOT_FOUND_EXCEPTION_CODE, locale);
+        return new ErrorsDto(errorMessage);
+    }
 	
 	@ExceptionHandler(IncorrectLoginException.class)
 	@ResponseStatus(HttpStatus.NOT_FOUND)
@@ -99,6 +119,22 @@ public class UserController {
 		
 		return errorDto;
 	}
+
+    /**
+     * Exception handler for PermissionException.
+     * 
+     * @param exception The exception that was thrown
+     * @param locale The current locale for message localization
+     * @return ErrorsDto containing the error message
+     */
+    @ExceptionHandler(PermissionException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    @ResponseBody
+    public ErrorsDto handlePermissionException(PermissionException exception, Locale locale) {
+        String errorMessage = messageSource.getMessage(PERMISSION_EXCEPTION_CODE, null,
+            PERMISSION_EXCEPTION_CODE, locale);
+        return new ErrorsDto(errorMessage);
+    }
 
 	@PostMapping("/signUp")
 	public ResponseEntity<AuthenticatedUserDto> signUp(
@@ -161,6 +197,15 @@ public class UserController {
 		userService.changePassword(id, params.getOldPassword(), params.getNewPassword());
 		
 	}
+
+	@DeleteMapping("/admin/deleteUser")
+	@ResponseStatus(HttpStatus.NO_CONTENT)
+	public void deleteUser(@RequestAttribute Long userId, @RequestParam String userName) throws InstanceNotFoundException, PermissionException {
+		
+		userService.deleteUser(userId, userName);
+
+	}
+
 	
 	private String generateServiceToken(Users user) {
 		
