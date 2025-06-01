@@ -1,27 +1,32 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
+import { getAverageRatingForMovie } from '../../../../backend/rateService';
 import './MovieCard.css';
 
 const MovieCard = ({ movie, onClick, theme, source }) => {
   const [imageError, setImageError] = useState(false);
-  
+  const [averageRating, setAverageRating] = useState(null);
+
+  useEffect(() => {
+    if (source === 'topRated' && movie.imdbId) {
+      getAverageRatingForMovie(
+        movie.imdbId,
+        (rating) => setAverageRating(rating),
+        () => setAverageRating(null) // Manejar errores silenciosamente
+      );
+    }
+  }, [source, movie.imdbId]);
+
   const handleImageError = () => {
     setImageError(true);
   };
 
-  // Formatear la valoración para mostrarla con un decimal
   const formatRating = (rating) => {
     if (rating === null || rating === undefined || rating === 0) return 'N/A';
     const numRating = parseFloat(rating);
     return isNaN(numRating) ? 'N/A' : numRating.toFixed(1);
   };
 
-  // Determinar si se debe mostrar una valoración
-  const shouldShowUserRating = movie.userRating !== null && 
-                              movie.userRating !== undefined && 
-                              movie.userRating !== 0;
-
-  // Obtener iniciales para placeholder
   const getInitials = () => {
     if (!movie.title) return "??";
     return movie.title
@@ -56,30 +61,35 @@ const MovieCard = ({ movie, onClick, theme, source }) => {
             onError={handleImageError}
           />
         )}
+        
         <div className="movie-overlay">
-          <div className="movie-year">{movie.year || '???'}</div>
-          <div className="movie-ratings">
-            {movie.rating && (
-              <div className="movie-rating imdb" title="Valoración IMDB">
-                <span className="rating-icon">⭐</span>
-                <span className="rating-value">{formatRating(movie.rating)}</span>
-              </div>
-            )}
-            {shouldShowUserRating && (
-              <div className="movie-rating user" title="Valoración de usuarios">
-                <span className="rating-icon">👤</span>
-                <span className="rating-value">{formatRating(movie.userRating)}</span>
-              </div>
-            )}
+          <div className="overlay-top">
+            <div className="movie-year">{movie.year || '???'}</div>
           </div>
         </div>
       </div>
+      
       <div className="movie-info">
         <h3 className="movie-title">{movie.title || 'Sin título'}</h3>
         <div className="movie-genres">
           {(movie.genres || []).slice(0, 2).map((genre, index) => (
             <span key={index} className="movie-genre">{genre}</span>
           ))}
+        </div>
+        <div className="movie-ratings">
+          {source === 'topRated' && averageRating !== null && (
+            <div className="movie-rating users" title="Valoración media de usuarios">
+              <span className="rating-icon">👤</span>
+              <span className="rating-value">{formatRating(averageRating)}</span>
+              <span className="rating-label">Usuarios</span>
+            </div>
+          )}
+          {movie.rating && (
+            <div className="movie-rating imdb" title="Valoración IMDB">
+              <span className="rating-value">{formatRating(movie.rating)}</span>
+              <span className="rating-label">IMDB</span>
+            </div>
+          )}
         </div>
       </div>
     </div>

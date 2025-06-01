@@ -4,6 +4,7 @@ import { useTheme } from '../../../context/ThemeContext';
 import PersonHeader from './PersonHeader';
 import PersonBio from './PersonBio';
 import PersonDetails from './PersonDetails';
+import BackButton from '../../common/components/BackButton';
 import './ShowPerson.css';
 
 const ShowPerson = ({ 
@@ -16,6 +17,10 @@ const ShowPerson = ({
 }) => {
   const navigate = useNavigate();
   const { theme } = useTheme();
+
+  const handleBackClick = () => {
+    navigate(-1);
+  };
   
   const [person, setPerson] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -175,6 +180,8 @@ const ShowPerson = ({
       <div className="person-backdrop"></div>
       
       <div className="person-content-wrapper">
+        <BackButton theme={theme} onBackClick={handleBackClick} />
+
         <PersonHeader 
           person={person} 
           imdbData={imdbData} 

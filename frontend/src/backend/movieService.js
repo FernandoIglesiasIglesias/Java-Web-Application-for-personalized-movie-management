@@ -180,7 +180,7 @@ export const getMovieCast = (imdbId, onSuccess, onErrors) => {
     return;
   }
   
-  fetch(`https://imdb236.p.rapidapi.com/imdb/${imdbId}/cast`, {
+  fetch(`https://imdb236.p.rapidapi.com/api/imdb/${imdbId}/cast`, {
     method: 'GET',
     headers: {
       'x-rapidapi-host': 'imdb236.p.rapidapi.com',
@@ -207,7 +207,6 @@ export const getMovieCast = (imdbId, onSuccess, onErrors) => {
     onErrors(error);
   });
 };
-
 export const searchMoviesByTitle = (title, onSuccess, onErrors) => {
   if (!title || title.trim() === '') {
     onErrors(new Error('El título de búsqueda no puede estar vacío'));

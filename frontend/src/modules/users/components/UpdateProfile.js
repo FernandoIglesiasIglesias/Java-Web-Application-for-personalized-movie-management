@@ -4,6 +4,7 @@ import { uploadAvatar } from "../../../backend/uploadService";
 import { Errors } from "../../common";
 import { useNavigate } from "react-router-dom";
 import { useTheme } from "../../../context/ThemeContext";
+import ModalButton from "../../common/components/ModalButton";
 import './UpdateProfile.css';
 
 const UpdateProfile = ({ user, onClose }) => {
@@ -239,21 +240,23 @@ const UpdateProfile = ({ user, onClose }) => {
                     )}
 
                     <div className="modal-actions">
-                        <button 
-                            className={`modal-button primary ${theme}`} 
-                            type="submit"
+                        <ModalButton 
+                            type="submit" 
+                            variant="primary" 
+                            theme={theme} 
                             disabled={loading}
                         >
                             {loading ? "Guardando..." : "Guardar cambios"}
-                        </button>
-                        <button 
-                            type="button"
-                            className={`modal-button secondary ${theme}`} 
-                            onClick={onClose}
+                        </ModalButton>
+                        <ModalButton 
+                            type="button" 
+                            variant="secondary" 
+                            theme={theme} 
+                            onClick={onClose} 
                             disabled={loading}
                         >
                             Cancelar
-                        </button>
+                        </ModalButton>
                     </div>
                 </form>
             </div>

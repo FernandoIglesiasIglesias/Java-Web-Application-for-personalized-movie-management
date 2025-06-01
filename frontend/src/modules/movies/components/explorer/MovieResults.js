@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { useNavigate } from 'react-router-dom';
 import MovieCarousel from './MovieCarousel';
 import MovieGrid from './MovieGrid';
+import LoadingSpinner from "../../../common/LoadingSpinner"
 import './MovieResults.css';
 
 const MovieResults = ({ 
@@ -17,7 +18,8 @@ const MovieResults = ({
   onLoadMore,
   onRetry,
   theme,
-  searchTitle = "" 
+  searchTitle = "",
+  isSearching // Añadir el estado de búsqueda
 }) => {
   const navigate = useNavigate();
 
@@ -25,38 +27,22 @@ const MovieResults = ({
     navigate(`/movies/${imdbId}`);
   };
 
-  const renderTitle = () => {
-    if (searchTitle) {
-      return `Resultados para "${searchTitle}"`;
-    }
-    
-    if (movieSource === 'external') {
-      return filters.keyword ? `Resultados para "${filters.keyword}"` : 'Películas más populares';
-    } else {
-      return 'Películas mejor valoradas por usuarios';
-    }
-  };
-
   const renderContent = () => {
-    // Mostrar indicador de carga
-    if ((movieSource === 'external' && loadingExternal) || 
-        (movieSource === 'topRated' && loadingTopRated)) {
+    // Mostrar indicador de carga si está buscando
+    if (isSearching && loadingExternal) {
       return (
         <div className="loading-container">
-          <div className="loading-spinner"></div>
-          <p className="loading-text">Cargando películas...</p>
+          <LoadingSpinner /> {/* Mostrar el componente LoadingSpinner */}
         </div>
       );
     }
 
     // Mostrar resultados de búsqueda o películas externas
     if ((searchTitle || movieSource === 'external') && externalMovies.length > 0) {
-      // Normalizar datos para asegurar que cada película tiene la estructura correcta
       const normalizedMovies = externalMovies.map(movie => ({
         id: movie.id,
         imdbId: movie.imdbId || movie.ids?.imdb,
         title: movie.title,
-        // Manejar múltiples formatos de poster
         posterUrl: movie.posterUrl || 
                   movie.imageSet?.verticalPoster?.w240 || 
                   movie.posterURLs?.w342 || 
@@ -85,7 +71,6 @@ const MovieResults = ({
             />
           )}
           
-          {/* Solo mostrar el botón de cargar más si no es una búsqueda */}
           {!searchTitle && hasMore && !loadingMoreExternal && (
             <div className="load-more-container">
               <button 
@@ -96,33 +81,10 @@ const MovieResults = ({
               </button>
             </div>
           )}
-          
-          {!searchTitle && loadingMoreExternal && (
-            <div className="loading-more-container">
-              <div className="loading-spinner small"></div>
-              <p>Cargando más películas...</p>
-            </div>
-          )}
         </>
       );
     }
-    
-    // Mostrar películas mejor valoradas
-    if (movieSource === 'topRated' && topRatedMovies.length > 0) {
-      return (
-        <MovieGrid 
-          movies={topRatedMovies.map(movie => ({
-            ...movie,
-            // Asegurar que cada película tenga una URL de poster válida
-            posterUrl: movie.posterUrl || movie.verticalPoster
-          }))}
-          onMovieClick={handleMovieClick}
-          theme={theme}
-          source="topRated"
-        />
-      );
-    }
-    
+
     // Mostrar mensaje de no resultados
     return (
       <div className="no-results-container">
@@ -147,7 +109,7 @@ const MovieResults = ({
 
   return (
     <div className="movie-results-container">
-      <h2 className="results-title">{renderTitle()}</h2>
+      <h2 className="results-title">{searchTitle ? `Resultados para "${searchTitle}"` : 'Películas'}</h2>
       {renderContent()}
     </div>
   );
@@ -165,7 +127,8 @@ MovieResults.propTypes = {
   onLoadMore: PropTypes.func,
   onRetry: PropTypes.func,
   theme: PropTypes.string.isRequired,
-  searchTitle: PropTypes.string
+  searchTitle: PropTypes.string,
+  isSearching: PropTypes.bool // Añadir la nueva prop
 };
 
 export default MovieResults;

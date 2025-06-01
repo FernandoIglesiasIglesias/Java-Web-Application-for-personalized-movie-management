@@ -1,0 +1,24 @@
+.back-button {
+  background: none;
+  border: none;
+  display: flex;
+  align-items: center;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--primary-color-light);
+  cursor: pointer;
+  padding: 0.5rem 0;
+  transition: color var(--transition-duration);
+}
+
+.back-button.dark {
+  color: var(--primary-color-dark);
+}
+
+.back-button:hover {
+  color: var(--primary-hover-light);
+}
+
+.back-button.dark:hover {
+  color: var(--primary-hover-dark);
+}

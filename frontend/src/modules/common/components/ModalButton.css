@@ -1,0 +1,63 @@
+.modal-button {
+  flex: 1;
+  padding: 0.75rem;
+  font-size: 1rem;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color var(--transition-duration), 
+              color var(--transition-duration), 
+              box-shadow var(--transition-duration), 
+              transform var(--transition-duration);
+}
+
+.modal-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.modal-button.primary {
+  background-color: var(--primary-color-light);
+  color: var(--text-color-light);
+  font-weight: normal;
+}
+
+.modal-button.primary:hover:not(:disabled) {
+  background-color: var(--primary-hover-light);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2); 
+  transform: translateY(-2px); 
+}
+
+body.dark .modal-button.primary {
+  background-color: var(--primary-color-dark);
+  color: var(--text-color-dark);
+  font-weight: normal;
+}
+
+body.dark .modal-button.primary:hover:not(:disabled) {
+  background-color: var(--primary-hover-dark);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3); 
+  transform: translateY(-2px);
+}
+
+.modal-button.secondary {
+  background-color: var(--danger-color-light);
+  color: white;
+}
+
+.modal-button.secondary:hover:not(:disabled) {
+  background-color: var(--danger-hover-light);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2); 
+  transform: translateY(-2px);
+}
+
+body.dark .modal-button.secondary {
+  background-color: var(--danger-color-dark);
+  color: white;
+}
+
+body.dark .modal-button.secondary:hover:not(:disabled) {
+  background-color: var(--danger-hover-dark);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3); 
+  transform: translateY(-2px); 
+}

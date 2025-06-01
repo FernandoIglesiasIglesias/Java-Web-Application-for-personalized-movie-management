@@ -5,7 +5,7 @@
 
 .home-container {
   min-height: calc(100vh - 60px);
-  padding: 20px;
+  padding: 45px;
 }
 
 .home-container.light {

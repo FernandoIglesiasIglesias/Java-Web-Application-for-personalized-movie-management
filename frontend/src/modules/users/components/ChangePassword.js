@@ -3,6 +3,7 @@ import { changePassword } from "../../../backend/userService";
 import { Errors } from "../../common";
 import { useNavigate } from "react-router-dom";
 import { useTheme } from "../../../context/ThemeContext";
+import ModalButton from "../../common/components/ModalButton";
 import './ChangePassword.css';
 
 const ChangePassword = ({ user, onClose }) => {
@@ -97,19 +98,21 @@ const ChangePassword = ({ user, onClose }) => {
                         />
                     </div>
                     <div className="modal-actions">
-                        <button 
-                            className={`settings-subcontainer-button ${theme}`} 
-                            type="submit"
+                        <ModalButton 
+                            type="submit" 
+                            variant="primary" 
+                            theme={theme}
                         >
                             Guardar cambios
-                        </button>
-                        <button 
-                            className={`settings-subcontainer-button red ${theme}`} 
-                            type="button"
+                        </ModalButton>
+                        <ModalButton 
+                            type="button" 
+                            variant="secondary" 
+                            theme={theme} 
                             onClick={onClose}
                         >
                             Cancelar
-                        </button>
+                        </ModalButton>
                     </div>
                 </form>
             </div>

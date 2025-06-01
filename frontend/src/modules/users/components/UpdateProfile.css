@@ -219,14 +219,12 @@ body.dark .avatar-error {
 body.dark .avatar-help-text {
   color: var(--text-muted-dark);
 }
-/* Acciones del modal */
 .modal-actions {
   display: flex;
   gap: 1rem;
   margin-top: 1.5rem;
 }
 
-/* Botones del modal */
 .modal-button {
   flex: 1;
   padding: 0.75rem;
@@ -234,7 +232,9 @@ body.dark .avatar-help-text {
   border: none;
   border-radius: 5px;
   cursor: pointer;
-  transition: background-color var(--transition-duration);
+  transition: background-color var(--transition-duration), 
+              color var(--transition-duration), 
+              box-shadow var(--transition-duration);
 }
 
 .modal-button:disabled {
@@ -244,36 +244,44 @@ body.dark .avatar-help-text {
 
 .modal-button.primary {
   background-color: var(--primary-color-light);
-  color: white;
+  color: var(--text-color-light);
 }
 
 .modal-button.primary:hover:not(:disabled) {
   background-color: var(--primary-hover-light);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
 body.dark .modal-button.primary {
-  background-color: var(--primary-color-dark);
+  background-color: var(--primary-color-dark) !important;
+  color: var(--text-color-dark) !important;
 }
 
 body.dark .modal-button.primary:hover:not(:disabled) {
   background-color: var(--primary-hover-dark);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25); /* Igual que ChangePassword */
 }
 
 .modal-button.secondary {
-  background-color: var(--text-secondary-light);
+  background-color: var(--danger-color-light);
   color: white;
+  font-weight: normal;
 }
 
 .modal-button.secondary:hover:not(:disabled) {
   background-color: var(--text-muted-light);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15); 
 }
 
 body.dark .modal-button.secondary {
-  background-color: var(--text-secondary-dark);
+  background-color: var(--danger-color-dark); /* Cambiar a rojo oscuro para modo oscuro */
+  color: white; /* Asegurar que el texto sea blanco */
+  font-weight: normal; /* Quitar la negrita */
 }
 
 body.dark .modal-button.secondary:hover:not(:disabled) {
-  background-color: var(--text-muted-dark);
+  background-color: var(--danger-hover-dark); /* Ajustar el color de hover en modo oscuro */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25); /* Mantener el efecto de sombra */
 }
 
 /* Mensaje de éxito */
