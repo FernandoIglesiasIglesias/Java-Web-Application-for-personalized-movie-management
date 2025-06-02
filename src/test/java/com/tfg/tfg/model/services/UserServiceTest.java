@@ -2,6 +2,11 @@ package com.tfg.tfg.model.services;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,12 +14,15 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.tfg.tfg.model.entities.CustomList;
+import com.tfg.tfg.model.entities.CustomListDao;
 import com.tfg.tfg.model.entities.Users;
 import com.tfg.tfg.model.services.exceptions.DuplicateInstanceException;
 import com.tfg.tfg.model.services.exceptions.DuplicateListNameException;
 import com.tfg.tfg.model.services.exceptions.IncorrectLoginException;
 import com.tfg.tfg.model.services.exceptions.IncorrectPasswordException;
 import com.tfg.tfg.model.services.exceptions.InstanceNotFoundException;
+import com.tfg.tfg.model.services.exceptions.PermissionException;
 
 @ActiveProfiles("test")
 @SpringBootTest
@@ -25,6 +33,9 @@ public class UserServiceTest {
 	
 	@Autowired
 	private UserService userService;
+
+	@Autowired
+	private CustomListDao customListDao;
 	
 	private Users createUser(String userName) {
 		return new Users(userName, "password", userName + "@" + userName + ".com", "avatar");
@@ -64,6 +75,46 @@ public class UserServiceTest {
         
         assertThrows(DuplicateInstanceException.class, () -> userService.signUp(duplicatedUser));
     }
+
+	@Test
+	public void testSignUpWithoutRole() throws DuplicateInstanceException, DuplicateListNameException, InstanceNotFoundException {
+		Users user = createUser("userWithoutRole");
+		user.setRole(null); // Sin rol explícito
+
+		userService.signUp(user);
+
+		Users signedUpUser = userService.loginFromId(user.getId());
+		assertEquals(Users.RoleType.USER, signedUpUser.getRole()); // Rol por defecto
+	}
+
+	@Test
+	public void testSignUpWithExplicitRole() throws DuplicateInstanceException, DuplicateListNameException, InstanceNotFoundException {
+		Users admin = createUser("admin");
+		admin.setRole(Users.RoleType.ADMIN);
+
+		userService.signUp(admin);
+
+		Users signedUpAdmin = userService.loginFromId(admin.getId());
+		assertEquals(Users.RoleType.ADMIN, signedUpAdmin.getRole());
+	}
+
+	@Test
+	public void testSignUpCreatesDefaultLists() throws DuplicateInstanceException, DuplicateListNameException, InstanceNotFoundException {
+		Users user = createUser("userWithLists");
+		userService.signUp(user);
+
+		List<CustomList> userLists = customListDao.findByUserId(user.getId());
+		assertEquals(4, userLists.size());
+
+		Set<String> listNames = userLists.stream()
+			.map(CustomList::getName)
+			.collect(Collectors.toSet());
+
+		assertTrue(listNames.contains("Películas favoritas"));
+		assertTrue(listNames.contains("Pendientes por ver"));
+		assertTrue(listNames.contains("Películas vistas"));
+		assertTrue(listNames.contains("Películas con las que lloré"));
+	}
 	
 	@Test
 	public void testLoginFromNonExistentId() {
@@ -158,6 +209,53 @@ public class UserServiceTest {
 		assertThrows(IncorrectPasswordException.class, () ->
 			userService.changePassword(user.getId(), 'Y' + oldPassword, newPassword));
 		
+	}
+
+	@Test
+	public void testDeleteUserWithNonExistentUser() throws DuplicateInstanceException, InstanceNotFoundException, DuplicateListNameException {
+		Users admin = createUser("admin");
+		admin.setRole(Users.RoleType.ADMIN);
+		userService.signUp(admin);
+
+		assertThrows(InstanceNotFoundException.class, () -> 
+			userService.deleteUser(admin.getId(), "nonExistentUser"));
+	}
+
+	@Test
+	public void testDeleteSelfAsAdmin() throws DuplicateInstanceException, InstanceNotFoundException, DuplicateListNameException {
+		Users admin = createUser("admin");
+		admin.setRole(Users.RoleType.ADMIN);
+		userService.signUp(admin);
+
+		assertThrows(PermissionException.class, () -> 
+			userService.deleteUser(admin.getId(), admin.getUserName()));
+	}
+
+	@Test
+	public void testDeleteUserWithoutAdminRole() throws DuplicateInstanceException, InstanceNotFoundException, DuplicateListNameException {
+		Users user = createUser("user");
+		userService.signUp(user);
+
+		Users targetUser = createUser("targetUser");
+		userService.signUp(targetUser);
+
+		assertThrows(PermissionException.class, () -> 
+			userService.deleteUser(user.getId(), targetUser.getUserName()));
+	}
+
+	@Test
+	public void testDeleteUserSuccessfully() throws InstanceNotFoundException, PermissionException, DuplicateInstanceException, DuplicateListNameException {
+		Users admin = createUser("admin");
+		admin.setRole(Users.RoleType.ADMIN);
+		userService.signUp(admin);
+
+		Users targetUser = createUser("targetUser");
+		userService.signUp(targetUser);
+
+		userService.deleteUser(admin.getId(), targetUser.getUserName());
+
+		assertThrows(InstanceNotFoundException.class, () -> 
+			userService.loginFromId(targetUser.getId()));
 	}
 
 }

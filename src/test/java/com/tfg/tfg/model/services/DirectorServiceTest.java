@@ -228,60 +228,38 @@ public class DirectorServiceTest {
         assertEquals("1.75 m", result.getHeight());
     }
 
-    @Test
-    public void testCreateDirectorWithExistingName() {
-        // Intentar crear un director con el mismo nombre que el director de prueba
-        Director newDirector = new Director();
-        newDirector.setName("Steven Spielberg"); // Mismo nombre que testDirector
-        newDirector.setImdbId("nm9999999"); // ImdbId diferente
 
-        Director result = directorService.createDirector(newDirector);
-
-        // Verificar que no se creó un nuevo director, sino que se devolvió el existente
-        assertNotNull(result);
-        assertEquals(testDirector.getId(), result.getId());
-        assertEquals("Steven Spielberg", result.getName());
-        
-        // Verificar que se actualizó el imdbId del director existente
-        assertEquals("nm9999999", result.getImdbId());
-    }
 
     @Test
     public void testCreateDirectorWithExistingImdbId() {
-        // Intentar crear un director con el mismo imdbId que el director de prueba
         Director newDirector = new Director();
-        newDirector.setName("Different Director Name"); // Nombre diferente
-        newDirector.setImdbId("nm0000229"); // Mismo imdbId que testDirector
+        newDirector.setName("Different Director Name");
+        newDirector.setImdbId("nm0000229");
+        newDirector.setBio("Updated biography");
 
         Director result = directorService.createDirector(newDirector);
 
-        // Verificar que no se creó un nuevo director, sino que se devolvió el existente
         assertNotNull(result);
         assertEquals(testDirector.getId(), result.getId());
-        
-        // El nombre no debería cambiar porque estamos usando el imdbId como clave principal
         assertEquals("Steven Spielberg", result.getName());
         assertEquals("nm0000229", result.getImdbId());
+        assertEquals("Updated biography", result.getBio());
     }
 
     @Test
     public void testCreateDirectorWithExistingNameAndImdbId() {
-        // Intentar crear un director con el mismo nombre e imdbId que el director de prueba
         Director newDirector = new Director();
         newDirector.setName("Steven Spielberg");
         newDirector.setImdbId("nm0000229");
-        newDirector.setBio("New biography text"); // Datos adicionales
+        newDirector.setBio("Updated biography");
 
         Director result = directorService.createDirector(newDirector);
 
-        // Verificar que no se creó un nuevo director, sino que se devolvió el existente
         assertNotNull(result);
         assertEquals(testDirector.getId(), result.getId());
         assertEquals("Steven Spielberg", result.getName());
         assertEquals("nm0000229", result.getImdbId());
-        
-        // Verificar que se actualizaron otros campos
-        assertEquals("New biography text", result.getBio());
+        assertEquals("Updated biography", result.getBio());
     }
 
     @Test
@@ -306,4 +284,156 @@ public class DirectorServiceTest {
         // Verificar que ambos resultados apuntan al mismo director en la base de datos
         assertEquals(result1.getId(), result2.getId());
     }
+
+    @Test
+    public void testUpdateExistingDirectorAllFields() throws InstanceNotFoundException {
+        Director updatedData = new Director();
+        updatedData.setImdbId("nm0000229"); // Use the existing IMDB ID to locate the director
+        updatedData.setBirthDate(new java.sql.Date(System.currentTimeMillis()));
+        updatedData.setBirthPlace("Los Angeles, California, USA");
+        updatedData.setHeight("1.80 m");
+        updatedData.setBio("Updated biography text");
+        updatedData.setImageUrl("https://example.com/updated_image.jpg");
+
+        Director result = directorService.updateDirector(updatedData);
+
+        assertEquals(testDirector.getId(), result.getId());
+        assertEquals("nm0000229", result.getImdbId());
+        assertEquals("Los Angeles, California, USA", result.getBirthPlace());
+        assertEquals("1.80 m", result.getHeight());
+        assertEquals("Updated biography text", result.getBio());
+        assertEquals("https://example.com/updated_image.jpg", result.getImageUrl());
+    }
+
+    @Test
+    public void testUpdateExistingDirectorSomeFields() throws InstanceNotFoundException {
+        Director updatedData = new Director();
+        updatedData.setImdbId("nm0000229"); // Use the existing IMDB ID to locate the director
+        updatedData.setHeight("1.75 m");
+
+        Director result = directorService.updateDirector(updatedData);
+
+        assertEquals(testDirector.getId(), result.getId());
+        assertEquals("nm0000229", result.getImdbId());
+        assertEquals("1.75 m", result.getHeight());
+        assertEquals("Steven Allan Spielberg (born December 18, 1946) is an American director, producer, and screenwriter.", result.getBio());
+    }
+
+    @Test
+    public void testUpdateExistingDirectorNoFields() throws InstanceNotFoundException {
+        Director updatedData = new Director();
+        updatedData.setImdbId("nm0000229"); // Use the existing IMDB ID to locate the director
+
+        Director result = directorService.updateDirector(updatedData);
+
+        assertEquals(testDirector.getId(), result.getId());
+        assertEquals("nm0000229", result.getImdbId());
+        assertEquals("Cincinnati, Ohio, USA", result.getBirthPlace());
+        assertEquals("1.70 m", result.getHeight());
+        assertEquals("Steven Allan Spielberg (born December 18, 1946) is an American director, producer, and screenwriter.", result.getBio());
+    }
+
+    @Test
+    public void testCreateDirectorNew() {
+        Director newDirector = new Director();
+        newDirector.setName("Quentin Tarantino");
+        newDirector.setImdbId("nm0000233");
+        newDirector.setBio("New biography text");
+
+        Director result = directorService.createDirector(newDirector);
+
+        assertNotNull(result);
+        assertNotEquals(testDirector.getId(), result.getId());
+        assertEquals("Quentin Tarantino", result.getName());
+        assertEquals("nm0000233", result.getImdbId());
+        assertEquals("New biography text", result.getBio());
+    }
+
+    @Test
+    public void testCreateDirectorWithExistingName() {
+        // Intentar crear un director con el mismo nombre que el director de prueba
+        Director newDirector = new Director();
+        newDirector.setName("Steven Spielberg"); // Mismo nombre que testDirector
+        newDirector.setImdbId("nm9999999"); // ImdbId diferente
+
+        Director result = directorService.createDirector(newDirector);
+
+        // Verificar que no se creó un nuevo director, sino que se devolvió el existente
+        assertNotNull(result);
+        assertEquals(testDirector.getId(), result.getId());
+        assertEquals("Steven Spielberg", result.getName());
+        
+        // Verificar que se actualizó el imdbId del director existente
+        assertEquals("nm9999999", result.getImdbId());
+    }
+
+    @Test
+    public void testCreateDirectorWithExistingImdbIdButNoName() {
+        Director newDirector = new Director();
+        newDirector.setName("Steven Spielberg"); // Provide a valid name
+        newDirector.setImdbId("nm0000229"); // `imdbId` existente
+        newDirector.setBio("Updated biography"); // Nuevo campo
+
+        Director result = directorService.createDirector(newDirector);
+
+        assertNotNull(result);
+        assertEquals(testDirector.getId(), result.getId());
+        assertEquals("Steven Spielberg", result.getName()); // Nombre no debe cambiar
+        assertEquals("Updated biography", result.getBio()); // Bio debe actualizarse
+    }
+
+    @Test
+    public void testCreateDirectorWithExistingNameButNoImdbId() {
+        Director newDirector = new Director();
+        newDirector.setName("Steven Spielberg"); // Nombre existente
+        newDirector.setBio("Updated biography"); // Nuevo campo
+
+        Director result = directorService.createDirector(newDirector);
+
+        assertNotNull(result);
+        assertEquals(testDirector.getId(), result.getId());
+        assertEquals("nm0000229", result.getImdbId()); // `imdbId` no debe cambiar
+        assertEquals("Updated biography", result.getBio()); // Bio debe actualizarse
+    }
+
+    @Test
+    public void testCreateDirectorWithNonExistentImdbIdAndName() {
+        Director newDirector = new Director();
+        newDirector.setName("Quentin Tarantino"); // Nombre nuevo
+        newDirector.setImdbId("nm0000233"); // `imdbId` nuevo
+
+        Director result = directorService.createDirector(newDirector);
+
+        assertNotNull(result);
+        assertNotEquals(testDirector.getId(), result.getId());
+        assertEquals("Quentin Tarantino", result.getName());
+        assertEquals("nm0000233", result.getImdbId());
+    }
+
+    @Test
+    public void testCreateDirectorWithExistingImdbIdAndName() {
+        Director newDirector = new Director();
+        newDirector.setName("Steven Spielberg"); // Nombre existente
+        newDirector.setImdbId("nm0000229"); // `imdbId` existente
+        newDirector.setBio("Updated biography"); // Nuevo campo
+
+        Director result = directorService.createDirector(newDirector);
+
+        assertNotNull(result);
+        assertEquals(testDirector.getId(), result.getId());
+        assertEquals("Steven Spielberg", result.getName()); // Nombre no debe cambiar
+        assertEquals("nm0000229", result.getImdbId()); // `imdbId` no debe cambiar
+        assertEquals("Updated biography", result.getBio()); // Bio debe actualizarse
+    }
+
+    @Test
+    public void testCreateDirectorWithoutImdbIdOrName() {
+        Director newDirector = new Director();
+        newDirector.setBio("Updated biography"); // Campo adicional
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            directorService.createDirector(newDirector);
+        });
+    }
+
 }

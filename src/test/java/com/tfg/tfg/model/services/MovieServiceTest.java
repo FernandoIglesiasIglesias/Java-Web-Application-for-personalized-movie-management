@@ -163,4 +163,184 @@ public class MovieServiceTest {
         assertEquals(savedMovie.getId(), allMovies.get(0).getId());
     }
 
+    @Test
+    public void testSaveMovieWithExistingActorByImdbId() {
+        Actor existingActor = new Actor("Robert Downey Jr.", List.of());
+        actorDao.save(existingActor);
+
+        Genre genre = new Genre("Action", List.of());
+        Director director = new Director("Jon Favreau", List.of());
+        genreDao.save(genre);
+        directorDao.save(director);
+
+        Movie movie = createMovie("tt43722", "Iron Man", "A billionaire industrialist and genius inventor, Tony Stark (Robert Downey Jr.), is conducting weapons tests overseas, but terrorists kidnap him to force him to build a devastating weapon.", 2008, "ironman.jpg", 126, List.of(genre), List.of(existingActor), List.of(director));
+
+        Movie savedMovie = movieService.saveMovie(movie);
+
+        assertEquals(1, savedMovie.getActors().size());
+        assertEquals(existingActor.getId(), savedMovie.getActors().get(0).getId());
+    }
+
+    @Test
+    public void testSaveMovieWithExistingActorByName() {
+        Actor existingActor = new Actor("Robert Downey Jr.", List.of());
+        actorDao.save(existingActor);
+
+        Genre genre = new Genre("Action", List.of());
+        Director director = new Director("Jon Favreau", List.of());
+        genreDao.save(genre);
+        directorDao.save(director);
+
+        Movie movie = createMovie("tt43722", "Iron Man", "A billionaire industrialist and genius inventor, Tony Stark (Robert Downey Jr.), is conducting weapons tests overseas, but terrorists kidnap him to force him to build a devastating weapon.", 2008, "ironman.jpg", 126, List.of(genre), List.of(existingActor), List.of(director));
+
+        Movie savedMovie = movieService.saveMovie(movie);
+
+        assertEquals(1, savedMovie.getActors().size());
+        assertEquals(existingActor.getId(), savedMovie.getActors().get(0).getId());
+    }
+
+    @Test
+    public void testSaveMovieWithNewActor() {
+        Actor newActor = new Actor("Chris Hemsworth", List.of());
+
+        Genre genre = new Genre("Action", List.of());
+        Director director = new Director("Kenneth Branagh", List.of());
+        genreDao.save(genre);
+        directorDao.save(director);
+
+        Movie movie = createMovie("tt0800369", "Thor", "The powerful but arrogant god Thor is cast out of Asgard to live amongst humans in Midgard (Earth), where he soon becomes one of their finest defenders.", 2011, "thor.jpg", 115, List.of(genre), List.of(newActor), List.of(director));
+
+        Movie savedMovie = movieService.saveMovie(movie);
+
+        assertEquals(1, savedMovie.getActors().size());
+        assertEquals("Chris Hemsworth", savedMovie.getActors().get(0).getName());
+    }
+
+    @Test
+    public void testSaveMovieWithExistingDirectorByImdbId() {
+        Director existingDirector = new Director("Jon Favreau", List.of());
+        directorDao.save(existingDirector);
+
+        Genre genre = new Genre("Action", List.of());
+        Actor actor = new Actor("Robert Downey Jr.", List.of());
+        genreDao.save(genre);
+        actorDao.save(actor);
+
+        Movie movie = createMovie("tt43722", "Iron Man", "A billionaire industrialist and genius inventor, Tony Stark (Robert Downey Jr.), is conducting weapons tests overseas, but terrorists kidnap him to force him to build a devastating weapon.", 2008, "ironman.jpg", 126, List.of(genre), List.of(actor), List.of(existingDirector));
+
+        Movie savedMovie = movieService.saveMovie(movie);
+
+        assertEquals(1, savedMovie.getDirectors().size());
+        assertEquals(existingDirector.getId(), savedMovie.getDirectors().get(0).getId());
+    }
+
+    @Test
+    public void testSaveMovieWithExistingDirectorByName() {
+        Director existingDirector = new Director("Jon Favreau", List.of());
+        directorDao.save(existingDirector);
+
+        Genre genre = new Genre("Action", List.of());
+        Actor actor = new Actor("Robert Downey Jr.", List.of());
+        genreDao.save(genre);
+        actorDao.save(actor);
+
+        Movie movie = createMovie("tt43722", "Iron Man", "A billionaire industrialist and genius inventor, Tony Stark (Robert Downey Jr.), is conducting weapons tests overseas, but terrorists kidnap him to force him to build a devastating weapon.", 2008, "ironman.jpg", 126, List.of(genre), List.of(actor), List.of(existingDirector));
+
+        Movie savedMovie = movieService.saveMovie(movie);
+
+        assertEquals(1, savedMovie.getDirectors().size());
+        assertEquals(existingDirector.getId(), savedMovie.getDirectors().get(0).getId());
+    }
+
+    @Test
+    public void testSaveMovieWithNewDirector() {
+        Director newDirector = new Director("Kenneth Branagh", List.of());
+
+        Genre genre = new Genre("Action", List.of());
+        Actor actor = new Actor("Chris Hemsworth", List.of());
+        genreDao.save(genre);
+        actorDao.save(actor);
+
+        Movie movie = createMovie("tt0800369", "Thor", "The powerful but arrogant god Thor is cast out of Asgard to live amongst humans in Midgard (Earth), where he soon becomes one of their finest defenders.", 2011, "thor.jpg", 115, List.of(genre), List.of(actor), List.of(newDirector));
+
+        Movie savedMovie = movieService.saveMovie(movie);
+
+        assertEquals(1, savedMovie.getDirectors().size());
+        assertEquals("Kenneth Branagh", savedMovie.getDirectors().get(0).getName());
+    }
+
+    @Test
+public void testSaveMovieWithActorImdbIdNotFound() {
+    Genre genre = new Genre("Action", List.of());
+    Director director = new Director("Jon Favreau", List.of());
+    Actor actor = new Actor("Chris Hemsworth", List.of());
+    actor.setImdbId("nm0000001"); // imdbId válido pero no existente
+
+    genreDao.save(genre);
+    directorDao.save(director);
+
+    Movie movie = createMovie("tt0800369", "Thor", "The powerful but arrogant god Thor is cast out of Asgard to live amongst humans in Midgard (Earth), where he soon becomes one of their finest defenders.", 2011, "thor.jpg", 115, List.of(genre), List.of(actor), List.of(director));
+
+    Movie savedMovie = movieService.saveMovie(movie);
+
+    assertEquals(1, savedMovie.getActors().size());
+    assertEquals("Chris Hemsworth", savedMovie.getActors().get(0).getName());
+    assertEquals("nm0000001", savedMovie.getActors().get(0).getImdbId());
+}
+
+    @Test
+    public void testSaveMovieWithActorNameNotFound() {
+        Genre genre = new Genre("Action", List.of());
+        Director director = new Director("Jon Favreau", List.of());
+        Actor actor = new Actor("Chris Hemsworth", List.of());
+        actor.setName("Chris Hemsworth"); // name válido pero no existente
+
+        genreDao.save(genre);
+        directorDao.save(director);
+
+        Movie movie = createMovie("tt0800369", "Thor", "The powerful but arrogant god Thor is cast out of Asgard to live amongst humans in Midgard (Earth), where he soon becomes one of their finest defenders.", 2011, "thor.jpg", 115, List.of(genre), List.of(actor), List.of(director));
+
+        Movie savedMovie = movieService.saveMovie(movie);
+
+        assertEquals(1, savedMovie.getActors().size());
+        assertEquals("Chris Hemsworth", savedMovie.getActors().get(0).getName());
+    }
+
+    @Test
+    public void testSaveMovieWithDirectorImdbIdNotFound() {
+        Genre genre = new Genre("Action", List.of());
+        Actor actor = new Actor("Chris Hemsworth", List.of());
+        Director director = new Director("Kenneth Branagh", List.of());
+        director.setImdbId("nm0000002"); // imdbId válido pero no existente
+
+        genreDao.save(genre);
+        actorDao.save(actor);
+
+        Movie movie = createMovie("tt0800369", "Thor", "The powerful but arrogant god Thor is cast out of Asgard to live amongst humans in Midgard (Earth), where he soon becomes one of their finest defenders.", 2011, "thor.jpg", 115, List.of(genre), List.of(actor), List.of(director));
+
+        Movie savedMovie = movieService.saveMovie(movie);
+
+        assertEquals(1, savedMovie.getDirectors().size());
+        assertEquals("Kenneth Branagh", savedMovie.getDirectors().get(0).getName());
+        assertEquals("nm0000002", savedMovie.getDirectors().get(0).getImdbId());
+    }
+
+    @Test
+    public void testSaveMovieWithDirectorNameNotFound() {
+        Genre genre = new Genre("Action", List.of());
+        Actor actor = new Actor("Chris Hemsworth", List.of());
+        Director director = new Director("Kenneth Branagh", List.of());
+        director.setName("Kenneth Branagh"); // name válido pero no existente
+
+        genreDao.save(genre);
+        actorDao.save(actor);
+
+        Movie movie = createMovie("tt0800369", "Thor", "The powerful but arrogant god Thor is cast out of Asgard to live amongst humans in Midgard (Earth), where he soon becomes one of their finest defenders.", 2011, "thor.jpg", 115, List.of(genre), List.of(actor), List.of(director));
+
+        Movie savedMovie = movieService.saveMovie(movie);
+
+        assertEquals(1, savedMovie.getDirectors().size());
+        assertEquals("Kenneth Branagh", savedMovie.getDirectors().get(0).getName());
+    }
+
 }
