@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { useNavigate } from 'react-router-dom';
 import MovieCarousel from './MovieCarousel';
 import MovieGrid from './MovieGrid';
-import LoadingSpinner from "../../../common/LoadingSpinner"
+import LoadingSpinner from "../../../common/LoadingSpinner";
 import './MovieResults.css';
 
 const MovieResults = ({ 
@@ -82,6 +82,18 @@ const MovieResults = ({
             </div>
           )}
         </>
+      );
+    }
+
+    // Mostrar películas valoradas por usuarios
+    if (movieSource === 'topRated' && topRatedMovies.length > 0) {
+      return (
+        <MovieGrid 
+          movies={topRatedMovies} 
+          onMovieClick={handleMovieClick} 
+          theme={theme} 
+          source="topRated"
+        />
       );
     }
 

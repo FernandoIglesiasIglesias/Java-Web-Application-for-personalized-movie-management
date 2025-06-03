@@ -166,7 +166,7 @@ const MovieExplorer = ({ user }) => {
             averageRating: ratingValue
           };
         });
-                
+        console.log("Películas valoradas procesadas:", processedData); // Log para depuración
         setTopRatedMovies(processedData);
         setLoadingTopRated(false);
       },
