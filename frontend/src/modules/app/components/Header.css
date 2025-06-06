@@ -1,31 +1,36 @@
-.header {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: var(--header-height);
-  background-color: var(--card-background-light);
-  color: var(--text-color-light);
+/* Estilos para la imagen del logo */
+.logo-image {
+  max-height: 24px;
+  width: auto;
+  display: block;
+}
+
+/* Ajustes al contenedor del logo */
+.header-logo {
   display: flex;
   align-items: center;
+  padding: 0 8px;
+  margin-right: 10px;  /* Añadido margen para separarlo de la navegación */
+}
+
+.header-nav, .header-actions {
+  display: flex;
+  align-items: center;
+}
+
+/* Asegurar que el header tenga suficiente espacio */
+.header {
   padding: 0 1.5rem;
-  box-shadow: 0 1px 3px var(--card-shadow-light);
-  z-index: 1000;
-  transition: background-color var(--transition-duration), 
-              color var(--transition-duration),
-              box-shadow var(--transition-duration);
+  height: 60px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 body.dark .header {
   background-color: var(--card-background-dark);
   color: var(--text-color-dark);
   box-shadow: 0 1px 3px var(--card-shadow-dark);
-}
-
-.header-logo {
-  font-size: 1.5rem;
-  font-weight: 700;
-  margin-right: 1.5rem;
 }
 
 .header-logo a {
@@ -111,4 +116,94 @@ body.dark .theme-toggle:hover {
 
 body.dark .user-avatar:hover {
   border-color: var(--primary-color-dark);
+}
+
+/* Estilos responsivos para dispositivos móviles */
+@media (max-width: 768px) {
+  .header {
+    padding: 0 1rem;
+  }
+  
+  .nav-item {
+    margin-right: 0.5rem;
+  }
+  
+  .nav-link {
+    padding: 0.4rem;
+    font-size: 0.9rem;
+  }
+  
+  .theme-toggle {
+    margin-right: 0.6rem;
+    padding: 0.3rem;
+  }
+  
+  .user-avatar {
+    width: 32px;
+    height: 32px;
+  }
+}
+
+@media (max-width: 576px) {
+  .header {
+    padding: 0 0.75rem;
+  }
+  
+  .logo-image {
+    max-height: 20px;
+  }
+  
+  .header-logo {
+    margin-right: 6px;
+  }
+  
+  .nav-item {
+    margin-right: 0.3rem;
+  }
+  
+  .nav-link {
+    padding: 0.3rem;
+    font-size: 0.85rem;
+  }
+  
+  .theme-toggle {
+    font-size: 1.1rem;
+    margin-right: 0.5rem;
+  }
+  
+  .user-avatar {
+    width: 28px;
+    height: 28px;
+  }
+}
+
+@media (max-width: 360px) {
+  .header {
+    padding: 0 0.5rem;
+    height: 50px;
+  }
+  
+  .logo-image {
+    max-height: 18px;
+  }
+  
+  .header-logo {
+    padding: 0 4px;
+  }
+  
+  .nav-link {
+    padding: 0.25rem;
+    font-size: 0.8rem;
+  }
+  
+  .theme-toggle {
+    padding: 0.2rem;
+    font-size: 1rem;
+    margin-right: 0.4rem;
+  }
+  
+  .user-avatar {
+    width: 26px;
+    height: 26px;
+  }
 }

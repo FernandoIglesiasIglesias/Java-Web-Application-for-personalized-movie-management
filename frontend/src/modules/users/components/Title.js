@@ -8,7 +8,10 @@ const Title = () => {
 
   return (
     <div className={`auth-container ${theme}`}>
-      <h1>TFG</h1>
+      <div className="logo-container">
+        <div className="spiral-animation"></div>
+        <img src="/images/cinematrix_e.png" alt="Cinematrix Logo" className="auth-logo" />
+      </div>
       <div className="login-signup-button-container">
         <Link to="/signup">
           <button type="button" className={theme}>Registrarse</button>

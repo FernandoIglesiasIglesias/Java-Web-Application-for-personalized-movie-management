@@ -37,11 +37,12 @@ const MovieHeader = ({
           </button>
         </div>
         
-        {/* Solo mostrar el botón de filtros si no estamos en modo búsqueda */}
+        {/* Solo mostrar el botón de filtros si no estamos en modo búsqueda y no estamos en "Valoradas por Usuarios" */}
         {!isSearching && (
           <button 
             className={`toggle-filters-button ${theme} ${showFilters ? 'active' : ''}`}
             onClick={toggleFilters}
+            disabled={movieSource === "topRated"}
           >
             {showFilters ? 'Ocultar filtros' : 'Mostrar filtros'}
             <span className="filter-icon">🔍</span>

@@ -9,4 +9,6 @@ public interface ReviewVoteDao extends JpaRepository<ReviewVote, ReviewVotePK> {
     Optional<ReviewVote> findByReviewIdAndUserId(Long reviewId, Long userId);
     
     void deleteByReviewIdAndUserId(Long reviewId, Long userId);
+
+    void deleteByUserId(Long userId);
 }

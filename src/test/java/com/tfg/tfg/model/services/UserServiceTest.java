@@ -16,6 +16,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.tfg.tfg.model.entities.CustomList;
 import com.tfg.tfg.model.entities.CustomListDao;
+import com.tfg.tfg.model.entities.Movie;
+import com.tfg.tfg.model.entities.MovieDao;
+import com.tfg.tfg.model.entities.MovieReview;
+import com.tfg.tfg.model.entities.MovieReviewDao;
 import com.tfg.tfg.model.entities.Users;
 import com.tfg.tfg.model.services.exceptions.DuplicateInstanceException;
 import com.tfg.tfg.model.services.exceptions.DuplicateListNameException;
@@ -33,6 +37,15 @@ public class UserServiceTest {
 	
 	@Autowired
 	private UserService userService;
+
+	@Autowired
+	private CustomListService customListService;
+
+	@Autowired
+	private MovieReviewDao movieReviewDao;
+
+	@Autowired
+	private MovieDao movieDao;
 
 	@Autowired
 	private CustomListDao customListDao;
@@ -256,6 +269,74 @@ public class UserServiceTest {
 
 		assertThrows(InstanceNotFoundException.class, () -> 
 			userService.loginFromId(targetUser.getId()));
+	}
+
+	@Test
+	public void testDeleteUserWithReviews() throws InstanceNotFoundException, PermissionException, DuplicateInstanceException, DuplicateListNameException {
+		Users admin = createUser("admin");
+		admin.setRole(Users.RoleType.ADMIN);
+		userService.signUp(admin);
+
+		Users targetUser = createUser("targetUser");
+		userService.signUp(targetUser);
+
+		// Crear película asociada a las reseñas
+		Movie movie = new Movie();
+		movie.setImdbId("tt1234567");
+		movie.setTitle("Test Movie");
+		movie.setOverview("Overview of the test movie");
+		movie.setReleaseYear(2023);
+		movie.setVerticalPoster("poster.jpg");
+		movie.setRuntime(120);
+		movieDao.save(movie);
+
+		// Crear reseñas asociadas al usuario y a la película
+		MovieReview review1 = new MovieReview();
+		review1.setUser(targetUser);
+		review1.setMovie(movie); // Asignar película
+		review1.setTitle("Reseña 1");
+		review1.setContent("Contenido de la reseña 1");
+		
+		MovieReview review2 = new MovieReview();
+		review2.setUser(targetUser);
+		review2.setMovie(movie); // Asignar película
+		review2.setTitle("Reseña 2");
+		review2.setContent("Contenido de la reseña 2");
+		
+		movieReviewDao.save(review1);
+		movieReviewDao.save(review2);
+
+		// Eliminar el usuario
+		userService.deleteUser(admin.getId(), targetUser.getUserName());
+
+		// Verificar que las reseñas se eliminaron
+		assertTrue(movieReviewDao.findByUserIdOrderByCreatedAtDesc(targetUser.getId()).isEmpty());
+
+		// Verificar que el usuario ya no existe
+		assertThrows(InstanceNotFoundException.class, () -> userService.loginFromId(targetUser.getId()));
+	}
+
+	@Test
+	public void testDeleteUserWithCustomLists() throws InstanceNotFoundException, PermissionException, DuplicateInstanceException, DuplicateListNameException {
+		Users admin = createUser("admin");
+		admin.setRole(Users.RoleType.ADMIN);
+		userService.signUp(admin);
+
+		Users targetUser = createUser("targetUser");
+		userService.signUp(targetUser);
+
+		// Crear listas personalizadas asociadas al usuario
+		customListService.createList("Lista personalizada 1", targetUser);
+		customListService.createList("Lista personalizada 2", targetUser);
+
+		// Eliminar el usuario
+		userService.deleteUser(admin.getId(), targetUser.getUserName());
+
+		// Verificar que las listas personalizadas se eliminaron
+		assertTrue(customListDao.findByUserId(targetUser.getId()).isEmpty());
+
+		// Verificar que el usuario ya no existe
+		assertThrows(InstanceNotFoundException.class, () -> userService.loginFromId(targetUser.getId()));
 	}
 
 }

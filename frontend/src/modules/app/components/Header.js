@@ -10,7 +10,13 @@ const Header = ({ user }) => {
   return (
     <header className="header">
       <div className="header-logo">
-        <Link to="/home">TFG</Link>
+        <Link to="/home">
+          <img 
+            src="/images/cinematrix_t.png" 
+            alt="Cinematrix" 
+            className="logo-image"
+          />
+        </Link>
       </div>
       
       <nav className="header-nav">

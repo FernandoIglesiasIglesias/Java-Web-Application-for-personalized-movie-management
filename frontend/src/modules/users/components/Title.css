@@ -26,6 +26,106 @@ body.dark {
   transition: background-color var(--transition-duration), color var(--transition-duration);
 }
 
+.logo-container {
+  position: relative;
+  display: inline-block;
+  margin-bottom: 6rem;
+}
+
+.auth-logo {
+  width: 220px; /* Aumentado de 150px a 220px */
+  height: auto;
+  z-index: 2;
+  position: relative;
+}
+.spiral-animation {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 300px;
+  height: 290px; /* Altura ligeramente diferente para crear asimetría */
+  border-radius: 50%;
+  transform: translate(-52%, -48%) rotate(5deg); /* Posición y rotación descentrada */
+  z-index: 1;
+  overflow: visible; /* Permitir que la animación sobresalga */
+  box-shadow: 0 0 25px rgba(13, 110, 253, 0.3);
+}
+
+.spiral-animation:before, .spiral-animation:after {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  border-radius: 47% 53% 51% 49% / 48% 52% 48% 52%; /* Bordes irregulares */
+  box-sizing: border-box;
+}
+
+.spiral-animation:before {
+  border: 10px solid transparent;
+  border-top: 12px solid rgba(13, 110, 253, 0.8);
+  border-right: 6px solid rgba(13, 110, 253, 0.3);
+  border-bottom: 4px dotted rgba(13, 110, 253, 0.2);
+  animation: spinWobble 4.5s cubic-bezier(0.36, 0.07, 0.19, 0.97) infinite;
+}
+
+.spiral-animation:after {
+  border: 7px dotted transparent;
+  border-bottom: 8px solid rgba(13, 110, 253, 0.5);
+  border-left: 9px solid rgba(13, 110, 253, 0.2);
+  transform: scale(1.05) rotate(15deg); /* Asimetría adicional */
+  animation: spinWobbleReverse 5.2s cubic-bezier(0.34, 1.56, 0.64, 1) infinite reverse;
+}
+
+.auth-container.dark .spiral-animation {
+  box-shadow: 0 0 30px rgba(121, 82, 179, 0.4);
+}
+
+.auth-container.dark .spiral-animation:before {
+  border-top: 12px solid rgba(121, 82, 179, 0.8);
+  border-right: 6px solid rgba(121, 82, 179, 0.3);
+  border-bottom: 4px dotted rgba(121, 82, 179, 0.2);
+}
+
+.auth-container.dark .spiral-animation:after {
+  border-bottom: 8px solid rgba(121, 82, 179, 0.5);
+  border-left: 9px solid rgba(121, 82, 179, 0.2);
+}
+
+@keyframes spinWobble {
+  0% {
+    transform: rotate(0deg) scale(0.98);
+  }
+  25% {
+    transform: rotate(90deg) scale(1.02);
+  }
+  50% {
+    transform: rotate(180deg) scale(0.99);
+  }
+  75% {
+    transform: rotate(270deg) scale(1.03);
+  }
+  100% {
+    transform: rotate(360deg) scale(0.98);
+  }
+}
+
+@keyframes spinWobbleReverse {
+  0% {
+    transform: rotate(0deg) scale(1.02);
+  }
+  33% {
+    transform: rotate(-120deg) scale(0.97);
+  }
+  67% {
+    transform: rotate(-240deg) scale(1.04);
+  }
+  100% {
+    transform: rotate(-360deg) scale(1.02);
+  }
+}
+
 .auth-container {
   display: flex;
   flex-direction: column;

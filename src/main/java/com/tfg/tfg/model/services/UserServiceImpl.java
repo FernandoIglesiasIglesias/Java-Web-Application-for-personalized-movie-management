@@ -11,7 +11,10 @@ import com.tfg.tfg.model.entities.CustomList;
 import com.tfg.tfg.model.entities.CustomListDao;
 import com.tfg.tfg.model.entities.DirectorList;
 import com.tfg.tfg.model.entities.DirectorListDao;
+import com.tfg.tfg.model.entities.MovieReview;
+import com.tfg.tfg.model.entities.MovieReviewDao;
 import com.tfg.tfg.model.entities.RatingDao;
+import com.tfg.tfg.model.entities.ReviewVoteDao;
 import com.tfg.tfg.model.entities.UserActivityDao;
 import com.tfg.tfg.model.entities.UserProfileDao;
 import com.tfg.tfg.model.entities.Users;
@@ -41,8 +44,10 @@ public class UserServiceImpl implements UserService{
 	private final RatingDao ratingDao;
 	private final UserProfileDao userProfileDao;
 	private final UserActivityDao userActivityDao;
+	private final ReviewVoteDao reviewVoteDao;
+	private final MovieReviewDao movieReviewDao;
 
-	public UserServiceImpl(PermissionChecker permissionChecker, BCryptPasswordEncoder passwordEncoder, UsersDao userDao, CustomListService customListService, ActorListService actorListService, DirectorListService directorListService, CustomListDao customListDao, ActorListDao actorListDao, DirectorListDao directorListDao, RatingDao ratingDao, UserProfileDao userProfileDao, UserActivityDao userActivityDao) {
+	public UserServiceImpl(PermissionChecker permissionChecker, BCryptPasswordEncoder passwordEncoder, UsersDao userDao, CustomListService customListService, ActorListService actorListService, DirectorListService directorListService, CustomListDao customListDao, ActorListDao actorListDao, DirectorListDao directorListDao, RatingDao ratingDao, UserProfileDao userProfileDao, UserActivityDao userActivityDao, ReviewVoteDao reviewVoteDao, MovieReviewDao movieReviewDao) {
 		this.permissionChecker = permissionChecker;
 		this.passwordEncoder = passwordEncoder;
 		this.userDao = userDao;
@@ -55,6 +60,8 @@ public class UserServiceImpl implements UserService{
 		this.ratingDao = ratingDao;
 		this.userProfileDao = userProfileDao;
 		this.userActivityDao = userActivityDao;
+		this.reviewVoteDao = reviewVoteDao;
+		this.movieReviewDao = movieReviewDao;
 	}
 	
 	/**
@@ -144,13 +151,23 @@ public class UserServiceImpl implements UserService{
      * @throws InstanceNotFoundException if the user with the given ID is not found
      */
 	@Override
-	public Users updateProfile(Long id, String userName, String avatar, String email) throws InstanceNotFoundException {
-		
+	public Users updateProfile(Long id, String userName, String avatar, String email) throws InstanceNotFoundException, DuplicateInstanceException {
 		Users user = permissionChecker.checkUser(id);
-        user.setUserName(userName);
-        user.setAvatar(avatar);
+
+		// Verificar si el nombre de usuario ya está en uso por otro usuario
+		if (!user.getUserName().equals(userName) && userDao.existsByUserName(userName)) {
+			throw new DuplicateInstanceException("project.entities.user", userName);
+		}
+
+		// Verificar si el correo electrónico ya está en uso por otro usuario
+		if (!user.getEmail().equals(email) && userDao.existsByEmail(email)) {
+			throw new DuplicateInstanceException("project.entities.email", email);
+		}
+
+		user.setUserName(userName);
+		user.setAvatar(avatar);
 		user.setEmail(email);
-		
+
 		return user;
 	}
     
@@ -187,45 +204,52 @@ public class UserServiceImpl implements UserService{
 	 */
 	@Override
 	public void deleteUser(Long adminId, String userNameToDelete) 
-		throws InstanceNotFoundException, PermissionException {
-		
+			throws InstanceNotFoundException, PermissionException {
+
 		Users admin = permissionChecker.checkUser(adminId);
 		if (admin.getRole() != Users.RoleType.ADMIN) {
 			throw new PermissionException("Solo los administradores pueden eliminar usuarios");
 		}
-		
+
 		Optional<Users> userToDeleteOpt = userDao.findByUserName(userNameToDelete);
 		if (!userToDeleteOpt.isPresent()) {
 			throw new InstanceNotFoundException("project.entities.user", userNameToDelete);
 		}
-		
+
 		Users userToDelete = userToDeleteOpt.get();
-		
+
 		if (adminId.equals(userToDelete.getId())) {
 			throw new PermissionException("Un administrador no puede eliminarse a sí mismo");
 		}
-		
+
+		// Eliminar todas las reseñas del usuario
+		List<MovieReview> reviews = movieReviewDao.findByUserIdOrderByCreatedAtDesc(userToDelete.getId());
+		movieReviewDao.deleteAll(reviews);
+
 		// Eliminar todas las listas de actores del usuario
 		List<ActorList> actorLists = actorListDao.findByUserId(userToDelete.getId());
 		actorListDao.deleteAll(actorLists);
-		
+
 		// Eliminar todas las listas de directores del usuario
 		List<DirectorList> directorLists = directorListDao.findByUserId(userToDelete.getId());
 		directorListDao.deleteAll(directorLists);
-		
+
 		// Eliminar todas las listas personalizadas del usuario
 		List<CustomList> customLists = customListDao.findByUserId(userToDelete.getId());
 		customListDao.deleteAll(customLists);
-		
+
 		// Eliminar las valoraciones del usuario
 		ratingDao.deleteByUserId(userToDelete.getId());
-		
+
 		// Eliminar actividades del usuario
 		userActivityDao.deleteByUserId(userToDelete.getId());
-		
+
+		// Eliminar votos realizados por el usuario en otras reseñas
+		reviewVoteDao.deleteByUserId(userToDelete.getId());
+
 		// Eliminar perfil de usuario
 		userProfileDao.deleteById(userToDelete.getId());
-		
+
 		// Finalmente, eliminar el usuario
 		userDao.delete(userToDelete);
 	}
