@@ -73,10 +73,12 @@ body.dark .read-more-btn:hover {
   padding-bottom: 0.75rem;
   border-bottom: 2px solid rgba(0, 0, 0, 0.1);
   position: relative;
+  color: var(--text-color-light); /* Asegurar color correcto en modo claro */
 }
 
 body.dark .section-title {
   border-bottom-color: rgba(255, 255, 255, 0.1);
+  color: var(--text-color-dark); /* Ajustar color para modo oscuro */
 }
 
 .section-title .icon {
