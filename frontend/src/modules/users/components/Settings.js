@@ -6,7 +6,7 @@ import ChangePassword from "./ChangePassword";
 import { useTheme } from "../../../context/ThemeContext";
 import './Settings.css';
 
-const Settings = ({ user , setAuthenticatedUser }) => {
+const Settings = ({ user, setAuthenticatedUser }) => {
     const navigate = useNavigate();
     const { theme, toggleTheme } = useTheme();
 
@@ -19,25 +19,27 @@ const Settings = ({ user , setAuthenticatedUser }) => {
     const [confirmLogout, setConfirmLogout] = useState(false);
 
     const handleLogOut = () => {
-        logout(); //
-        setAuthenticatedUser(null); 
+        logout();
+        setAuthenticatedUser(null);
         navigate("/", { replace: true });
-    }
+    };
 
     const handleManageLists = () => {
         navigate('/user/lists');
-    }
+    };
 
     return (
         <div className="settings-page-wrapper">
             <div className={`settings-page ${theme}`}>
                 <h1>Ajustes de usuario</h1>
                 <div className={`settings-container ${theme}`}>
+                    {/* Avatar Section */}
                     <div className="settings-subcontainer avatar-container">
                         <h3>Avatar</h3>
                         <img src={avatar} alt="Avatar de usuario" className="user-avatar-large" />
                     </div>
-                    
+
+                    {/* User Info Section */}
                     <div className="settings-horizontal">
                         <div className="settings-subcontainer">
                             <h3>Nombre de usuario</h3>
@@ -48,7 +50,8 @@ const Settings = ({ user , setAuthenticatedUser }) => {
                             <p className="settings-value">{email}</p>
                         </div>
                     </div>
-                    
+
+                    {/* Profile Section */}
                     <div className="settings-section">
                         <h3>Perfil</h3>
                         <div className="settings-horizontal">
@@ -66,7 +69,8 @@ const Settings = ({ user , setAuthenticatedUser }) => {
                             </button>
                         </div>
                     </div>
-                    
+
+                    {/* Content Section */}
                     <div className="settings-section">
                         <h3>Contenido</h3>
                         <div className="settings-horizontal">
@@ -78,22 +82,24 @@ const Settings = ({ user , setAuthenticatedUser }) => {
                             </button>
                         </div>
                     </div>
-                    
+
+                    {/* Appearance Section */}
                     <div className="settings-section">
-                        <h3>Apariencia</h3>
-                        <div className="settings-horizontal theme-toggle-container">
-                            <span>Modo {theme === 'light' ? 'claro' : 'oscuro'}</span>
-                            <button 
-                                className={`theme-toggle-button ${theme}`}
-                                onClick={toggleTheme}
-                                aria-label={`Cambiar a modo ${theme === 'light' ? 'oscuro' : 'claro'}`}
-                            >
-                                {theme === 'light' ? '🌙' : '☀️'}
-                            </button>
-                        </div>
+                    <h3>Apariencia</h3>
+                    <div 
+                        className="theme-toggle-container" 
+                        onClick={toggleTheme} 
+                        aria-label={`Cambiar a modo ${theme === 'light' ? 'oscuro' : 'claro'}`}
+                    >
+                        <button className={`theme-toggle-button ${theme}`}>
+                        <span className="theme-icon">{theme === 'light' ? '☀️' : '🌙'}</span>
+                        <span className="theme-label">Modo {theme === 'light' ? 'claro' : 'oscuro'}</span>
+                        </button>
+                        <p className="theme-toggle-hint">Haz clic para cambiar al modo {theme === 'light' ? 'oscuro' : 'claro'}</p>
+                    </div>
                     </div>
 
-                    {/* Sección de Administración agregada dentro del contenedor principal */}
+                    {/* Admin Section */}
                     {user.role === 'ADMIN' && (
                         <div className="settings-section">
                             <h3>Administración</h3>
@@ -107,7 +113,8 @@ const Settings = ({ user , setAuthenticatedUser }) => {
                             </div>
                         </div>
                     )}
-                    
+
+                    {/* Session Section */}
                     <div className="settings-section">
                         <h3>Sesión</h3>
                         <div className="settings-horizontal">
@@ -128,9 +135,9 @@ const Settings = ({ user , setAuthenticatedUser }) => {
                 </div>
             </div>
 
+            {/* Modals */}
             {update && <UpdateProfile user={user} onClose={() => setUpdate(false)} />}
             {passwordChange && <ChangePassword user={user} onClose={() => setPasswordChange(false)} />}
-            
             {confirmLogout && (
                 <div className="confirm-modal-centered">
                     <div className={`confirm-content ${theme}`}>

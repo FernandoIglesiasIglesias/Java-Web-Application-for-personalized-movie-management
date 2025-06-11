@@ -121,12 +121,14 @@
 
 .theme-toggle-container {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0.5rem 1rem;
+  align-items: center; /* Centrar verticalmente los elementos */
+  justify-content: space-between; /* Distribuir elementos a los extremos */
+  padding: 1rem 1.5rem;
   background-color: var(--input-background-light);
   border-radius: 8px;
   border: 1px solid var(--border-color-light);
+  transition: background-color var(--transition-duration), border-color var(--transition-duration);
+  cursor: pointer; /* Indicar que es interactivo */
 }
 
 .settings-container.dark .theme-toggle-container {
@@ -135,24 +137,50 @@
 }
 
 .theme-toggle-button {
-  background: none;
-  border: none;
-  font-size: 1.5rem;
-  cursor: pointer;
-  padding: 0.25rem;
-  border-radius: 50%;
   display: flex;
   align-items: center;
-  justify-content: center;
-  transition: background-color var(--transition-duration);
+  gap: 0.75rem;
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  transition: background-color var(--transition-duration), transform var(--transition-duration);
 }
 
 .theme-toggle-button:hover {
-  background-color: rgba(0, 0, 0, 0.1);
+  background-color: rgba(0, 0, 0, 0.05);
+  transform: scale(1.05);
 }
 
 .settings-container.dark .theme-toggle-button:hover {
   background-color: rgba(255, 255, 255, 0.1);
+}
+
+.theme-icon {
+  font-size: 1.8rem; /* Aumentar tamaño del icono */
+}
+
+.theme-label {
+  font-size: 1.2rem; /* Ajustar tamaño del texto */
+  font-weight: 400; /* Quitar la negrita */
+  color: var(--text-color-light);
+}
+
+.settings-container.dark .theme-label {
+  color: var(--text-color-dark);
+}
+
+.theme-toggle-hint {
+  font-size: 1rem; /* Ajustar tamaño del texto informativo */
+  color: var(--text-secondary-light);
+  text-align: right; /* Alinear texto a la derecha */
+  margin-left: auto; /* Empujar el texto hacia el extremo derecho */
+}
+
+.settings-container.dark .theme-toggle-hint {
+  color: var(--text-secondary-dark);
 }
 
 .settings-subcontainer-button {
