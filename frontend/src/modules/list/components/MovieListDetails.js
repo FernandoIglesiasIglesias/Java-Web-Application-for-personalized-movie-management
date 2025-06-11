@@ -8,7 +8,6 @@ import {
 import AbstractListDetails from './common/AbstractListDetails';
 import ItemsGrid from './ListDetailsComponents/items/ItemsGrid';
 import './ListDetailsComponents/ListDetails.css';
-import BackButton from "../../common/components/BackButton"
 
 const MovieListDetails = () => {
   const renderMovies = (list, theme, handleRemoveMovie, itemsIcon, noItemsMessage, noItemsSuggestion) => {
@@ -27,7 +26,6 @@ const MovieListDetails = () => {
 
   return (
     <>
-      <BackButton /> {/* Añadir el botón común de Atrás */}
       <AbstractListDetails
         getList={getListById}
         updateList={updateList}
